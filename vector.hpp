@@ -4,84 +4,103 @@ namespace Math
     class Vector3D
     {
     public:
-        T x;
-        T y;
-        T z;
+        T X;
+        T Y;
+        T Z;
 
-        Vector3D(T x = 0, T y = 0, T z = 0) : x(x), y(y), z(z) {}
+        Vector3D(T x = 0, T y = 0, T z = 0) : X(x), Y(y), Z(z) {}
 
-        template<class OtherType>
-        Vector3D Add(const Vector3D<OtherType>& other) const {
-            return Vector3D(x + other.x, y + other.y, z + other.z);
+        template <class OtherType>
+        Vector3D(const Vector3D<OtherType> &other) : X(other.X), Y(other.Y), Z(other.Z) {}
+
+        template <class OtherType>
+        auto Add(const Vector3D<OtherType> &other) const
+        {
+            return Vector3D<decltype(X + other.X)>(X + other.X, Y + other.Y, Z + other.Z);
         }
 
-        template<class OtherType>
-        Vector3D operator+(const Vector3D<OtherType>& other) const {
+        template <class OtherType>
+        auto operator+(const Vector3D<OtherType> &other) const
+        {
             return this->Add(other);
         }
 
-        template<class OtherType>
-        Vector3D& operator+=(const Vector3D<OtherType>& other) {
-            x += other.x;
-            y += other.y;
-            z += other.z;
+        template <class OtherType>
+        Vector3D<T> &operator+=(const Vector3D<OtherType> &other)
+        {
+            X += other.X;
+            Y += other.Y;
+            Z += other.Z;
             return *this;
         }
 
-        template<class OtherType>
-        Vector3D Minus(const Vector3D<OtherType>& other) const {
-            return Vector3D(x - other.x, y - other.y, z - other.z);
+        template <class OtherType>
+        auto Minus(const Vector3D<OtherType> &other) const
+        {
+            return Vector3D<decltype(X - other.X)>(X - other.X, Y - other.Y, Z - other.Z);
         }
 
-        template<class OtherType>
-        Vector3D operator-(const Vector3D<OtherType>& other) const {
+        template <class OtherType>
+        auto operator-(const Vector3D<OtherType> &other) const
+        {
             return this->Minus(other);
         }
 
-        template<class OtherType>
-        Vector3D& operator-=(const Vector3D<OtherType>& other) {
-            x -= other.x;
-            y -= other.y;
-            z -= other.z;
+        template <class OtherType>
+        Vector3D<T> &operator-=(const Vector3D<OtherType> &other)
+        {
+            X -= other.X;
+            Y -= other.Y;
+            Z -= other.Z;
             return *this;
         }
 
-        template<class OtherType>
-        Vector3D Scale(const OtherType& scaler) const {
-            return Vector3D(x * scaler, y * scaler, z * scaler);
+        template <class OtherType>
+        auto Scale(const OtherType &scaler) const
+        {
+            return Vector3D<decltype(X * scaler)>(X * scaler, Y * scaler, Z * scaler);
         }
 
-        template<class OtherType>
-        Vector3D operator*(const OtherType& scaler) const {
+        template <class OtherType>
+        auto operator*(const OtherType &scaler) const
+        {
             return this->Scale(scaler);
         }
 
-        template<class OtherType>
-        Vector3D Divide(const OtherType& scaler) const {
-            return Vector3D(x / scaler, y / scaler, z / scaler);
+        template <class OtherType>
+        auto Divide(const OtherType &scaler) const
+        {
+            return Vector3D<decltype(X / scaler)>(X / scaler, Y / scaler, Z / scaler);
         }
 
-        template<class OtherType>
-        Vector3D operator/(const OtherType& scaler) const {
+        template <class OtherType>
+        auto operator/(const OtherType &scaler) const
+        {
             return this->Divide(scaler);
         }
 
-        template<class OtherType>
-        Vector3D operator/=(const OtherType& scaler) const {
-            x /= scaler;
-            y /= scaler;
-            z /= scaler;
+        template <class OtherType>
+        Vector3D<T> &operator/=(const OtherType &scaler) const
+        {
+            X /= scaler;
+            Y /= scaler;
+            Z /= scaler;
             return *this;
         }
 
-        template<class OtherType>
-        Vector3D Dot(const Vector3D<OtherType>& other) const {
-            return Vector3D(x * other.x, y * other.y, z * other.z);
+        template <class OtherType>
+        auto Dot(const Vector3D<OtherType> &other) const
+        {
+            return Vector3D<decltype(X * other.X)>(X * other.X, Y * other.Y, Z * other.Z);
         }
 
-        template<class OtherType>
-        Vector3D Cross(const Vector3D<OtherType>& other) const {
-            return Vector3D(y * other.z - other.y * z, z * other.x - other.z * x, x * other.y - other.x * y);
+        template <class OtherType>
+        auto Cross(const Vector3D<OtherType> &other) const
+        {
+            return Vector3D<decltype(Y * other.Z)>(
+                Y * other.Z - other.Y * Z,
+                Z * other.X - other.Z * X,
+                X * other.Y - other.X * Y);
         }
     };
 }
