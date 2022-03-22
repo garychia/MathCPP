@@ -1,4 +1,4 @@
-vector_test: ../vector.hpp ./vector_test.hpp ./test_main.cpp
+vector_test: ../vector3d.hpp ./vector_test.hpp ./test_main.cpp
 	g++ -std=c++17 -lgtest ./test_main.cpp -o vector_test
 
 all:
