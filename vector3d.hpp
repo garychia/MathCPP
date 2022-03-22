@@ -1,3 +1,9 @@
+#ifndef VECTOR3D_H
+#define VECTOR3D_H
+
+#include <sstream>
+#include <ostream>
+
 namespace Math
 {
     template <class T>
@@ -12,6 +18,13 @@ namespace Math
 
         template <class OtherType>
         Vector3D(const Vector3D<OtherType> &other) : X(other.X), Y(other.Y), Z(other.Z) {}
+
+        auto ToString() const
+        {
+            std::stringstream ss;
+            ss << "(" << X << ", " << Y << ", " << Z << ")";
+            return ss.str();
+        }
 
         template <class OtherType>
         auto Add(const Vector3D<OtherType> &other) const
@@ -68,6 +81,15 @@ namespace Math
         }
 
         template <class OtherType>
+        Vector3D<T> &operator*=(const OtherType &scaler)
+        {
+            X *= scaler;
+            Y *= scaler;
+            Z *= scaler;
+            return *this;
+        }
+
+        template <class OtherType>
         auto Divide(const OtherType &scaler) const
         {
             return Vector3D<decltype(X / scaler)>(X / scaler, Y / scaler, Z / scaler);
@@ -102,5 +124,14 @@ namespace Math
                 Z * other.X - other.Z * X,
                 X * other.Y - other.X * Y);
         }
+
+        friend std::ostream &operator<<(std::ostream &stream, const Vector3D<T> &v)
+        {
+            stream << v.ToString();
+            return stream;
+        }
     };
+
 }
+
+#endif
