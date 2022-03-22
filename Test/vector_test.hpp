@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "../vector.hpp"
+#include "../vector3d.hpp"
 
 using namespace Math;
 
@@ -192,11 +192,20 @@ TEST(Vector3D, VectorSubtraction)
 TEST(Vector3D, VectorScaling)
 {
     Vector3D<int> v1Int(1, -10, 100);
+    Vector3D<int> v2Int = v1Int;
     TEST_VECTOR_INT_SCALING(v1Int, 34)
+    v1Int *= 2;
+    TEST_VECTOR_INT_EQUAL(v1Int, v2Int * 2)
 
     Vector3D<float> v1Float(3.4f, -1320.23f, 23.f);
+    Vector3D<float> v2Float = v1Float;
     TEST_VECTOR_FLOAT_SCALING(v1Float, 324.4f)
+    v1Float *= 10;
+    TEST_VECTOR_FLOAT_EQUAL(v1Float, v2Float * 10)
 
     Vector3D<double> v1Double(31.4f, -20.23f, 23.f);
+    Vector3D<double> v2Double = v1Double;
     TEST_VECTOR_DOUBLE_SCALING(v1Double, 332.343)
+    v1Double *= 3;
+    TEST_VECTOR_DOUBLE_EQUAL(v1Double, v2Double * 3)
 }
