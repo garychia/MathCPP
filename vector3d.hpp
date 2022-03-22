@@ -102,7 +102,7 @@ namespace Math
         }
 
         template <class OtherType>
-        Vector3D<T> &operator/=(const OtherType &scaler) const
+        Vector3D<T> &operator/=(const OtherType &scaler)
         {
             X /= scaler;
             Y /= scaler;
