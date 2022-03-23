@@ -4,6 +4,8 @@
 #include <sstream>
 #include <ostream>
 
+#include "exceptions.hpp"
+
 namespace Math
 {
     template <class T>
@@ -24,6 +26,23 @@ namespace Math
             std::stringstream ss;
             ss << "(" << X << ", " << Y << ", " << Z << ")";
             return ss.str();
+        }
+
+        T &operator[](const std::size_t &index)
+        {
+            switch (index)
+            {
+            case 0:
+                return X;
+            case 1:
+                return Y;
+            case 2:
+                return Z;
+            default:
+                throw Exceptions::IndexOutOfBound(
+                    index,
+                    "Vector3D: Index must be between 0 and 2 inclusively.");
+            }
         }
 
         template <class OtherType>
