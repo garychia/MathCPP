@@ -17,12 +17,13 @@ namespace Exceptions
         @param index a detected invalid index.
         @param addtionalMessage an optional string that represents an error message.
         */
-        IndexOutOfBound(const std::size_t &index, const std::string& additionalMessage = "") : invalidIndex(index)
+        IndexOutOfBound(const std::size_t &index, const std::string &additionalMessage = "") : invalidIndex(index)
         {
             std::stringstream ss;
             ss << "Index Out of Bound: " << invalidIndex;
             if (additionalMessage.size() > 0)
-                ss << std::endl << additionalMessage;
+                ss << std::endl
+                   << additionalMessage;
             errorMessage = ss.str();
         }
 
@@ -38,6 +39,40 @@ namespace Exceptions
     private:
         // a detected invalid index.
         std::size_t invalidIndex;
+        // an error message to be shown.
+        std::string errorMessage;
+    };
+
+    /*
+    DividedByZero is an exception thown when a value is being divided by zero.
+    */
+    class DividedByZero : public std::exception
+    {
+    public:
+        /*
+        Constructor with an optional message.
+        @param additionalMessage a string that represent an optional error message.
+        */
+        DividedByZero(std::string additionalMessage = "")
+        {
+            std::stringstream ss;
+            ss << "Division by zero occurred.";
+            if (additionalMessage.size() > 0)
+                ss << std::endl
+                   << additionalMessage;
+            errorMessage = ss.str();
+        }
+
+        /*
+        Returns the error message.
+        @return an error message.
+        */
+        const char *what() const throw()
+        {
+            return errorMessage.c_str();
+        }
+
+    private:
         // an error message to be shown.
         std::string errorMessage;
     };
