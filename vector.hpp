@@ -3,10 +3,13 @@
 
 #include <initializer_list>
 
+#include "container.hpp"
+#include "exceptions.hpp"
+
 namespace Math
 {
     template <class T>
-    class Vector
+    class Vector : public Container<T>
     {
     public:
         Vector(std::initializer_list<T> l) : nDimension(l.size())
@@ -38,13 +41,18 @@ namespace Math
             delete[] data;
         }
 
-        template<class IndexType>
-        T &operator[](const IndexType &index)
+        T &operator[](const std::size_t &index)
         {
-            return data[(std::size_t)index];
+            if (index > nDimension - 1)
+                throw Exceptions::IndexOutOfBound(
+                    index,
+                    "Vector: Index must be less than the dimention.");
+            return data[index];
         }
 
         std::size_t Dimension() const { return nDimension; }
+
+        std::size_t Size() const { return nDimension; }
 
     private:
         std::size_t nDimension;

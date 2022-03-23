@@ -4,12 +4,13 @@
 #include <sstream>
 #include <ostream>
 
+#include "container.hpp"
 #include "exceptions.hpp"
 
 namespace Math
 {
     template <class T>
-    class Vector3D
+    class Vector3D : public Container<T>
     {
     public:
         T X;
@@ -28,8 +29,7 @@ namespace Math
             return ss.str();
         }
 
-        template <class IndexType>
-        T &operator[](const IndexType &index)
+        virtual T &operator[](const std::size_t &index)
         {
             switch (index)
             {
@@ -45,6 +45,8 @@ namespace Math
                     "Vector3D: Index must be between 0 and 2 inclusively.");
             }
         }
+
+        virtual std::size_t Size() const { return 3; }
 
         template <class OtherType>
         auto Add(const Vector3D<OtherType> &other) const
