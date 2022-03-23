@@ -8,7 +8,7 @@ int main(void)
     Math::Vector3D<int> v1(32, 32, 43);
     Math::Vector3D<double> v2(23, 23.32, 23.23);
     Math::Vector3D<float> v3(3.14f, 234.234f, 324.f);
-    Math::Vector<int> v({1, 2, 3});
+    Math::Vector<int> v = Math::Vector<int>::ZeroVector(23);
 
     std::cout << v1 << std::endl;
     std::cout << v2 << std::endl;
@@ -26,7 +26,7 @@ int main(void)
         std::cerr << e.what() << '\n';
     }
 
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < v.Size(); i++)
         std::cout << v[i] << std::endl;
 
     try
