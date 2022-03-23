@@ -1,6 +1,7 @@
 #ifndef VECTOR3D_H
 #define VECTOR3D_H
 
+#include <cmath>
 #include <sstream>
 #include <ostream>
 
@@ -77,6 +78,12 @@ namespace Math
         @return always 3 (X, Y and Z components).
         */
         virtual std::size_t Size() const override { return 3; }
+
+        /*
+        Calculates the length of this Vector3D.
+        @return the length of this Vector3D.
+        */
+        T Length() const { return std::sqrt(X * X + Y * Y + Z * Z); }
 
         /*
         Performs addition with another Vector3D.
@@ -246,6 +253,33 @@ namespace Math
                 Y * other.Z - other.Y * Z,
                 Z * other.X - other.Z * X,
                 X * other.Y - other.X * Y);
+        }
+
+        /*
+        Generates a new vector with normalized values of this Vector3D.
+        @return a normalized vector.
+        @thow DividedByZero when this Vector3D is a zero vector.
+        */
+        Vector3D<T> Normalized() const
+        {
+            const T length = Length();
+            if (length == 0)
+                throw Exceptions::DividedByZero("Cannot normalize a zero vector.")
+            return Vector3D<T>(X / length, Y / length, Z / length);
+        }
+
+        /*
+        Normalizes this Vector3D.
+        @throw DividedByZero thown when this vector is a zero vector.
+        */
+        void Normalize()
+        {
+            const T length = Length();
+            if (length == 0)
+                throw Exceptions::DividedByZero("Cannot normalize a zero vector.")
+            X /= length;
+            Y /= length;
+            Z /= length;
         }
 
         /*
