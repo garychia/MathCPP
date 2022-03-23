@@ -95,13 +95,13 @@ using namespace Math;
     TEST_VECTOR_DOUBLE((v).Divide(s), (v).X / s, (v).Y / s, (v).Z / s)
 
 #define TEST_VECTOR_INT_DOT_PRODUCT(v1, v2) \
-    TEST_VECTOR_INT_ARITHMETIC_FUNCTION(v1, v2, Dot, *)
+    EXPECT_EQ((v1).Dot(v2), (v1).X *(v2).X + (v1).Y * (v2).Y + (v1).Z * (v2).Z);
 
 #define TEST_VECTOR_FLOAT_DOT_PRODUCT(v1, v2) \
-    TEST_VECTOR_FLOAT_ARITHMETIC_FUNCTION(v1, v2, Dot, *)
+    EXPECT_FLOAT_EQ((v1).Dot(v2), (v1).X *(v2).X + (v1).Y * (v2).Y + (v1).Z * (v2).Z);
 
 #define TEST_VECTOR_DOUBLE_DOT_PRODUCT(v1, v2) \
-    TEST_VECTOR_DOUBLE_ARITHMETIC_FUNCTION(v1, v2, Dot, *)
+    EXPECT_DOUBLE_EQ((v1).Dot(v2), (v1).X *(v2).X + (v1).Y * (v2).Y + (v1).Z * (v2).Z);
 
 #define TEST_VECTOR_INT_CROSS_PRODUCT(v1, v2) \
     TEST_VECTOR_INT((v1).Cross(v2), (v1).Y *(v2).Z - (v1).Z * (v2).Y, (v1).Z * (v2).X - (v1).X * (v2).Z, (v1).X * (v2).Y - (v1).Y * (v2).X)
@@ -267,7 +267,7 @@ TEST(Vector3D, VectorToString)
     Vector3D<float> v1Float(3.4f, -1230.23f, 23.f);
     Vector3D<float> v2Float(24.23f, -23.65f, -67.345f);
     EXPECT_TRUE(v1Float.ToString() == "(3.4, -1230.23, 23)" && v2Float.ToString() == "(24.23, -23.65, -67.345)");
-    
+
     Vector3D<double> v1Double(31.4, -20.23, 23.234);
     Vector3D<double> v2Double(9.324, 94.2354, -234.32);
     EXPECT_TRUE(v1Double.ToString() == "(31.4, -20.23, 23.234)" && v2Double.ToString() == "(9.324, 94.2354, -234.32)");
