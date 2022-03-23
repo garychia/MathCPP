@@ -1,8 +1,8 @@
-compileMain: main.cpp vector3d.hpp
-	g++ -std=c++17 ./main.cpp -o main
+macCompileMain: main.cpp vector3d.hpp
+	g++ -std=c++17 -Xclang -fopenmp ./main.cpp -lomp -o main
 
 all:
-	compileMain
+	macCompileMain
 
 clear:
 	rm main
