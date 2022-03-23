@@ -63,7 +63,7 @@ namespace Math
         @param index the index of the element to be accessed.
         @return the element
         */
-        T &operator[](const std::size_t &index)
+        T &operator[](const std::size_t &index) override
         {
             if (index > dimension - 1)
                 throw Exceptions::IndexOutOfBound(
@@ -82,7 +82,7 @@ namespace Math
         Returns the number of elements this Vector contains.
         @return the number of elements this Vector contains.
         */
-        std::size_t Size() const { return dimension; }
+        virtual std::size_t Size() const override { return dimension; }
 
     private:
         // the dimension of this Vector

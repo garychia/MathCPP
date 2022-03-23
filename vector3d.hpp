@@ -55,7 +55,7 @@ namespace Math
         @return X, Y or Z component when index is 0, 1 or 2, respectively.
         @throw IndexOutOfBound an exception thrown when index is not valid.
         */
-        virtual T &operator[](const std::size_t &index)
+        virtual T &operator[](const std::size_t &index) override
         {
             switch (index)
             {
@@ -76,7 +76,7 @@ namespace Math
         Returns the number of elements this Vector3D has.
         @return always 3 (X, Y and Z components).
         */
-        virtual std::size_t Size() const { return 3; }
+        virtual std::size_t Size() const override { return 3; }
 
         /*
         Performs addition with another Vector3D.
