@@ -264,7 +264,7 @@ namespace Math
         {
             const T length = Length();
             if (length == 0)
-                throw Exceptions::DividedByZero("Cannot normalize a zero vector.")
+                throw Exceptions::DividedByZero("Cannot normalize a zero vector.");
             return Vector3D<T>(X / length, Y / length, Z / length);
         }
 
@@ -276,7 +276,7 @@ namespace Math
         {
             const T length = Length();
             if (length == 0)
-                throw Exceptions::DividedByZero("Cannot normalize a zero vector.")
+                throw Exceptions::DividedByZero("Cannot normalize a zero vector.");
             X /= length;
             Y /= length;
             Z /= length;
