@@ -28,7 +28,7 @@ namespace Math
         Vector(std::initializer_list<T> l) : dimension(l.size())
         {
             data = new T[l.size()];
-            #pragma omp parallel for shared(data)
+            #pragma omp parallel for schedule(dynamic, 4)
             for (std::size_t i = 0; i < l.size(); i++)
                 data[i] = *(l.begin() + i);
         }
@@ -41,7 +41,7 @@ namespace Math
         Vector(const std::array<T, N>& arr) : dimension(arr.size())
         {
             data = new T[arr.size()];
-            #pragma omp parallel for shared(data)
+            #pragma omp parallel for schedule(dynamic, 4)
             for (std::size_t i = 0; i < arr.size(); i++)
                 data[i] = arr[i];
         }
@@ -53,7 +53,7 @@ namespace Math
         Vector(const Vector<T> &other)
         {
             T *newData = new T[other.dimension];
-            #pragma omp parallel for shared(newData)
+            #pragma omp parallel for schedule(dynamic, 4)
             for (std::size_t i = 0; i < other.dimension; i++)
                 newData[i] = other.data[i];
             delete[] data;
@@ -115,7 +115,7 @@ namespace Math
             Vector<T> v;
             v.dimension = n;
             v.data = new T[n];
-            #pragma omp parallel for
+            #pragma omp parallel for schedule(dynamic, 4)
             for (std::size_t i = 0; i < n; i++)
                 v.data[i] = 0;
             return v;
