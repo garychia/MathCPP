@@ -16,6 +16,9 @@ namespace Math
     class Vector : public Container<T>
     {
     public:
+        /* Constructor with no elements. */
+        Vector() : dimension(0), data(nullptr) {}
+
         /*
         Constructor with Initializer List as Input.
         @param l an initializer_list that contains the elements this Vector will store.
@@ -55,7 +58,8 @@ namespace Math
         /* Destructor */
         ~Vector()
         {
-            delete[] data;
+            if (data)
+                delete[] data;
         }
 
         /*
@@ -83,6 +87,21 @@ namespace Math
         @return the number of elements this Vector contains.
         */
         virtual std::size_t Size() const override { return dimension; }
+
+        /*
+        Generates a vector filled with zeros.
+        @param n the number of zeros.
+        @return a Vector that is filled with n zeros.
+        */
+        static Vector<T> ZeroVector(const std::size_t& n)
+        {
+            Vector<T> v;
+            v.dimension = n;
+            v.data = new T[n];
+            for (std::size_t i = 0; i < n; i++)
+                v.data[i] = 0;
+            return v;
+        }
 
     private:
         // the dimension of this Vector
