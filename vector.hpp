@@ -9,7 +9,7 @@
 namespace Math
 {
     /*
-    Vector Class is a container that is capable of storing multiple elements
+    Vector is a Container that is capable of storing multiple elements
     such as numbers.
     */
     template <class T>
