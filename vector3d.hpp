@@ -28,7 +28,8 @@ namespace Math
             return ss.str();
         }
 
-        T &operator[](const std::size_t &index)
+        template <class IndexType>
+        T &operator[](const IndexType &index)
         {
             switch (index)
             {
