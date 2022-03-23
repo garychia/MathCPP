@@ -2,6 +2,8 @@
 #define VECTOR_H
 
 #include <initializer_list>
+#include <array>
+#include <omp.h>
 
 #include "container.hpp"
 #include "exceptions.hpp"
@@ -26,8 +28,22 @@ namespace Math
         Vector(std::initializer_list<T> l) : dimension(l.size())
         {
             data = new T[l.size()];
+            #pragma omp parallel for shared(data)
             for (std::size_t i = 0; i < l.size(); i++)
                 data[i] = *(l.begin() + i);
+        }
+
+        /*
+        Constructor with arrary as Input.
+        @param arr an array that contains the elements this Vector will store.
+        */
+       template <std::size_t N>
+        Vector(const std::array<T, N>& arr) : dimension(arr.size())
+        {
+            data = new T[arr.size()];
+            #pragma omp parallel for shared(data)
+            for (std::size_t i = 0; i < arr.size(); i++)
+                data[i] = arr[i];
         }
 
         /*
@@ -37,6 +53,7 @@ namespace Math
         Vector(const Vector<T> &other)
         {
             T *newData = new T[other.dimension];
+            #pragma omp parallel for shared(newData)
             for (std::size_t i = 0; i < other.dimension; i++)
                 newData[i] = other.data[i];
             delete[] data;
@@ -98,6 +115,7 @@ namespace Math
             Vector<T> v;
             v.dimension = n;
             v.data = new T[n];
+            #pragma omp parallel for
             for (std::size_t i = 0; i < n; i++)
                 v.data[i] = 0;
             return v;
