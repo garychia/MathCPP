@@ -6,10 +6,28 @@
 
 namespace Exceptions
 {
+
+    class Exception : public std::exception
+    {
+    protected:
+        // an error message to be displayed.
+        std::string errorMessage;
+
+    public:
+        /*
+        Returns the error message.
+        @return an error message.
+        */
+        virtual const char *what() const throw()
+        {
+            return errorMessage.c_str();
+        }
+    };
+
     /*
     IndexOutOfBound is an exception that is thrown when an index is out of bound.
     */
-    class IndexOutOfBound : public std::exception
+    class IndexOutOfBound : public Exception
     {
     public:
         /*
@@ -27,26 +45,15 @@ namespace Exceptions
             errorMessage = ss.str();
         }
 
-        /*
-        Returns the error message.
-        @return an error message.
-        */
-        const char *what() const throw()
-        {
-            return errorMessage.c_str();
-        }
-
     private:
         // a detected invalid index.
         std::size_t invalidIndex;
-        // an error message to be shown.
-        std::string errorMessage;
     };
 
     /*
     DividedByZero is an exception thown when a value is being divided by zero.
     */
-    class DividedByZero : public std::exception
+    class DividedByZero : public Exception
     {
     public:
         /*
@@ -62,19 +69,43 @@ namespace Exceptions
                    << additionalMessage;
             errorMessage = ss.str();
         }
+    };
 
+    /*
+    DimensionMismatch is an exception thown when a mismatched dimension of
+    a vector is found.
+    */
+    class DimensionMismatch : public Exception
+    {
         /*
-        Returns the error message.
-        @return an error message.
+        Constructor with an Expected Dimension, a Mismatched Dimension, and Optional Message
+        @param expectedDimension the expected dimension
+        @param misMatchedDimension the mismatched dimension
+        @param additionalMessage a string that represent an optional error message.
         */
-        const char *what() const throw()
+        DimensionMismatch(
+            std::size_t expectedDimension,
+            std::size_t misMatchedDimension,
+            std::string additionalMessage = "")
+            : expectedDimension(expectedDimension),
+              misMatchedDimension(misMatchedDimension)
         {
-            return errorMessage.c_str();
+            std::stringstream ss;
+            ss << "Mismatched dimension found: "
+               << misMatchedDimension << std::endl;
+            ss << "Expected dimension: "
+               << expectedDimension << std::endl;
+            if (additionalMessage.size() > 0)
+                ss << std::endl
+                   << additionalMessage;
+            errorMessage = ss.str();
         }
 
     private:
-        // an error message to be shown.
-        std::string errorMessage;
+        // the expected dimension
+        std::size_t expectedDimension;
+        // the found mismatched dimension
+        std::size_t misMatchedDimension;
     };
 }
 

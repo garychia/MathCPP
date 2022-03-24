@@ -121,6 +121,8 @@ namespace Math
             return v;
         }
 
+        friend class Matrix;
+
     private:
         // the dimension of this Vector
         std::size_t dimension;
