@@ -77,6 +77,7 @@ namespace Exceptions
     */
     class DimensionMismatch : public Exception
     {
+    public:
         /*
         Constructor with an Expected Dimension, a Mismatched Dimension, and Optional Message
         @param expectedDimension the expected dimension
@@ -94,7 +95,7 @@ namespace Exceptions
             ss << "Mismatched dimension found: "
                << misMatchedDimension << std::endl;
             ss << "Expected dimension: "
-               << expectedDimension << std::endl;
+               << expectedDimension;
             if (additionalMessage.size() > 0)
                 ss << std::endl
                    << additionalMessage;

@@ -43,7 +43,7 @@ namespace Math
         Returns a string that represents this Vector3D.
         @return a string that contains information about this Vector3D.
         */
-        auto ToString() const
+        virtual std::string ToString() const override
         {
             std::stringstream ss;
             ss << "(" << X << ", " << Y << ", " << Z << ")";
@@ -57,6 +57,29 @@ namespace Math
         @throw IndexOutOfBound an exception thrown when index is not valid.
         */
         virtual T &operator[](const std::size_t &index) override
+        {
+            switch (index)
+            {
+            case 0:
+                return X;
+            case 1:
+                return Y;
+            case 2:
+                return Z;
+            default:
+                throw Exceptions::IndexOutOfBound(
+                    index,
+                    "Vector3D: Index must be between 0 and 2 inclusively.");
+            }
+        }
+
+        /*
+        Returns a component of this Vector3D.
+        @param index the index of the X, Y or Z component.
+        @return X, Y or Z component when index is 0, 1 or 2, respectively.
+        @throw IndexOutOfBound an exception thrown when index is not valid.
+        */
+        virtual const T &operator[](const std::size_t &index) const override
         {
             switch (index)
             {
