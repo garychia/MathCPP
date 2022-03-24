@@ -58,6 +58,10 @@ namespace Math
                 data = nullptr;
         }
 
+        /*
+        Copy Constructor
+        @param other a Tuple to be copied.
+        */
         Tuple(const Tuple<T> &other)
         {
             size = other.size;
@@ -113,8 +117,8 @@ namespace Math
 
         /*
         Copy Assignment
-        @param other a Vector.
-        @return a reference to this Vector.
+        @param other a Tuple.
+        @return a reference to this Tuple.
         */
         virtual Tuple<T> &operator=(const Tuple<T> &other) {
             if (this != &other)

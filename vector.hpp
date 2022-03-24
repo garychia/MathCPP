@@ -38,6 +38,29 @@ namespace Math
         Vector(const std::array<T, N>& arr) : Tuple<T>(arr) {}
 
         /*
+        Copy Constructor
+        @param other a Vector to be copied.
+        */
+        Vector(const Vector<T> &other) : Tuple<T>(other) {}
+
+        /*
+        Move Constructor
+        @param other a Vector to be moved.
+        */
+        Vector(Vector &&other) : Tuple<T>(other) {}
+
+        /*
+        Copy Assignment
+        @param other a Vector.
+        @return a reference to this Vector.
+        */
+        virtual Vector<T> &operator=(const Vector<T> &other)
+        {
+            Tuple<T>::operator=(other);
+            return *this;
+        }
+
+        /*
         Operator []
         @param index the index of the element to be accessed.
         @return the element

@@ -88,8 +88,6 @@ namespace Exceptions
             std::size_t expectedDimension,
             std::size_t misMatchedDimension,
             std::string additionalMessage = "")
-            : expectedDimension(expectedDimension),
-              misMatchedDimension(misMatchedDimension)
         {
             std::stringstream ss;
             ss << "Mismatched dimension found: "
@@ -101,12 +99,6 @@ namespace Exceptions
                    << additionalMessage;
             errorMessage = ss.str();
         }
-
-    private:
-        // the expected dimension
-        std::size_t expectedDimension;
-        // the found mismatched dimension
-        std::size_t misMatchedDimension;
     };
 }
 
