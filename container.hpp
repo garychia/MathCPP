@@ -13,7 +13,6 @@ public:
     @param index the index of the element to be accessed.
     @return the reference of the element accessed.
     */
-    virtual T &operator[](const std::size_t &index) = 0;
     virtual const T &operator[](const std::size_t &index) const = 0;
 
     /*

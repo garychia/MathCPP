@@ -56,7 +56,7 @@ namespace Math
         @return the vector at the given index.
         @throw IndexOutOfBound when the index exceeds the greatest possible index.
         */
-        virtual Vector<T> &operator[](const std::size_t &index) override
+        virtual Vector<T> &operator[](const std::size_t &index)
         {
             try
             {
