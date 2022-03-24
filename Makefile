@@ -1,5 +1,5 @@
 macCompileMain: main.cpp vector3d.hpp
-	g++ -std=c++17 -Xclang -fopenmp ./main.cpp -lomp -o main
+	g++ -Wall -std=c++17 -Xclang -fopenmp ./main.cpp -lomp -o main
 
 all:
 	macCompileMain
