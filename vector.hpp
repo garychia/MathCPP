@@ -9,7 +9,7 @@
 #include "tuple.hpp"
 #include "exceptions.hpp"
 
-namespace Math
+namespace DataStructure
 {
     /*
     Vector is a Container that is capable of storing multiple elements
@@ -28,7 +28,7 @@ namespace Math
         Constructor with Initializer List as Input.
         @param l an initializer_list that contains the elements this Vector will store.
         */
-        Vector(std::initializer_list<T> l) : Tuple<T>(l) {}
+        Vector(const std::initializer_list<T>& l) : Tuple<T>(l) {}
 
         /*
         Constructor with arrary as Input.
@@ -65,7 +65,7 @@ namespace Math
         @param index the index of the element to be accessed.
         @return the element
         */
-        T &operator[](const std::size_t &index)
+        virtual T &operator[](const std::size_t &index)
         {
             if (index > this->size - 1)
                 throw Exceptions::IndexOutOfBound(
@@ -79,7 +79,7 @@ namespace Math
         @param index the index of the element to be accessed.
         @return the element
         */
-        const T &operator[](const std::size_t &index) const override
+        virtual const T &operator[](const std::size_t &index) const override
         {
             if (index > this->size - 1)
                 throw Exceptions::IndexOutOfBound(

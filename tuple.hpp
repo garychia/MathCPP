@@ -2,11 +2,12 @@
 #define TUPLE_H
 
 #include <sstream>
+#include <vector>
 
 #include "container.hpp"
 #include "exceptions.hpp"
 
-namespace Math
+namespace DataStructure
 {
     template <class T>
     class Tuple : public Container<T>
@@ -27,7 +28,7 @@ namespace Math
         Constructor with Initializer List as Input.
         @param l an initializer_list that contains the elements this Tuple will store.
         */
-        Tuple(std::initializer_list<T> l) : size(l.size())
+        Tuple(const std::initializer_list<T>& l) : size(l.size())
         {
             if (l.size() > 0)
             {
@@ -53,6 +54,20 @@ namespace Math
                 #pragma omp parallel for schedule(dynamic)
                 for (std::size_t i = 0; i < arr.size(); i++)
                     data[i] = arr[i];
+            }
+            else
+                data = nullptr;
+        }
+
+        Tuple(const std::vector<T> &values) : size(values.size())
+        {
+            if (size > 0)
+            {
+                data = new T[size];
+                for (std::size_t i = 0; i < size; i++)
+                {
+                    data[i] = values[i];
+                }
             }
             else
                 data = nullptr;

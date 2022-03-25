@@ -8,7 +8,7 @@
 #include "container.hpp"
 #include "exceptions.hpp"
 
-namespace Math
+namespace DataStructure
 {
     /*
     Vector3D is a class that represents a vector in a 3D space.

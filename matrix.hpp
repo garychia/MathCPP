@@ -5,9 +5,10 @@
 
 #include "container.hpp"
 #include "vector.hpp"
+#include "list.hpp"
 #include "exceptions.hpp"
 
-namespace Math
+namespace DataStructure
 {
     template <class T>
     class Matrix : public Container<Vector<T>>
@@ -96,7 +97,16 @@ namespace Math
         virtual std::size_t Size() const override
         {
             return rows.Size();
-        };
+        }
+
+        /*
+        Returns the shape of this Matrix.
+        @return a Tuple that contains the numbers of rows and columns.
+        */
+        Tuple<std::size_t> Shape() const
+        {
+            return Tuple<std::size_t>({nRows, nColumns});
+        }
 
         /*
         Converts this Matrix to a string that shows the elements of this Matrix.
@@ -105,7 +115,7 @@ namespace Math
         virtual std::string ToString() const override
         {
             if (nRows == 0)
-                return "";
+                return "(EMPTY MATRIX)";
             std::stringstream ss;
             for (std::size_t i = 0; i < nRows; i++)
             {
@@ -122,10 +132,32 @@ namespace Math
         @param m a Matrix
         @return the output stream.
         */
-        friend std::ostream &operator<<(std::ostream& os, const Matrix<T>& m)
+        friend std::ostream &operator<<(std::ostream &os, const Matrix<T> &m)
         {
             os << m.ToString();
             return os;
+        }
+
+        /*
+        Transposes this Matrix inplace.
+        */
+        void Transpose()
+        {
+            if (nRows > 0)
+            {
+                List<Vector<T>> newRows;
+                for (std::size_t i = 0; i < nColumns; i++)
+                {
+                    newRows.Append(Vector<T>::ZeroVector(nRows));
+                    for (std::size_t j = 0; j < nRows; j++)
+                    {
+                        newRows[i][j] = rows[j][i];
+                    }
+                }
+                this->rows = newRows;
+                nColumns = nRows;
+                nRows = newRows.Size();
+            }
         }
     };
 } // namespace Math

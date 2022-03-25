@@ -14,6 +14,9 @@ namespace Exceptions
         std::string errorMessage;
 
     public:
+        /* Constructor */
+        Exception(std::string message = "") : errorMessage(message) {}
+
         /*
         Returns the error message.
         @return an error message.
@@ -99,6 +102,12 @@ namespace Exceptions
                    << additionalMessage;
             errorMessage = ss.str();
         }
+    };
+
+    class EmptyList : public Exception
+    {
+    public:
+        EmptyList(std::string message = "") : Exception(message) {}
     };
 }
 

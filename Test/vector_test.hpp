@@ -2,7 +2,7 @@
 
 #include "../vector.hpp"
 
-using namespace Math;
+using namespace DataStructure;
 
 TEST(Vector, VectorConstructor)
 {
