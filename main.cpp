@@ -4,14 +4,27 @@
 
 int main(void)
 {
-    DataStructure::List<int> myList = {1, 2, 3, 4};
-    std::cout << myList.PopFront() << std::endl;
-    std::cout << myList.PopFront() << std::endl;
-    std::cout << myList.PopFront() << std::endl;
-    std::cout << myList.PopFront() << std::endl;
-    for (int i = 0; i < 100; i++)
-        myList.Append(1);
-    myList.Clear();
-    std::cout << myList.Size() << std::endl;
+    DataStructure::Matrix<int> m = 
+        {
+            {1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
+            {1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
+            {1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
+            {1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
+            {1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
+            {1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
+            {1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
+            {1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
+            {1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
+            {1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
+            {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+        };
+
+    std::cout << "m before transpose:" << std::endl;
+    std::cout << "Shape: " << m.Shape() << std::endl;
+    std::cout << m << std::endl;
+    std::cout << "m after transpose:" << std::endl;
+    m.Transpose();
+    std::cout << "Shape: " << m.Shape() << std::endl;
+    std::cout << m << std::endl;
     return 0;
 }
