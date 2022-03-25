@@ -31,6 +31,8 @@ namespace DataStructure
             T *newData = new T[this->size];
             for (std::size_t i = 0; i < nElements; i++)
                 newData[i] = this->data[i];
+            if (this->data)
+                delete[] this->data;
             this->data = newData;
         }
 
@@ -43,6 +45,13 @@ namespace DataStructure
             this->data = new T[INITIAL_SIZE];
             this->size = INITIAL_SIZE;
         }
+
+        /*
+        Constructor with Initial Size and a Value.
+        @param s the initial size of the List to be generated.
+        @param value the value the List will be filled with.
+        */
+        List(std::size_t s, const T &value) : Vector<T>(s, value), nElements(s) {}
 
         /*
         Constructor with Initializer List as Input.
@@ -128,6 +137,27 @@ namespace DataStructure
         virtual std::size_t Size() const override { return nElements; }
 
         /*
+        Converts this List to a string that displays all the elements
+        of this List.
+        @return a string that represents this List.
+        */
+        virtual std::string ToString() const override
+        {
+            if (nElements == 0)
+                return "[]";
+            std::stringstream ss;
+            ss << "[";
+            for (std::size_t i = 0; i < nElements; i++)
+            {
+                ss << this->data[i];
+                if (i < nElements - 1)
+                    ss << ", ";
+            }
+            ss << "]";
+            return ss.str();
+        }
+
+        /*
         Appends an element to this List.
         @param element the element to be appended.
         */
@@ -208,6 +238,19 @@ namespace DataStructure
             if (nElements < this->size / 2)
                 shrink();
             return element;
+        }
+
+        /*
+        Clears all the elements this List stores.
+        */
+        void Clear()
+        {
+            if (this->data) {
+                delete[] this->data;
+                this->data = nullptr;
+            }
+            nElements = 0;
+            shrink();
         }
     };
 } // namespace DataStructure

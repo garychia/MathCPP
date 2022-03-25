@@ -25,6 +25,18 @@ namespace DataStructure
         Tuple() : size(0), data(nullptr) {}
 
         /*
+        Constructor with Initial Size and Identical Values.
+        @param s the initial size of the Tuple to be generated.
+        @param value the value the Tuple will be filled with.
+        */
+        Tuple(std::size_t s, const T &value) : size(s)
+        {
+            data = new T[s];
+            for (std::size_t i = 0; i < s; i++)
+                data[i] = value;
+        }
+
+        /*
         Constructor with Initializer List as Input.
         @param l an initializer_list that contains the elements this Tuple will store.
         */

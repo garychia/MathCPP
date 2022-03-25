@@ -25,6 +25,13 @@ namespace DataStructure
         Vector() : Tuple<T>() {}
 
         /*
+        Constructor with Initial Size and a Value.
+        @param s the initial size of the Vector to be generated.
+        @param value the value the Vector will be filled with.
+        */
+        Vector(std::size_t s, const T &value) : Tuple<T>(s, value) {}
+
+        /*
         Constructor with Initializer List as Input.
         @param l an initializer_list that contains the elements this Vector will store.
         */
