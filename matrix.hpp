@@ -145,11 +145,12 @@ namespace DataStructure
         {
             if (nRows > 0)
             {
-                List<Vector<T>> newRows;
-                for (std::size_t i = 0; i < nColumns; i++)
+                std::size_t i, j;
+                Vector<Vector<T>> newRows(nColumns, Vector<T>::ZeroVector(nRows));
+                #pragma omp parallel for private(j) collapse(2)
+                for (i = 0; i < nColumns; i++)
                 {
-                    newRows.Append(Vector<T>::ZeroVector(nRows));
-                    for (std::size_t j = 0; j < nRows; j++)
+                    for (j = 0; j < nRows; j++)
                     {
                         newRows[i][j] = rows[j][i];
                     }
