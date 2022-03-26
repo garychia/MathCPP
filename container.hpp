@@ -35,7 +35,8 @@ Container is an abstract class that is capable of storing data.
 
         /*
         Constructor with Initializer List as Input.
-        @param l an initializer_list that contains the elements this Container will store.
+        @param l an initializer_list that contains the elements this Container
+        will store.
         */
         Container(const std::initializer_list<T>& l) : size(l.size())
         {
@@ -52,7 +53,7 @@ Container is an abstract class that is capable of storing data.
 
         /*
         Constructor with arrary as Input.
-        @param arr an array that contains the elements this Tuple will store.
+        @param arr an array that contains the elements this Container will store.
         */
         template <std::size_t N>
         Container(const std::array<T, N>& arr) : size(arr.size())
@@ -109,7 +110,7 @@ Container is an abstract class that is capable of storing data.
 
         /*
         Move Constructor
-        @param other a Tuple to be moved.
+        @param other a Container to be moved.
         */
         Container(Container<T> &&other)
         {
