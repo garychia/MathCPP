@@ -28,9 +28,15 @@ Container is an abstract class that is capable of storing data.
         */
         Container(std::size_t s, const T &value) : size(s)
         {
-            data = new T[s];
-            for (std::size_t i = 0; i < s; i++)
-                data[i] = value;
+            if (s > 0)
+            {
+                data = new T[s];
+                #pragma omp parallel for schedule(dynamic)
+                for (std::size_t i = 0; i < s; i++)
+                    data[i] = value;
+            }
+            else
+                data = nullptr;
         }
 
         /*
@@ -79,10 +85,9 @@ Container is an abstract class that is capable of storing data.
             if (size > 0)
             {
                 data = new T[size];
+                #pragma omp parallel for schedule(dynamic)
                 for (std::size_t i = 0; i < size; i++)
-                {
                     data[i] = values[i];
-                }
             }
             else
                 data = nullptr;
@@ -101,7 +106,6 @@ Container is an abstract class that is capable of storing data.
                 #pragma omp parallel for schedule(dynamic)
                 for (std::size_t i = 0; i < size; i++)
                     newData[i] = other.data[i];
-                delete[] data;
                 data = newData;
             }
             else
@@ -145,7 +149,8 @@ Container is an abstract class that is capable of storing data.
             if (this != &other)
             {
                 size = other.size;
-                delete[] data;
+                if (data)
+                    delete[] data;
                 data = nullptr;
                 if (size > 0) {
                     data = new T[size];

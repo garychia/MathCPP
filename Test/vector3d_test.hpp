@@ -5,46 +5,46 @@
 using namespace DataStructure;
 
 #define TEST_VECTOR_INT(v, a, b, c) \
-    EXPECT_EQ((v).X, a);            \
-    EXPECT_EQ((v).Y, b);            \
-    EXPECT_EQ((v).Z, c);
+    EXPECT_EQ((v).X(), a);            \
+    EXPECT_EQ((v).Y(), b);            \
+    EXPECT_EQ((v).Z(), c);
 
 #define TEST_VECTOR_FLOAT(v, a, b, c) \
-    EXPECT_FLOAT_EQ((v).X, a);        \
-    EXPECT_FLOAT_EQ((v).Y, b);        \
-    EXPECT_FLOAT_EQ((v).Z, c);
+    EXPECT_FLOAT_EQ((v).X(), a);        \
+    EXPECT_FLOAT_EQ((v).Y(), b);        \
+    EXPECT_FLOAT_EQ((v).Z(), c);
 
 #define TEST_VECTOR_DOUBLE(v, a, b, c) \
-    EXPECT_DOUBLE_EQ((v).X, a);        \
-    EXPECT_DOUBLE_EQ((v).Y, b);        \
-    EXPECT_DOUBLE_EQ((v).Z, c);
+    EXPECT_DOUBLE_EQ((v).X(), a);        \
+    EXPECT_DOUBLE_EQ((v).Y(), b);        \
+    EXPECT_DOUBLE_EQ((v).Z(), c);
 
 #define TEST_VECTOR_INT_EQUAL(v1, v2) \
-    TEST_VECTOR_INT(v1, (v2).X, (v2).Y, (v2).Z)
+    TEST_VECTOR_INT(v1, (v2).X(), (v2).Y(), (v2).Z())
 
 #define TEST_VECTOR_FLOAT_EQUAL(v1, v2) \
-    TEST_VECTOR_FLOAT(v1, (v2).X, (v2).Y, (v2).Z)
+    TEST_VECTOR_FLOAT(v1, (v2).X(), (v2).Y(), (v2).Z())
 
 #define TEST_VECTOR_DOUBLE_EQUAL(v1, v2) \
-    TEST_VECTOR_DOUBLE(v1, (v2).X, (v2).Y, (v2).Z)
+    TEST_VECTOR_DOUBLE(v1, (v2).X(), (v2).Y(), (v2).Z())
 
 #define TEST_VECTOR_INT_OPERATOR(v1, v2, op) \
-    TEST_VECTOR_INT((v1)op(v2), (v1).X op(v2).X, (v1).Y op(v2).Y, (v1).Z op(v2).Z)
+    TEST_VECTOR_INT((v1)op(v2), (v1).X() op(v2).X(), (v1).Y() op(v2).Y(), (v1).Z() op(v2).Z())
 
 #define TEST_VECTOR_FLOAT_OPERATION(v1, v2, op) \
-    TEST_VECTOR_FLOAT((v1)op(v2), (v1).X op(v2).X, (v1).Y op(v2).Y, (v1).Z op(v2).Z)
+    TEST_VECTOR_FLOAT((v1)op(v2), (v1).X() op(v2).X(), (v1).Y() op(v2).Y(), (v1).Z() op(v2).Z())
 
 #define TEST_VECTOR_DOUBLE_OPERATION(v1, v2, op) \
-    TEST_VECTOR_DOUBLE((v1)op(v2), (v1).X op(v2).X, (v1).Y op(v2).Y, (v1).Z op(v2).Z)
+    TEST_VECTOR_DOUBLE((v1)op(v2), (v1).X() op(v2).X(), (v1).Y() op(v2).Y(), (v1).Z() op(v2).Z())
 
 #define TEST_VECTOR_INT_ARITHMETIC_FUNCTION(v1, v2, f, op) \
-    TEST_VECTOR_INT((v1).f(v2), (v1).X op(v2).X, (v1).Y op(v2).Y, (v1).Z op(v2).Z)
+    TEST_VECTOR_INT((v1).f(v2), (v1).X() op(v2).X(), (v1).Y() op(v2).Y(), (v1).Z() op(v2).Z())
 
 #define TEST_VECTOR_FLOAT_ARITHMETIC_FUNCTION(v1, v2, f, op) \
-    TEST_VECTOR_FLOAT((v1).f(v2), (v1).X op(v2).X, (v1).Y op(v2).Y, (v1).Z op(v2).Z)
+    TEST_VECTOR_FLOAT((v1).f(v2), (v1).X() op(v2).X(), (v1).Y() op(v2).Y(), (v1).Z() op(v2).Z())
 
 #define TEST_VECTOR_DOUBLE_ARITHMETIC_FUNCTION(v1, v2, f, op) \
-    TEST_VECTOR_DOUBLE((v1).f(v2), (v1).X op(v2).X, (v1).Y op(v2).Y, (v1).Z op(v2).Z)
+    TEST_VECTOR_DOUBLE((v1).f(v2), (v1).X() op(v2).X(), (v1).Y() op(v2).Y(), (v1).Z() op(v2).Z())
 
 #define TEST_VECTOR_INT_ADDITION(v1, v2) \
     TEST_VECTOR_INT_OPERATOR(v1, v2, +)  \
@@ -71,46 +71,46 @@ using namespace DataStructure;
     TEST_VECTOR_DOUBLE_ARITHMETIC_FUNCTION(v1, v2, Minus, -)
 
 #define TEST_VECTOR_INT_SCALING(v, s)                    \
-    TEST_VECTOR_INT((v)*s, (v).X *s, (v).Y *s, (v).Z *s) \
-    TEST_VECTOR_INT((v).Scale(s), (v).X *s, (v).Y *s, (v).Z *s)
+    TEST_VECTOR_INT((v)*s, (v).X() *s, (v).Y() *s, (v).Z() *s) \
+    TEST_VECTOR_INT((v).Scale(s), (v).X() *s, (v).Y() *s, (v).Z() *s)
 
 #define TEST_VECTOR_FLOAT_SCALING(v, s)                    \
-    TEST_VECTOR_FLOAT((v)*s, (v).X *s, (v).Y *s, (v).Z *s) \
-    TEST_VECTOR_FLOAT((v).Scale(s), (v).X *s, (v).Y *s, (v).Z *s)
+    TEST_VECTOR_FLOAT((v)*s, (v).X() *s, (v).Y() *s, (v).Z() *s) \
+    TEST_VECTOR_FLOAT((v).Scale(s), (v).X() *s, (v).Y() *s, (v).Z() *s)
 
 #define TEST_VECTOR_DOUBLE_SCALING(v, s)                    \
-    TEST_VECTOR_DOUBLE((v)*s, (v).X *s, (v).Y *s, (v).Z *s) \
-    TEST_VECTOR_DOUBLE((v).Scale(s), (v).X *s, (v).Y *s, (v).Z *s)
+    TEST_VECTOR_DOUBLE((v)*s, (v).X() *s, (v).Y() *s, (v).Z() *s) \
+    TEST_VECTOR_DOUBLE((v).Scale(s), (v).X() *s, (v).Y() *s, (v).Z() *s)
 
 #define TEST_VECTOR_INT_DIVISION(v, s)                        \
-    TEST_VECTOR_INT((v) / s, (v).X / s, (v).Y / s, (v).Z / s) \
-    TEST_VECTOR_INT((v).Divide(s), (v).X / s, (v).Y / s, (v).Z / s)
+    TEST_VECTOR_INT((v) / s, (v).X() / s, (v).Y() / s, (v).Z() / s) \
+    TEST_VECTOR_INT((v).Divide(s), (v).X() / s, (v).Y() / s, (v).Z() / s)
 
 #define TEST_VECTOR_FLOAT_DIVISION(v, s)                        \
-    TEST_VECTOR_FLOAT((v) / s, (v).X / s, (v).Y / s, (v).Z / s) \
-    TEST_VECTOR_FLOAT((v).Divide(s), (v).X / s, (v).Y / s, (v).Z / s)
+    TEST_VECTOR_FLOAT((v) / s, (v).X() / s, (v).Y() / s, (v).Z() / s) \
+    TEST_VECTOR_FLOAT((v).Divide(s), (v).X() / s, (v).Y() / s, (v).Z() / s)
 
 #define TEST_VECTOR_DOUBLE_DIVISION(v, s)                        \
-    TEST_VECTOR_DOUBLE((v) / s, (v).X / s, (v).Y / s, (v).Z / s) \
-    TEST_VECTOR_DOUBLE((v).Divide(s), (v).X / s, (v).Y / s, (v).Z / s)
+    TEST_VECTOR_DOUBLE((v) / s, (v).X() / s, (v).Y() / s, (v).Z() / s) \
+    TEST_VECTOR_DOUBLE((v).Divide(s), (v).X() / s, (v).Y() / s, (v).Z() / s)
 
 #define TEST_VECTOR_INT_DOT_PRODUCT(v1, v2) \
-    EXPECT_EQ((v1).Dot(v2), (v1).X *(v2).X + (v1).Y * (v2).Y + (v1).Z * (v2).Z);
+    EXPECT_EQ((v1).Dot(v2), (v1).X() *(v2).X() + (v1).Y() * (v2).Y() + (v1).Z() * (v2).Z());
 
 #define TEST_VECTOR_FLOAT_DOT_PRODUCT(v1, v2) \
-    EXPECT_FLOAT_EQ((v1).Dot(v2), (v1).X *(v2).X + (v1).Y * (v2).Y + (v1).Z * (v2).Z);
+    EXPECT_FLOAT_EQ((v1).Dot(v2), (v1).X() *(v2).X() + (v1).Y() * (v2).Y() + (v1).Z() * (v2).Z());
 
 #define TEST_VECTOR_DOUBLE_DOT_PRODUCT(v1, v2) \
-    EXPECT_DOUBLE_EQ((v1).Dot(v2), (v1).X *(v2).X + (v1).Y * (v2).Y + (v1).Z * (v2).Z);
+    EXPECT_DOUBLE_EQ((v1).Dot(v2), (v1).X() *(v2).X() + (v1).Y() * (v2).Y() + (v1).Z() * (v2).Z());
 
 #define TEST_VECTOR_INT_CROSS_PRODUCT(v1, v2) \
-    TEST_VECTOR_INT((v1).Cross(v2), (v1).Y *(v2).Z - (v1).Z * (v2).Y, (v1).Z * (v2).X - (v1).X * (v2).Z, (v1).X * (v2).Y - (v1).Y * (v2).X)
+    TEST_VECTOR_INT((v1).Cross(v2), (v1).Y() *(v2).Z() - (v1).Z() * (v2).Y(), (v1).Z() * (v2).X() - (v1).X() * (v2).Z(), (v1).X() * (v2).Y() - (v1).Y() * (v2).X())
 
 #define TEST_VECTOR_FLOAT_CROSS_PRODUCT(v1, v2) \
-    TEST_VECTOR_FLOAT((v1).Cross(v2), (v1).Y *(v2).Z - (v1).Z * (v2).Y, (v1).Z * (v2).X - (v1).X * (v2).Z, (v1).X * (v2).Y - (v1).Y * (v2).X)
+    TEST_VECTOR_FLOAT((v1).Cross(v2), (v1).Y() *(v2).Z() - (v1).Z() * (v2).Y(), (v1).Z() * (v2).X() - (v1).X() * (v2).Z(), (v1).X() * (v2).Y() - (v1).Y() * (v2).X())
 
 #define TEST_VECTOR_DOUBLE_CROSS_PRODUCT(v1, v2) \
-    TEST_VECTOR_DOUBLE((v1).Cross(v2), (v1).Y *(v2).Z - (v1).Z * (v2).Y, (v1).Z * (v2).X - (v1).X * (v2).Z, (v1).X * (v2).Y - (v1).Y * (v2).X)
+    TEST_VECTOR_DOUBLE((v1).Cross(v2), (v1).Y() *(v2).Z() - (v1).Z() * (v2).Y(), (v1).Z() * (v2).X() - (v1).X() * (v2).Z(), (v1).X() * (v2).Y() - (v1).Y() * (v2).X())
 
 TEST(Vector3D, Vector3DConstructor)
 {

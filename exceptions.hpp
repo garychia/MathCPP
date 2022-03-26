@@ -109,6 +109,12 @@ namespace Exceptions
     public:
         EmptyList(std::string message = "") : Exception(message) {}
     };
+
+    class InvalidArgument : public Exception
+    {
+    public:
+        InvalidArgument(std::string message = "") : Exception(message) {}
+    };
 }
 
 #endif

@@ -14,15 +14,57 @@ namespace DataStructure
     class Matrix : public Container<Vector<T>>
     {
     private:
-        Vector<Vector<T>> rows;
+        // the number of row vectors
         std::size_t nRows;
+        // the number of columns of each row vector.
         std::size_t nColumns;
 
     public:
         /*
         Constructor that creates an empty matrix.
         */
-        Matrix() : rows(), nRows(0), nColumns(0) {}
+        Matrix() : Container<Vector<T>>(), nRows(0), nColumns(0) {}
+
+        /*
+        Constructor with the Number of Rows and Columns Specified.
+        @param numRows the number of rows.
+        @param numCoumns the number of columns.
+        @param value the value, 0 by default, the Matrix will be filled with.
+        */
+        Matrix(std::size_t numRows, std::size_t numColumns, T initialValue = 0)
+        {
+            nRows = numRows;
+            nColumns = numColumns;
+            this->size = numRows * numColumns;
+            this->data = nullptr;
+            if (numRows > 0)
+            {
+                if (numColumns == 0)
+                    throw Exceptions::InvalidArgument(
+                        "Matrix: the number of columns must be a positive number for a non-empty matrix.");
+                
+                this->data = new Vector<T>[numRows];
+            
+                std::size_t i;
+                #pragma omp parallel for schedule(dynamic)
+                for (i = 0; i < numRows; i++)
+                    this->data[i] = Vector<T>::ZeroVector(numColumns);
+                
+                if (initialValue != 0)
+                {
+                    std::size_t j;
+                    #pragma omp parallel for private(j) schedule(dynamic) collapse(2)
+                    for (i = 0; i < numRows; i++)
+                        for (j = 0; j < numColumns; j++)
+                            this->data[i][j] = initialValue;
+                }
+            }
+            else if (numColumns > 0)
+            {
+                throw Exceptions::InvalidArgument(
+                    "Matrix: Cannot initialize a matrix with no row vector while the number of columns is greater than 0.");
+            }
+        }
 
         /*
         Constructor with an initializer_list of row Vectors.
@@ -30,7 +72,7 @@ namespace DataStructure
         @throw DimensionMismatch when there is any of the row Vectors has a
         different dimension.
         */
-        Matrix(std::initializer_list<Vector<T>> l) : rows(l)
+        Matrix(std::initializer_list<Vector<T>> l)
         {
             if (l.size() > 0)
             {
@@ -44,11 +86,81 @@ namespace DataStructure
                             itr->Dimension(),
                             "Matrix: All row vectors must be of the same dimension.");
                 }
+                Container<Vector<T>>::Container(l);
+                this->size = nRows * nColumns;
             }
             else
             {
                 nRows = 0;
                 nColumns = 0;
+                this->size = 0;
+                this->data = nullptr;
+            }
+        }
+
+        /*
+        Constructor with arrary as Input.
+        @param arr an array that contains the row vectors this Matrix will store.
+        */
+        template <std::size_t N>
+        Matrix(const std::array<Vector<T>, N>& arr)
+        {
+            if (arr.size() > 0)
+            {
+                nRows = arr.size();
+                nColumns = arr.begin()->Size();
+                this->size = nRows * nColumns;
+                for (std::size_t i = 0; i < nRows; i++)
+                {
+                    if (arr[i].Dimension() != nColumns)
+                        throw Exceptions::DimensionMismatch(
+                            nColumns,
+                            arr[i].Dimension(),
+                            "Matrix: All row vectors must be of the same dimension.");
+                }
+                Container<Vector<T>>::Container(arr);
+            }
+            else
+            {
+                nRows = 0;
+                nColumns = 0;
+                this->size = 0;
+                this->data = nullptr;
+            }
+        }
+
+        /*
+        Constructor with List as Input.
+        @param l a List that contains the row vectors this Matrix will store.
+        */
+        Matrix(const List<Vector<T>>& l)
+        {
+            const std::size_t listSize = l.Size();
+            if (listSize > 0)
+            {
+                nRows = listSize;
+                nColumns = l[0].Size();
+                this->size = nRows * nColumns;
+                #pragma omp parallel for schedule(dynamic)
+                for (std::size_t i = 0; i < nRows; i++)
+                {
+                    if (l[i].Dimension() != nColumns)
+                        throw Exceptions::DimensionMismatch(
+                            nColumns,
+                            l[i].Dimension(),
+                            "Matrix: All row vectors must be of the same dimension.");
+                }
+                this->data = new Vector<T>[nRows];
+                #pragma omp parallel for schedule(dynamic)
+                for (std::size_t i = 0; i < nRows; i++)
+                    this->data[i] = l[i];
+            }
+            else
+            {
+                nRows = 0;
+                nColumns = 0;
+                this->size = 0;
+                this->data = nullptr;
             }
         }
 
@@ -61,7 +173,7 @@ namespace DataStructure
         {
             try
             {
-                return rows[index];
+                return this->data[index];
             }
             catch (const Exceptions::IndexOutOfBound &)
             {
@@ -80,7 +192,7 @@ namespace DataStructure
         {
             try
             {
-                return rows[index];
+                return this->data[index];
             }
             catch (const Exceptions::IndexOutOfBound &)
             {
@@ -94,19 +206,13 @@ namespace DataStructure
         Returns the number of row Vectors this Matrix stores.
         @return the number of row Vectors this Matrix stores.
         */
-        virtual std::size_t Size() const override
-        {
-            return rows.Size();
-        }
+        virtual std::size_t Size() const override { return this->size; }
 
         /*
         Returns the shape of this Matrix.
         @return a Tuple that contains the numbers of rows and columns.
         */
-        Tuple<std::size_t> Shape() const
-        {
-            return Tuple<std::size_t>({nRows, nColumns});
-        }
+        Tuple<std::size_t> Shape() const { return Tuple<std::size_t>({nRows, nColumns}); }
 
         /*
         Converts this Matrix to a string that shows the elements of this Matrix.
@@ -119,7 +225,7 @@ namespace DataStructure
             std::stringstream ss;
             for (std::size_t i = 0; i < nRows; i++)
             {
-                ss << rows[i];
+                ss << this->data[i];
                 if (i < nRows - 1)
                     ss << std::endl;
             }
@@ -146,18 +252,17 @@ namespace DataStructure
             if (nRows > 0)
             {
                 std::size_t i, j;
-                Vector<Vector<T>> newRows(nColumns, Vector<T>::ZeroVector(nRows));
-                #pragma omp parallel for private(j) collapse(2)
+                Vector<T>* newRows = new Vector<T>[nColumns];
+                #pragma omp parallel for schedule(dynamic)
                 for (i = 0; i < nColumns; i++)
-                {
+                    newRows[i] = Vector<T>::ZeroVector(nRows);
+                #pragma omp parallel for private(j) schedule(dynamic) collapse(2)
+                for (i = 0; i < nColumns; i++)
                     for (j = 0; j < nRows; j++)
-                    {
-                        newRows[i][j] = rows[j][i];
-                    }
-                }
-                this->rows = newRows;
-                nColumns = nRows;
-                nRows = newRows.Size();
+                        newRows[i][j] = this->data[j][i];
+                delete[] this->data;
+                this->data = newRows;
+                std::swap(nRows, nColumns);
             }
         }
     };

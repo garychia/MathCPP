@@ -8,6 +8,11 @@
 #include "container.hpp"
 #include "exceptions.hpp"
 
+#define NUM_COMPONENTS 3
+#define X_INDEX 0
+#define Y_INDEX 1
+#define Z_INDEX 2
+
 namespace DataStructure
 {
     /*
@@ -17,12 +22,21 @@ namespace DataStructure
     class Vector3D : public Container<T>
     {
     public:
-        // the X component of this vector
-        T X;
-        // the Y component of this vector
-        T Y;
-        // the Z component of this vector
-        T Z;
+        /*
+        Retrieves the X component of this vector.
+        @return the X component.
+        */
+        T &X() { return this->data[X_INDEX]; }
+        /*
+        Retrieves the Y component of this vector.
+        @return the Y component.
+        */
+        T &Y() { return this->data[Y_INDEX]; }
+        /*
+        Retrieves the Z component of this vector.
+        @return the Z component.
+        */
+        T &Z() { return this->data[Z_INDEX]; }
 
         /*
         Constructor with Component X, Y and Z
@@ -30,14 +44,36 @@ namespace DataStructure
         @param y the y component of this vector
         @param z the z component of this vector
         */
-        Vector3D(T x = 0, T y = 0, T z = 0) : X(x), Y(y), Z(z) {}
+        Vector3D(T x = 0, T y = 0, T z = 0) : Container<T>(NUM_COMPONENTS, 0)
+        {
+            this->data[X_INDEX] = x;
+            this->data[Y_INDEX] = y;
+            this->data[Z_INDEX] = z;
+        }
 
         /*
         Copy Constructor
         @param other a Vector3D to be copied.
         */
-        template <class OtherType>
-        Vector3D(const Vector3D<OtherType> &other) : X(other.X), Y(other.Y), Z(other.Z) {}
+        Vector3D(const Vector3D<T> &other) : Container<T>(other) {}
+
+
+        /*
+        Move Constructor
+        @param other a Vector3D to be moved.
+        */
+        Vector3D(Vector3D<T> &&other) : Container<T>(other) {}
+
+        /*
+        Copy Assignment
+        @param other a Vector3D to be copied.
+        @return a reference to this Vector3D.
+        */
+        virtual Vector3D<T> &operator=(const Vector3D<T> &other)
+        {
+            Container<T>::operator=(other);
+            return *this;
+        }
 
         /*
         Returns a string that represents this Vector3D.
@@ -46,7 +82,9 @@ namespace DataStructure
         virtual std::string ToString() const override
         {
             std::stringstream ss;
-            ss << "(" << X << ", " << Y << ", " << Z << ")";
+            ss << "(" << this->data[X_INDEX] << ", "
+                      << this->data[Y_INDEX] << ", "
+                      << this->data[Z_INDEX] << ")";
             return ss.str();
         }
 
@@ -56,16 +94,16 @@ namespace DataStructure
         @return X, Y or Z component when index is 0, 1 or 2, respectively.
         @throw IndexOutOfBound an exception thrown when index is not valid.
         */
-        virtual T &operator[](const std::size_t &index) override
+        virtual T &operator[](const std::size_t &index)
         {
             switch (index)
             {
-            case 0:
-                return X;
-            case 1:
-                return Y;
-            case 2:
-                return Z;
+            case X_INDEX:
+                return this->data[X_INDEX];
+            case Y_INDEX:
+                return this->data[Y_INDEX];
+            case Z_INDEX:
+                return this->data[Z_INDEX];
             default:
                 throw Exceptions::IndexOutOfBound(
                     index,
@@ -83,12 +121,12 @@ namespace DataStructure
         {
             switch (index)
             {
-            case 0:
-                return X;
-            case 1:
-                return Y;
-            case 2:
-                return Z;
+            case X_INDEX:
+                return this->data[X_INDEX];
+            case Y_INDEX:
+                return this->data[Y_INDEX];
+            case Z_INDEX:
+                return this->data[Z_INDEX];
             default:
                 throw Exceptions::IndexOutOfBound(
                     index,
@@ -100,14 +138,19 @@ namespace DataStructure
         Returns the number of elements this Vector3D has.
         @return always 3 (X, Y and Z components).
         */
-        virtual std::size_t Size() const override { return 3; }
+        virtual std::size_t Size() const override { return NUM_COMPONENTS; }
 
         /*
         Calculates the length of this Vector3D.
         @return the length of this Vector3D.
         */
         template<class ReturnType>
-        ReturnType Length() const { return std::sqrt(X * X + Y * Y + Z * Z); }
+        ReturnType Length() const {
+            return std::sqrt(
+                this->data[X_INDEX] * this->data[X_INDEX] + 
+                this->data[Y_INDEX] * this->data[Y_INDEX] +
+                this->data[Z_INDEX] * this->data[Z_INDEX]);
+        }
 
         /*
         Performs addition with another Vector3D.
@@ -117,7 +160,10 @@ namespace DataStructure
         template <class OtherType>
         auto Add(const Vector3D<OtherType> &other) const
         {
-            return Vector3D<decltype(X + other.X)>(X + other.X, Y + other.Y, Z + other.Z);
+            return Vector3D<decltype(this->data[X_INDEX] + other[X_INDEX])>(
+                this->data[X_INDEX] + other[X_INDEX],
+                this->data[Y_INDEX] + other[Y_INDEX],
+                this->data[Z_INDEX] + other[Z_INDEX]);
         }
 
         /*
@@ -139,9 +185,9 @@ namespace DataStructure
         template <class OtherType>
         Vector3D<T> &operator+=(const Vector3D<OtherType> &other)
         {
-            X += other.X;
-            Y += other.Y;
-            Z += other.Z;
+            this->data[X_INDEX] += other[X_INDEX];
+            this->data[Y_INDEX] += other[Y_INDEX];
+            this->data[Z_INDEX] += other[Z_INDEX];
             return *this;
         }
 
@@ -153,7 +199,10 @@ namespace DataStructure
         template <class OtherType>
         auto Minus(const Vector3D<OtherType> &other) const
         {
-            return Vector3D<decltype(X - other.X)>(X - other.X, Y - other.Y, Z - other.Z);
+            return Vector3D<decltype(this->data[X_INDEX] - other[X_INDEX])>(
+                this->data[X_INDEX] - other[X_INDEX],
+                this->data[Y_INDEX] - other[Y_INDEX],
+                this->data[Z_INDEX] - other[Z_INDEX]);
         }
 
         /*
@@ -175,9 +224,9 @@ namespace DataStructure
         template <class OtherType>
         Vector3D<T> &operator-=(const Vector3D<OtherType> &other)
         {
-            X -= other.X;
-            Y -= other.Y;
-            Z -= other.Z;
+            this->data[X_INDEX] -= other[X_INDEX];
+            this->data[Y_INDEX] -= other[Y_INDEX];
+            this->data[Z_INDEX] -= other[Z_INDEX];
             return *this;
         }
 
@@ -189,7 +238,10 @@ namespace DataStructure
         template <class OtherType>
         auto Scale(const OtherType &scaler) const
         {
-            return Vector3D<decltype(X * scaler)>(X * scaler, Y * scaler, Z * scaler);
+            return Vector3D<decltype(this->data[X_INDEX] * scaler)>(
+                this->data[X_INDEX] * scaler,
+                this->data[Y_INDEX] * scaler,
+                this->data[Z_INDEX] * scaler);
         }
 
         /*
@@ -211,9 +263,9 @@ namespace DataStructure
         template <class OtherType>
         Vector3D<T> &operator*=(const OtherType &scaler)
         {
-            X *= scaler;
-            Y *= scaler;
-            Z *= scaler;
+            this->data[X_INDEX] *= scaler;
+            this->data[Y_INDEX] *= scaler;
+            this->data[Z_INDEX] *= scaler;
             return *this;
         }
 
@@ -226,7 +278,10 @@ namespace DataStructure
         template <class OtherType>
         auto Divide(const OtherType &scaler) const
         {
-            return Vector3D<decltype(X / scaler)>(X / scaler, Y / scaler, Z / scaler);
+            return Vector3D<decltype(this->data[X_INDEX] / scaler)>(
+                this->data[X_INDEX] / scaler,
+                this->data[Y_INDEX] / scaler,
+                this->data[Z_INDEX] / scaler);
         }
 
         /*
@@ -248,9 +303,9 @@ namespace DataStructure
         template <class OtherType>
         Vector3D<T> &operator/=(const OtherType &scaler)
         {
-            X /= scaler;
-            Y /= scaler;
-            Z /= scaler;
+            this->data[X_INDEX] /= scaler;
+            this->data[Y_INDEX] /= scaler;
+            this->data[Z_INDEX] /= scaler;
             return *this;
         }
 
@@ -262,7 +317,9 @@ namespace DataStructure
         template <class OtherType>
         decltype(auto) Dot(const Vector3D<OtherType> &other) const
         {
-            return X * other.X + Y * other.Y + Z * other.Z;
+            return this->data[X_INDEX] * other[X_INDEX] +
+                   this->data[Y_INDEX] * other[Y_INDEX] +
+                   this->data[Z_INDEX] * other[Z_INDEX];
         }
 
         /*
@@ -273,10 +330,10 @@ namespace DataStructure
         template <class OtherType>
         auto Cross(const Vector3D<OtherType> &other) const
         {
-            return Vector3D<decltype(Y * other.Z)>(
-                Y * other.Z - other.Y * Z,
-                Z * other.X - other.Z * X,
-                X * other.Y - other.X * Y);
+            return Vector3D<decltype(this->data[Y_INDEX] * other[Z_INDEX])>(
+                this->data[Y_INDEX] * other[Z_INDEX] - other[Y_INDEX] * this->data[Z_INDEX],
+                this->data[Z_INDEX] * other[X_INDEX] - other[Z_INDEX] * this->data[X_INDEX],
+                this->data[X_INDEX] * other[Y_INDEX] - other[X_INDEX] * this->data[Y_INDEX]);
         }
 
         /*
@@ -289,7 +346,7 @@ namespace DataStructure
             const T length = Length();
             if (length == 0)
                 throw Exceptions::DividedByZero("Cannot normalize a zero vector.");
-            return Vector3D<T>(X / length, Y / length, Z / length);
+            return *this / length;
         }
 
         /*
@@ -300,10 +357,8 @@ namespace DataStructure
         {
             const T length = Length();
             if (length == 0)
-                throw Exceptions::DividedByZero("Cannot normalize a zero vector.");
-            X /= length;
-            Y /= length;
-            Z /= length;
+                throw Exceptions::DividedByZero("Vector3D: Cannot normalize a zero vector.");
+            *this /= length;
         }
 
         /*
