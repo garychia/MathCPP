@@ -12,119 +12,50 @@ namespace DataStructure
     template <class T>
     class Tuple : public Container<T>
     {
-    protected:
-        // number of elements stored
-        std::size_t size;
-        // array of the elements
-        T *data;
-
     public:
         /*
         Constructor that Generates an Empty Tuple.
         */
-        Tuple() : size(0), data(nullptr) {}
+        Tuple() : Container<T>() {}
 
         /*
-        Constructor with Initial Size and Identical Values.
+        Constructor with Initial Size and an Initial Value.
         @param s the initial size of the Tuple to be generated.
         @param value the value the Tuple will be filled with.
         */
-        Tuple(std::size_t s, const T &value) : size(s)
-        {
-            data = new T[s];
-            for (std::size_t i = 0; i < s; i++)
-                data[i] = value;
-        }
+        Tuple(std::size_t s, const T &value) : Container<T>(s, value) {}
 
         /*
         Constructor with Initializer List as Input.
         @param l an initializer_list that contains the elements this Tuple will store.
         */
-        Tuple(const std::initializer_list<T>& l) : size(l.size())
-        {
-            if (l.size() > 0)
-            {
-                data = new T[l.size()];
-                #pragma omp parallel for schedule(dynamic)
-                for (std::size_t i = 0; i < l.size(); i++)
-                    data[i] = *(l.begin() + i);
-            }
-            else
-                data = nullptr;
-        }
+        Tuple(const std::initializer_list<T>& l) : Container<T>(l) {}
 
         /*
         Constructor with arrary as Input.
         @param arr an array that contains the elements this Tuple will store.
         */
        template <std::size_t N>
-        Tuple(const std::array<T, N>& arr) : size(arr.size())
-        {
-            if (arr.size() > 0)
-            {
-                data = new T[arr.size()];
-                #pragma omp parallel for schedule(dynamic)
-                for (std::size_t i = 0; i < arr.size(); i++)
-                    data[i] = arr[i];
-            }
-            else
-                data = nullptr;
-        }
+        Tuple(const std::array<T, N>& arr) : Container<T>(arr) { }
 
-        Tuple(const std::vector<T> &values) : size(values.size())
-        {
-            if (size > 0)
-            {
-                data = new T[size];
-                for (std::size_t i = 0; i < size; i++)
-                {
-                    data[i] = values[i];
-                }
-            }
-            else
-                data = nullptr;
-        }
+        /*
+        Constructor with a std::vector.
+        @param values a std::vector that contains the elements this Tuple
+        will store.
+        */
+        Tuple(const std::vector<T> &values) : Container<T>(values) {}
 
         /*
         Copy Constructor
         @param other a Tuple to be copied.
         */
-        Tuple(const Tuple<T> &other)
-        {
-            size = other.size;
-            if (size > 0)
-            {
-                T *newData = new T[size];
-                #pragma omp parallel for schedule(dynamic)
-                for (std::size_t i = 0; i < size; i++)
-                    newData[i] = other.data[i];
-                delete[] data;
-                data = newData;
-            }
-            else
-                data = nullptr;
-        }
+        Tuple(const Tuple<T> &other) : Container<T>(other) {}
 
         /*
         Move Constructor
         @param other a Tuple to be moved.
         */
-        Tuple(Tuple &&other)
-        {
-            size = move(other.size);
-            data = move(other.data);
-            other.size = 0;
-            other.data = nullptr;
-        }
-
-        /*
-        Destructor
-        */
-        virtual ~Tuple()
-        {
-            if (data)
-                delete[] data;
-        }
+        Tuple(Tuple &&other) : Container<T>(other) {}
 
         /*
         Access the element of a given index.
@@ -134,8 +65,8 @@ namespace DataStructure
         */
         virtual const T &operator[](const std::size_t &index) const override
         {
-            if (index < size)
-                return data[index];
+            if (index < this->size)
+                return this->data[index];
             else
                 throw Exceptions::IndexOutOfBound(
                     index,
@@ -144,30 +75,14 @@ namespace DataStructure
 
         /*
         Copy Assignment
-        @param other a Tuple.
-        @return a reference to this Tuple.
+        @param other a Container to be copied.
+        @return a reference to this Container.
         */
-        virtual Tuple<T> &operator=(const Tuple<T> &other) {
-            if (this != &other)
-            {
-                size = other.size;
-                delete[] data;
-                data = nullptr;
-                if (size > 0) {
-                    data = new T[size];
-                    #pragma omp parallel for schedule(dynamic)
-                    for (std::size_t i = 0; i < size; i++)
-                        data[i] = other.data[i];
-                }
-            }
+        virtual Tuple<T> &operator=(const Tuple<T> &other)
+        {
+            Container<T>::operator=(other);
             return *this;
         }
-
-        /*
-        Returns the number of elements this Tuple stores.
-        @return the number of elements this Tuple stores.
-        */
-        virtual std::size_t Size() const override { return size; }
 
         /*
         Converts this container to a string that shows the elements
@@ -176,30 +91,18 @@ namespace DataStructure
         */
         virtual std::string ToString() const override
         {
-            if (size == 0)
+            if (this->size == 0)
                 return "(EMPTY)";
             std::stringstream ss;
             ss << "(";
-            for (std::size_t i = 0; i < size; i++)
+            for (std::size_t i = 0; i < this->size; i++)
             {
-                ss << data[i];
-                if (i < size - 1)
+                ss << this->data[i];
+                if (i < this->size - 1)
                     ss << ", ";
             }
             ss << ")";
             return ss.str();
-        }
-
-        /*
-        Converts this Tuple to a string and pass it to an output stream.
-        @param stream an output stream.
-        @param t a Tuple
-        @return a reference to the output stream.
-        */
-        friend std::ostream &operator<<(std::ostream &stream, const Tuple<T> &t)
-        {
-            stream << t.ToString();
-            return stream;
         }
     };
 } // namespace Math

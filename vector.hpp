@@ -5,6 +5,7 @@
 #include <array>
 #include <omp.h>
 #include <sstream>
+#include <cmath>
 
 #include "tuple.hpp"
 #include "exceptions.hpp"
@@ -100,6 +101,22 @@ namespace DataStructure
         @return the dimention of this Vector.
         */
         std::size_t Dimension() const { return this->size; }
+
+        /*
+        Returns the length of this Vector.
+        @return the length of this Vector.
+        */
+        template<class ReturnType>
+        ReturnType Length() const
+        {
+            T squaredTotal = 0;
+            for (std::size_t i = 0; i < this->size; i++)
+            {
+                T squaredElement = this->data[i] * this->data[i];
+                squaredTotal += squaredElement;
+            }
+            return std::sqrt(squaredTotal);
+        }
 
         /*
         Generates a vector filled with zeros.

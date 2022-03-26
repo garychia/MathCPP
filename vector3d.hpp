@@ -106,7 +106,8 @@ namespace DataStructure
         Calculates the length of this Vector3D.
         @return the length of this Vector3D.
         */
-        T Length() const { return std::sqrt(X * X + Y * Y + Z * Z); }
+        template<class ReturnType>
+        ReturnType Length() const { return std::sqrt(X * X + Y * Y + Z * Z); }
 
         /*
         Performs addition with another Vector3D.

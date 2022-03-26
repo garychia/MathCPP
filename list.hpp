@@ -9,7 +9,7 @@
 namespace DataStructure
 {
     template <class T>
-    class List : public Vector<T>
+    class List : public Container<T>
     {
     private:
         std::size_t nElements;
@@ -40,7 +40,7 @@ namespace DataStructure
         /*
         Constructor that Generates an Empty List.
         */
-        List() : Vector<T>(), nElements(0)
+        List() : Container<T>(), nElements(0)
         {
             this->data = new T[INITIAL_SIZE];
             this->size = INITIAL_SIZE;
@@ -51,13 +51,13 @@ namespace DataStructure
         @param s the initial size of the List to be generated.
         @param value the value the List will be filled with.
         */
-        List(std::size_t s, const T &value) : Vector<T>(s, value), nElements(s) {}
+        List(std::size_t s, const T &value) : Container<T>(s, value), nElements(s) {}
 
         /*
         Constructor with Initializer List as Input.
         @param l a std::initializer_list that contains the elements this List will store.
         */
-        List(const std::initializer_list<T> &l) : Vector<T>(l)
+        List(const std::initializer_list<T> &l) : Container<T>(l)
         {
             nElements = this->size;
         }
@@ -67,7 +67,7 @@ namespace DataStructure
         @param arr a std::array that contains the elements this List will store.
         */
         template <std::size_t N>
-        List(const std::array<T, N> &arr) : Vector<T>(arr)
+        List(const std::array<T, N> &arr) : Container<T>(arr)
         {
             nElements = this->size;
         }
@@ -76,18 +76,18 @@ namespace DataStructure
         Copy Constructor
         @param other a List to be copied.
         */
-        List(const List<T> &other) : Vector<T>(other)
+        List(const List<T> &other) : Container<T>(other)
         {
-            nElements = this->size;
+            nElements = this->nElements;
         }
 
         /*
         Move Constructor
         @param other a Vector to be moved.
         */
-        List(List &&other) : Vector<T>(other)
+        List(List &&other) : Container<T>(other)
         {
-            nElements = this->size;
+            nElements = other.nElements;
         }
 
         /*
@@ -97,8 +97,8 @@ namespace DataStructure
         */
         virtual List<T> &operator=(const List<T> &other)
         {
-            Vector<T>::operator=(other);
-            nElements = this->size;
+            Container<T>::operator=(other);
+            nElements = this->nElements;
             return *this;
         }
 
@@ -107,7 +107,7 @@ namespace DataStructure
         @param index the index of the element to be accessed.
         @return the element
         */
-        virtual T &operator[](const std::size_t &index) override
+        virtual T &operator[](const std::size_t &index)
         {
             if (index > nElements - 1)
                 throw Exceptions::IndexOutOfBound(
