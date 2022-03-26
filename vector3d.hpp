@@ -178,7 +178,7 @@ namespace DataStructure
         }
 
         /*
-        Performs inplace addition with another Vector3D..
+        Performs inplace addition with another Vector3D.
         @param other a Vector3D to be added.
         @return the reference of this Vector3D.
         */
@@ -268,7 +268,6 @@ namespace DataStructure
             this->data[Z_INDEX] *= scaler;
             return *this;
         }
-
 
         /*
         Divides this Vector3D by a scaler.

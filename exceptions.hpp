@@ -104,6 +104,12 @@ namespace Exceptions
         }
     };
 
+    class EmptyVector : public Exception
+    {
+    public:
+        EmptyVector(std::string message = "") : Exception(message) {}
+    };
+
     class EmptyList : public Exception
     {
     public:

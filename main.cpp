@@ -4,27 +4,10 @@
 
 int main(void)
 {
-    DataStructure::Matrix<int> m = 
-        {
-            {1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
-            {1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
-            {1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
-            {1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
-            {1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
-            {1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
-            {1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
-            {1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
-            {1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
-            {1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
-            {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
-        };
-
-    std::cout << "m before transpose:" << std::endl;
-    std::cout << "Shape: " << m.Shape() << std::endl;
-    std::cout << m << std::endl;
-    std::cout << "m after transpose:" << std::endl;
-    m.Transpose();
-    std::cout << "Shape: " << m.Shape() << std::endl;
-    std::cout << m << std::endl;
+    DataStructure::Vector<int> v1 = {1, 2, 3};
+    DataStructure::Vector<int> v2 = {2, 3, 4};
+    std::cout << v1 << std::endl;
+    std::cout << v2 << std::endl;
+    std::cout << v1 * 3.14 << std::endl;
     return 0;
 }

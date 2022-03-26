@@ -35,7 +35,7 @@ namespace DataStructure
         Constructor with arrary as Input.
         @param arr an array that contains the elements this Tuple will store.
         */
-       template <std::size_t N>
+        template <std::size_t N>
         Tuple(const std::array<T, N>& arr) : Container<T>(arr) { }
 
         /*
@@ -49,13 +49,15 @@ namespace DataStructure
         Copy Constructor
         @param other a Tuple to be copied.
         */
-        Tuple(const Tuple<T> &other) : Container<T>(other) {}
+        template <class OtherType>
+        Tuple(const Tuple<OtherType> &other) : Container<T>(other) {}
 
         /*
         Move Constructor
         @param other a Tuple to be moved.
         */
-        Tuple(Tuple &&other) : Container<T>(other) {}
+        template<class OtherType>
+        Tuple(Tuple<OtherType> &&other) : Container<T>(other) {}
 
         /*
         Access the element of a given index.

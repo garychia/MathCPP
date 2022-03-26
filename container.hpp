@@ -97,15 +97,16 @@ Container is an abstract class that is capable of storing data.
         Copy Constructor
         @param other a Container to be copied.
         */
-        Container(const Container<T> &other)
+        template<class OtherType>
+        Container(const Container<OtherType> &other)
         {
-            size = other.size;
+            size = other.Size();
             if (size > 0)
             {
                 T *newData = new T[size];
                 #pragma omp parallel for schedule(dynamic)
                 for (std::size_t i = 0; i < size; i++)
-                    newData[i] = other.data[i];
+                    newData[i] = (T)other[i];
                 data = newData;
             }
             else
@@ -116,7 +117,8 @@ Container is an abstract class that is capable of storing data.
         Move Constructor
         @param other a Container to be moved.
         */
-        Container(Container<T> &&other)
+        template<class OtherType>
+        Container(Container<OtherType> &&other)
         {
             size = move(other.size);
             data = move(other.data);
@@ -156,7 +158,7 @@ Container is an abstract class that is capable of storing data.
                     data = new T[size];
                     #pragma omp parallel for schedule(dynamic)
                     for (std::size_t i = 0; i < size; i++)
-                        data[i] = other.data[i];
+                        data[i] = (T)other.data[i];
                 }
             }
             return *this;
