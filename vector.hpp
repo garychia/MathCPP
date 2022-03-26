@@ -49,8 +49,20 @@ namespace DataStructure
         Copy Constructor
         @param other a Vector to be copied.
         */
+        Vector(const Vector<T> &other) : Tuple<T>(other) {}
+
+        /*
+        Copy Constructor
+        @param other a Vector to be copied.
+        */
         template<class OtherType>
         Vector(const Vector<OtherType> &other) : Tuple<T>(other) {}
+
+        /*
+        Move Constructor
+        @param other a Vector to be moved.
+        */
+        Vector(Vector<T> &&other) : Tuple<T>(other) {}
 
         /*
         Move Constructor
@@ -65,6 +77,18 @@ namespace DataStructure
         @return a reference to this Vector.
         */
         virtual Vector<T> &operator=(const Vector<T> &other)
+        {
+            Tuple<T>::operator=(other);
+            return *this;
+        }
+
+        /*
+        Copy Assignment
+        @param other a Vector that contains values of a different type.
+        @return a reference to this Vector.
+        */
+        template <class OtherType>
+        Vector<T> &operator=(const Vector<OtherType> &other)
         {
             Tuple<T>::operator=(other);
             return *this;
@@ -249,7 +273,7 @@ namespace DataStructure
         @return a Vector that is the result of the scaling.
         */
         template <class OtherType>
-        auto Scale(const OtherType &scaler) const -> Vector<decltype(this->data[0] * scaler)>
+        auto Scale(const OtherType &scaler) const
         {
             if (this->size == 0)
                 throw Exceptions::EmptyVector(
@@ -299,7 +323,12 @@ namespace DataStructure
         {
             if (this->size == 0)
                 throw Exceptions::EmptyVector(
-                    "Vector: Cannot perform division on an empty vector.");
+                    "Vector: Cannot perform division on an empty vector."
+                    );
+            else if (scaler == 0)
+                throw Exceptions::InvalidArgument(
+                    "Vector: Cannot divide a vector by 0."
+                    );
             Vector<decltype(this->data[0] / scaler)> result(*this);
             #pragma omp parallel for schedule(dynamic)
             for (std::size_t i = 0; i < Dimension(); i++)

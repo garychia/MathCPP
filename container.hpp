@@ -97,6 +97,25 @@ Container is an abstract class that is capable of storing data.
         Copy Constructor
         @param other a Container to be copied.
         */
+        Container(const Container<T> &other)
+        {
+            size = other.Size();
+            if (size > 0)
+            {
+                T *newData = new T[size];
+                #pragma omp parallel for schedule(dynamic)
+                for (std::size_t i = 0; i < size; i++)
+                    newData[i] = (T)other[i];
+                data = newData;
+            }
+            else
+                data = nullptr;
+        }
+
+        /*
+        Copy Constructor
+        @param other a Container to be copied.
+        */
         template<class OtherType>
         Container(const Container<OtherType> &other)
         {
@@ -111,6 +130,18 @@ Container is an abstract class that is capable of storing data.
             }
             else
                 data = nullptr;
+        }
+
+        /*
+        Move Constructor
+        @param other a Container to be moved.
+        */
+        Container(Container<T> &&other)
+        {
+            size = move(other.size);
+            data = move(other.data);
+            other.size = 0;
+            other.data = nullptr;
         }
 
         /*
@@ -148,6 +179,29 @@ Container is an abstract class that is capable of storing data.
         @return a reference to this Container.
         */
         virtual Container<T> &operator=(const Container<T> &other) {
+            if (this != &other)
+            {
+                size = other.size;
+                if (data)
+                    delete[] data;
+                data = nullptr;
+                if (size > 0) {
+                    data = new T[size];
+                    #pragma omp parallel for schedule(dynamic)
+                    for (std::size_t i = 0; i < size; i++)
+                        data[i] = other.data[i];
+                }
+            }
+            return *this;
+        }
+
+        /*
+        Copy Assignment
+        @param other a Container containing values of a different type to be copied.
+        @return a reference to this Container.
+        */
+        template <class OtherType>
+        Container<T> &operator=(const Container<OtherType> &other) {
             if (this != &other)
             {
                 size = other.size;

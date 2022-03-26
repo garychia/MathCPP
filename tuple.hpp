@@ -49,8 +49,20 @@ namespace DataStructure
         Copy Constructor
         @param other a Tuple to be copied.
         */
+        Tuple(const Tuple<T> &other) : Container<T>(other) {}
+
+        /*
+        Copy Constructor
+        @param other a Tuple to be copied.
+        */
         template <class OtherType>
         Tuple(const Tuple<OtherType> &other) : Container<T>(other) {}
+
+        /*
+        Move Constructor
+        @param other a Tuple to be moved.
+        */
+        Tuple(Tuple<T> &&other) : Container<T>(other) {}
 
         /*
         Move Constructor
@@ -77,10 +89,23 @@ namespace DataStructure
 
         /*
         Copy Assignment
-        @param other a Container to be copied.
-        @return a reference to this Container.
+        @param other a Tuple to be copied.
+        @return a reference to this Tuple.
         */
         virtual Tuple<T> &operator=(const Tuple<T> &other)
+        {
+            Container<T>::operator=(other);
+            return *this;
+        }
+
+        /*
+        Copy Assignment
+        @param other a Tuple containing values of a different type
+        to be copied.
+        @return a reference to this Tuple.
+        */
+        template <class OtherType>
+        Tuple<T> &operator=(const Tuple<OtherType> &other)
         {
             Container<T>::operator=(other);
             return *this;

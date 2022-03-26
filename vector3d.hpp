@@ -57,11 +57,24 @@ namespace DataStructure
         */
         Vector3D(const Vector3D<T> &other) : Container<T>(other) {}
 
+        /*
+        Copy Constructor
+        @param other a Vector3D to be copied.
+        */
+        template<class OtherType>
+        Vector3D(const Vector3D<OtherType> &other) : Container<T>(other) {}
 
         /*
         Move Constructor
         @param other a Vector3D to be moved.
         */
+        Vector3D(Vector3D<T> &&other) : Container<T>(other) {}
+
+        /*
+        Move Constructor
+        @param other a Vector3D to be moved.
+        */
+        template<class OtherType>
         Vector3D(Vector3D<T> &&other) : Container<T>(other) {}
 
         /*

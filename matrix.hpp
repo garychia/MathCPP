@@ -165,6 +165,17 @@ namespace DataStructure
         }
 
         /*
+        Copy Constructor
+        @param other a Matrix to be copied.
+        */
+        Matrix(const Matrix<T>& other) : Container<Vector<T>>(other)
+        {
+            nRows = this->size;
+            nColumns = (nRows > 0) ? this->data[0].Size() : 0;
+            this->size = nRows * nColumns;
+        }
+
+        /*
         Accesses the vector at a given index.
         @return the vector at the given index.
         @throw IndexOutOfBound when the index exceeds the greatest possible index.
