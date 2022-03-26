@@ -225,6 +225,12 @@ Container is an abstract class that is capable of storing data.
         virtual std::size_t Size() const { return size; }
 
         /*
+        Checks if this Container is empty or not.
+        @return a bool that indicates whether this Container is empty.
+        */
+        virtual bool IsEmpty() const { return size == 0; }
+
+        /*
         Converts this container to a string that shows the elements
         of this Container.
         @return a string that represents this Container.

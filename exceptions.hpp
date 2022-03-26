@@ -4,9 +4,14 @@
 #include <exception>
 #include <sstream>
 
+namespace DataStructure
+{
+    template <class T>
+    class Tuple;
+}
+
 namespace Exceptions
 {
-
     class Exception : public std::exception
     {
     protected:
@@ -15,7 +20,7 @@ namespace Exceptions
 
     public:
         /* Constructor */
-        Exception(std::string message = "") : errorMessage(message) {}
+        Exception(const std::string &message = "") : errorMessage(message) {}
 
         /*
         Returns the error message.
@@ -63,7 +68,7 @@ namespace Exceptions
         Constructor with an optional message.
         @param additionalMessage a string that represent an optional error message.
         */
-        DividedByZero(std::string additionalMessage = "")
+        DividedByZero(const std::string &additionalMessage = "")
         {
             std::stringstream ss;
             ss << "Division by zero occurred.";
@@ -90,7 +95,7 @@ namespace Exceptions
         DimensionMismatch(
             std::size_t expectedDimension,
             std::size_t misMatchedDimension,
-            std::string additionalMessage = "")
+            const std::string &additionalMessage = "")
         {
             std::stringstream ss;
             ss << "Mismatched dimension found: "
@@ -107,19 +112,59 @@ namespace Exceptions
     class EmptyVector : public Exception
     {
     public:
-        EmptyVector(std::string message = "") : Exception(message) {}
+        EmptyVector(const std::string &message = "") : Exception(message) {}
+    };
+
+    class EmptyMatrix : public Exception
+    {
+    public:
+        EmptyMatrix(const std::string &message = "") : Exception(message) {}
+    };
+
+    class MatrixShapeMismatch : Exception
+    {
+    public:
+        template <class T>
+        MatrixShapeMismatch(
+            const DataStructure::Tuple<T> &matrixShape,
+            const DataStructure::Tuple<T> &targetShape,
+            const std::string &message = "")
+        {
+            std::stringstream errorMessageStream;
+            errorMessageStream
+                << "Matrix Shape: " << matrixShape << std::endl
+                << "Target Shape: " << targetShape << std::endl;
+            if (message.length() > 0)
+                errorMessageStream << message << std::endl;
+            this->errorMessage = errorMessageStream.str();
+        }
+
+        template <class T>
+        MatrixShapeMismatch(
+            const DataStructure::Tuple<T> &expectedShape = DataStructure::Tuple<T>(),
+            const std::string &message = "")
+        {
+            std::stringstream ss;
+            if (expectedShape.Size() > 0)
+            {
+                ss << "Expected Shape: "
+                   << expectedShape << std::endl;
+            }
+            ss << message;
+            errorMessage = ss.str();
+        }
     };
 
     class EmptyList : public Exception
     {
     public:
-        EmptyList(std::string message = "") : Exception(message) {}
+        EmptyList(const std::string &message = "") : Exception(message) {}
     };
 
     class InvalidArgument : public Exception
     {
     public:
-        InvalidArgument(std::string message = "") : Exception(message) {}
+        InvalidArgument(const std::string &message = "") : Exception(message) {}
     };
 }
 
