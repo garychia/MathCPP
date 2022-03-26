@@ -137,6 +137,12 @@ namespace DataStructure
         virtual std::size_t Size() const override { return nElements; }
 
         /*
+        Checks if this List is empty or not.
+        @return a bool that indicates whether this List is empty.
+        */
+        virtual bool IsEmpty() const override { return nElements == 0; }
+
+        /*
         Converts this List to a string that displays all the elements
         of this List.
         @return a string that represents this List.
