@@ -8,7 +8,7 @@
 #include <cmath>
 
 #include "tuple.hpp"
-#include "exceptions.hpp"
+#include "../Exceptions/exceptions.hpp"
 
 namespace DataStructure
 {
