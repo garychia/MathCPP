@@ -258,6 +258,9 @@ namespace DataStructure
             nElements = 0;
             shrink();
         }
+
+        template <class OtherType>
+        friend class List;
     };
 } // namespace DataStructure
 

@@ -1,9 +1,6 @@
 #ifndef MATRIX_H
 #define MATRIX_H
 
-#define MATRIX_EMPTY_MESSAGE \
-    "Matrix: Cannot perform multiplication with an empty matrix."
-
 #include <sstream>
 
 #include "container.hpp"
@@ -182,13 +179,13 @@ namespace DataStructure
         template <class OtherType>
         Matrix(const Matrix<OtherType> &other) : Container<Vector<T>>(other)
         {
-            nRows = other.nRows;
+            nRows = other.Shape()[0];
             nColumns = (nRows > 0) ? this->data[0].Size() : 0;
         }
 
         /*
         Move Constructor
-        @param other a Matrix to be copied.
+        @param other a Matrix to be moved.
         */
         Matrix(Matrix<T> &&other) : Container<Vector<T>>(other)
         {
@@ -200,12 +197,12 @@ namespace DataStructure
 
         /*
         Move Constructor
-        @param other a Matrix to be copied.
+        @param other a Matrix to be moved.
         */
-        template<class OtherType>
+        template <class OtherType>
         Matrix(Matrix<OtherType> &&other) : Container<Vector<T>>(other)
         {
-            nRows = std::move(other.nRows);
+            nRows = std::move(other.Shape()[0]);
             nColumns = (nRows > 0) ? (*this)[0].Size() : 0;
             other.nRows = 0;
             other.nColumns = 0;
@@ -262,6 +259,228 @@ namespace DataStructure
         Tuple<std::size_t> Shape() const { return Tuple<std::size_t>({nRows, nColumns}); }
 
         /*
+        Performs matrix addition.
+        @param other a Matrix.
+        @return the result of the matrix addition.
+        @throw InvalidArgument when the given matrix is empty.
+        @throw EmptyMatrix when this matrix is empty.
+        @throw MatrixShapeMismatch when the two shapes of the
+        matrices are different.
+        */
+        template <class OtherType>
+        auto Add(const Matrix<OtherType> &other) const
+        {
+            if (other.IsEmpty())
+                throw Exceptions::InvalidArgument(
+                    "Matrix: Cannot perform addition with an empty matrix.");
+            else if (this->IsEmpty())
+                throw Exceptions::EmptyMatrix(
+                    "Matrix: Cannot perform addition with an empty matrix.");
+            const auto otherShape = other.Shape();
+            const auto thisShape = Shape();
+            if (thisShape[1] != otherShape[0])
+            {
+                std::stringstream errorMessageStream;
+                errorMessageStream
+                    << "Expected shape of the target matrix to be "
+                    << thisShape
+                    << "when performing addition."
+                    << std::endl;
+                throw Exceptions::MatrixShapeMismatch(
+                    thisShape,
+                    otherShape,
+                    errorMessageStream.str());
+            }
+
+            Matrix<decltype((*this)[0][0] + other[0][0])> result(*this);
+#pragma omp parallel for schedule(dynamic)
+            for (std::size_t i = 0; i < nRows; i++)
+                result[i] += other[i];
+            return result;
+        }
+
+        /*
+        Performs matrix addition. Reference: Matrix.Add
+        @param other a Matrix.
+        @return the result of the matrix addition.
+        @throw InvalidArgument when the given matrix is empty.
+        @throw EmptyMatrix when this matrix is empty.
+        @throw MatrixShapeMismatch when the two shapes of the
+        matrices are different.
+        */
+        template <class OtherType>
+        auto operator+(const Matrix<OtherType> &other) const
+        {
+            try
+            {
+                return Add(other);
+            }
+            catch (Exceptions::InvalidArgument &e)
+            {
+                throw e;
+            }
+            catch (Exceptions::EmptyMatrix &e)
+            {
+                throw e;
+            }
+            catch (Exceptions::MatrixShapeMismatch &e)
+            {
+                throw e;
+            }
+        }
+
+        /*
+        Performs inplace matrix addition.
+        @param other a Matrix.
+        @return the reference to this Matrix.
+        @throw InvalidArgument when the given matrix is empty.
+        @throw EmptyMatrix when this matrix is empty.
+        @throw MatrixShapeMismatch when the two shapes of the
+        matrices are different.
+        */
+        template <class OtherType>
+        Matrix<T> &operator+=(const Matrix<OtherType> &other)
+        {
+            if (other.IsEmpty())
+                throw Exceptions::InvalidArgument(
+                    "Matrix: Cannot perform addition with an empty matrix.");
+            else if (this->IsEmpty())
+                throw Exceptions::EmptyMatrix(
+                    "Matrix: Cannot perform addition with an empty matrix.");
+            const auto otherShape = other.Shape();
+            const auto thisShape = Shape();
+            if (thisShape[1] != otherShape[0])
+            {
+                std::stringstream errorMessageStream;
+                errorMessageStream
+                    << "Expected shape of the target matrix to be "
+                    << thisShape
+                    << "when performing addition."
+                    << std::endl;
+                throw Exceptions::MatrixShapeMismatch(
+                    thisShape,
+                    otherShape,
+                    errorMessageStream.str());
+            }
+
+#pragma omp parallel for schedule(dynamic)
+            for (std::size_t i = 0; i < nRows; i++)
+                (*this)[i] += other[i];
+            return *this;
+        }
+
+        /*
+        Performs matrix subtraction.
+        @param other a Matrix.
+        @return the result of the matrix subtraction.
+        @throw InvalidArgument when the given matrix is empty.
+        @throw EmptyMatrix when this matrix is empty.
+        @throw MatrixShapeMismatch when the two shapes of the
+        matrices are different.
+        */
+        template <class OtherType>
+        auto Subtract(const Matrix<OtherType> &other) const
+        {
+            if (other.IsEmpty())
+                throw Exceptions::InvalidArgument(
+                    "Matrix: Cannot perform subtraction with an empty matrix.");
+            else if (this->IsEmpty())
+                throw Exceptions::EmptyMatrix(
+                    "Matrix: Cannot perform subtraction with an empty matrix.");
+            const auto otherShape = other.Shape();
+            const auto thisShape = Shape();
+            if (thisShape[1] != otherShape[0])
+            {
+                std::stringstream errorMessageStream;
+                errorMessageStream
+                    << "Expected shape of the target matrix to be "
+                    << thisShape
+                    << "when performing subtraction."
+                    << std::endl;
+                throw Exceptions::MatrixShapeMismatch(
+                    thisShape,
+                    otherShape,
+                    errorMessageStream.str());
+            }
+
+            Matrix<decltype((*this)[0][0] + other[0][0])> result(*this);
+#pragma omp parallel for schedule(dynamic)
+            for (std::size_t i = 0; i < nRows; i++)
+                result[i] -= other[i];
+            return result;
+        }
+
+        /*
+        Performs matrix subtraction. Reference: Matrix.Add
+        @param other a Matrix.
+        @return the result of the matrix subtraction.
+        @throw InvalidArgument when the given matrix is empty.
+        @throw EmptyMatrix when this matrix is empty.
+        @throw MatrixShapeMismatch when the two shapes of the
+        matrices are different.
+        */
+        template <class OtherType>
+        auto operator-(const Matrix<OtherType> &other) const
+        {
+            try
+            {
+                return Subtract(other);
+            }
+            catch (Exceptions::InvalidArgument &e)
+            {
+                throw e;
+            }
+            catch (Exceptions::EmptyMatrix &e)
+            {
+                throw e;
+            }
+            catch (Exceptions::MatrixShapeMismatch &e)
+            {
+                throw e;
+            }
+        }
+
+        /*
+        Performs inplace matrix subtraction.
+        @param other a Matrix.
+        @return the reference to this Matrix.
+        @throw InvalidArgument when the given matrix is empty.
+        @throw EmptyMatrix when this matrix is empty.
+        @throw MatrixShapeMismatch when the two shapes of the
+        matrices are different.
+        */
+        template <class OtherType>
+        Matrix<T> &operator-=(const Matrix<OtherType> &other)
+        {
+            if (other.IsEmpty())
+                throw Exceptions::InvalidArgument(
+                    "Matrix: Cannot perform subtraction with an empty matrix.");
+            else if (this->IsEmpty())
+                throw Exceptions::EmptyMatrix(
+                    "Matrix: Cannot perform subtraction with an empty matrix.");
+            const auto otherShape = other.Shape();
+            const auto thisShape = Shape();
+            if (thisShape[1] != otherShape[0])
+            {
+                std::stringstream errorMessageStream;
+                errorMessageStream
+                    << "Expected shape of the target matrix to be "
+                    << thisShape
+                    << "when performing subtraction."
+                    << std::endl;
+                throw Exceptions::MatrixShapeMismatch(
+                    thisShape,
+                    otherShape,
+                    errorMessageStream.str());
+            }
+
+#pragma omp parallel for schedule(dynamic)
+            for (std::size_t i = 0; i < nRows; i++)
+                (*this)[i] -= other[i];
+            return *this;
+        }
+
+        /*
         Performs matrix multiplication.
         @param other a Matrix.
         @return the result of the matrix multiplication.
@@ -274,9 +493,11 @@ namespace DataStructure
         auto Multiply(const Matrix<OtherType> &other) const
         {
             if (other.IsEmpty())
-                throw Exceptions::InvalidArgument(MATRIX_EMPTY_MESSAGE);
+                throw Exceptions::InvalidArgument(
+                    "Matrix: Cannot perform multiplication with an empty matrix.");
             else if (this->IsEmpty())
-                throw Exceptions::EmptyMatrix(MATRIX_EMPTY_MESSAGE);
+                throw Exceptions::EmptyMatrix(
+                    "Matrix: Cannot perform multiplication with an empty matrix.");
             const auto otherShape = other.Shape();
             const auto thisShape = Shape();
             if (thisShape[1] != otherShape[0])
@@ -304,6 +525,220 @@ namespace DataStructure
 #pragma omp atomic
                         result[i][j] += (*this)[i][k] * other[k][j];
             return result;
+        }
+
+        /*
+        Performs matrix multiplication. Reference: Matrix.Multiply
+        @param other a Matrix.
+        @return the result of the matrix multiplication.
+        @throw InvalidArgument when the given matrix is empty.
+        @throw EmptyMatrix when this matrix is empty.
+        @throw MatrixShapeMismatch when the two shapes of the
+        matrices do not match.
+        */
+        template <class OtherType>
+        auto operator*(const Matrix<OtherType> &other) const
+        {
+            try
+            {
+                return Multiply(other);
+            }
+            catch (Exceptions::InvalidArgument &e)
+            {
+                throw e;
+            }
+            catch (Exceptions::EmptyMatrix &e)
+            {
+                throw e;
+            }
+            catch (Exceptions::MatrixShapeMismatch &e)
+            {
+                throw e;
+            }
+        }
+
+        /*
+        Performs matrix scaling.
+        @param scaler a scaler.
+        @return the result of the matrix scaling.
+        @throw EmptyMatrix when this matrix is empty.
+        */
+        auto Scale(const T &scaler) const
+        {
+            if (this->IsEmpty())
+                throw Exceptions::EmptyMatrix(
+                    "Matrix: Cannot perform scaling on an empty matrix.");
+
+            Matrix<decltype((*this)[0][0] * scaler)> result(*this);
+#pragma omp parallel for schedule(dynamic)
+            for (std::size_t i = 0; i < nRows; i++)
+                result[i] *= scaler;
+            return result;
+        }
+
+        /*
+        Performs Matrix element-wise multiplication.
+        @param other a Matrix.
+        @return the result of the matrix element-wise multiplication.
+        @throw InvalidArgument when the target matrix is empty.
+        @throw EmptyMatrix when this matrix is empty.
+        @throw MatrixShapeMismatch when the shapes of the matrices
+        are different.
+        */
+        template <class OtherType>
+        auto Scale(const Matrix<OtherType> &other) const
+        {
+            if (other.IsEmpty())
+                throw Exceptions::InvalidArgument(
+                    "Matrix: Cannot perform element-wise scaling with an empty matrix.");
+            if (this->IsEmpty())
+                throw Exceptions::EmptyMatrix(
+                    "Matrix: Cannot perform element-wise scaling with an empty matrix.");
+
+            const auto otherShape = other.Shape();
+            const auto thisShape = Shape();
+            if (thisShape != otherShape)
+            {
+                std::stringstream errorMessageStream;
+                errorMessageStream
+                    << "Expected two matrices have the same shape when performing"
+                       "element-wise scaling."
+                    << std::endl;
+                throw Exceptions::MatrixShapeMismatch(
+                    thisShape,
+                    otherShape,
+                    errorMessageStream.str());
+            }
+
+            Matrix<decltype((*this)[0][0] * other[0][0])> result(*this);
+            #pragma omp parallel for schedule(dynamic)
+            for (std::size_t i = 0; i < nRows; i++)
+                result[i] *= other[i];
+            return result;
+        }
+
+        /*
+        Performs matrix scaling. Reference: Matrix.Scale
+        @param scaler a scaler.
+        @return the result of the matrix multiplication.
+        @throw EmptyMatrix when this matrix is empty.
+        */
+        auto operator*(const T &scaler) const
+        {
+            try
+            {
+                return Scale(scaler);
+            }
+            catch (Exceptions::EmptyMatrix &e)
+            {
+                throw e;
+            }
+        }
+
+        /*
+        Performs inplace matrix scaling.
+        @param scaler a scaler.
+        @return the reference to this Matrix.
+        @throw EmptyMatrix when this matrix is empty.
+        */
+        Matrix<T> &operator*=(const T &scaler)
+        {
+            if (this->IsEmpty())
+                throw Exceptions::EmptyMatrix(
+                    "Matrix: Cannot perform scaling on an empty matrix.");
+
+#pragma omp parallel for schedule(dynamic)
+            for (std::size_t i = 0; i < nRows; i++)
+                (*this)[i] *= scaler;
+            return *this;
+        }
+
+        /*
+        Performs inplace matrix element-wise multiplication.
+        @param other a scaler.
+        @return the reference to this Matrix.
+        @throw EmptyMatrix when this matrix is empty.
+        */
+        Matrix<T> &operator*=(const Matrix<T> &other)
+        {
+            if (this->IsEmpty())
+                throw Exceptions::EmptyMatrix(
+                    "Matrix: Cannot perform scaling on an empty matrix.");
+
+            #pragma omp parallel for schedule(dynamic)
+            for (std::size_t i = 0; i < nRows; i++)
+                (*this)[i] *= other[i];
+            return *this;
+        }
+
+        /*
+        Performs matrix element-wise division.
+        @param scaler a scaler.
+        @return the result of the matrix element-wise division.
+        @throw InvalidArgument when the scaler is zero.
+        @throw EmptyMatrix when this matrix is empty.
+        */
+        template <class ScalerType>
+        auto Divide(const ScalerType &scaler) const
+        {
+            if (scaler == 0)
+                throw Exceptions::InvalidArgument(
+                    "Matrix: Cannot perform element-wise division with zero.");
+            if (this->IsEmpty())
+                throw Exceptions::EmptyMatrix(
+                    "Matrix: Cannot perform element-wise division on an empty matrix.");
+
+            Matrix<decltype((*this)[0][0] * scaler)> result(*this);
+#pragma omp parallel for schedule(dynamic)
+            for (std::size_t i = 0; i < nRows; i++)
+                result[i] /= scaler;
+            return result;
+        }
+
+        /*
+        Performs matrix element-wise division. Reference: Matrix.Divide.
+        @param scaler a scaler.
+        @return the result of the matrix element-wise division.
+        @throw InvalidArgument when the scaler is zero.
+        @throw EmptyMatrix when this matrix is empty.
+        */
+        template <class ScalerType>
+        auto operator/(const ScalerType &scaler) const
+        {
+            try
+            {
+                return Divide(scaler);
+            }
+            catch (Exceptions::InvalidArgument &e)
+            {
+                throw e;
+            }
+            catch (Exceptions::EmptyMatrix &e)
+            {
+                throw e;
+            }
+        }
+
+        /*
+        Performs inplace matrix element-wise division.
+        @param scaler a scaler.
+        @return the reference to this Matrix.
+        @throw InvalidArgument when the scaler is zero.
+        @throw EmptyMatrix when this matrix is empty.
+        */
+        Matrix<T> &operator/=(const T &scaler)
+        {
+            if (scaler == 0)
+                throw Exceptions::InvalidArgument(
+                    "Matrix: Cannot perform element-wise division with zero.");
+            if (this->IsEmpty())
+                throw Exceptions::EmptyMatrix(
+                    "Matrix: Cannot perform scaling on an empty matrix.");
+
+#pragma omp parallel for schedule(dynamic)
+            for (std::size_t i = 0; i < nRows; i++)
+                (*this)[i] /= scaler;
+            return *this;
         }
 
         /*
@@ -377,14 +812,16 @@ namespace DataStructure
         {
             if (n == 0)
                 throw Exceptions::InvalidArgument(
-                    "The size of the identity matrix must be positive."
-                );
+                    "The size of the identity matrix must be positive.");
             Matrix<T> identity(n, n);
-            #pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(dynamic)
             for (std::size_t i = 0; i < n; i++)
                 identity[i][i] = 1;
             return identity;
         }
+
+        template <class OtherType>
+        friend class Matrix;
     };
 } // namespace Math
 

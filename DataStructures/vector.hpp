@@ -36,14 +36,14 @@ namespace DataStructure
         Constructor with Initializer List as Input.
         @param l an initializer_list that contains the elements this Vector will store.
         */
-        Vector(const std::initializer_list<T>& l) : Tuple<T>(l) {}
+        Vector(const std::initializer_list<T> &l) : Tuple<T>(l) {}
 
         /*
         Constructor with arrary as Input.
         @param arr an array that contains the elements this Vector will store.
         */
         template <std::size_t N>
-        Vector(const std::array<T, N>& arr) : Tuple<T>(arr) {}
+        Vector(const std::array<T, N> &arr) : Tuple<T>(arr) {}
 
         /*
         Copy Constructor
@@ -55,7 +55,7 @@ namespace DataStructure
         Copy Constructor
         @param other a Vector to be copied.
         */
-        template<class OtherType>
+        template <class OtherType>
         Vector(const Vector<OtherType> &other) : Tuple<T>(other) {}
 
         /*
@@ -68,7 +68,7 @@ namespace DataStructure
         Move Constructor
         @param other a Vector to be moved.
         */
-        template<class OtherType>
+        template <class OtherType>
         Vector(Vector<OtherType> &&other) : Tuple<T>(other) {}
 
         /*
@@ -132,7 +132,7 @@ namespace DataStructure
         Returns the length of this Vector.
         @return the length of this Vector.
         */
-        template<class ReturnType>
+        template <class ReturnType>
         ReturnType Length() const
         {
             T squaredTotal = 0;
@@ -181,7 +181,18 @@ namespace DataStructure
         template <class OtherType>
         auto operator+(const Vector<OtherType> &other) const
         {
-            return this->Add(other);
+            try
+            {
+                return this->Add(other);
+            }
+            catch (Exceptions::EmptyVector &e)
+            {
+                throw e;
+            }
+            catch (Exceptions::InvalidArgument &e)
+            {
+                throw e;
+            }
         }
 
         /*
@@ -195,7 +206,7 @@ namespace DataStructure
             if (this->size == 0)
                 throw Exceptions::EmptyVector(
                     "Vector: Cannot perform addition on an empty vector.");
-            else if (other.size == 0)
+            else if (other.Size() == 0)
                 throw Exceptions::InvalidArgument(
                     "Vector: Cannot perform addtion on the given empty vector.");
             else if (Dimension() != other.Dimension())
@@ -240,7 +251,18 @@ namespace DataStructure
         template <class OtherType>
         auto operator-(const Vector<OtherType> &other) const
         {
-            return this->Minus(other);
+            try
+            {
+                return this->Minus(other);
+            }
+            catch (Exceptions::EmptyVector &e)
+            {
+                throw e;
+            }
+            catch (Exceptions::InvalidArgument &e)
+            {
+                throw e;
+            }
         }
 
         /*
@@ -254,7 +276,7 @@ namespace DataStructure
             if (this->size == 0)
                 throw Exceptions::EmptyVector(
                     "Vector: Cannot perform subtraction on an empty vector.");
-            else if (other.size == 0)
+            else if (other.Size() == 0)
                 throw Exceptions::InvalidArgument(
                     "Vector: Cannot perform subtraction on the given empty vector.");
             else if (Dimension() != other.Dimension())
@@ -293,7 +315,38 @@ namespace DataStructure
         template <class OtherType>
         auto operator*(const OtherType &scaler) const
         {
-            return this->Scale(scaler);
+            try
+            {
+                return this->Scale(scaler);
+            }
+            catch (Exceptions::EmptyVector &e)
+            {
+                throw e;
+            }
+        }
+
+        /*
+        Performs vector element-wise multiplication.
+        @param other a Vector.
+        @return a Vector that is the result of the multiplication.
+        @throw EmptyVector when this vector is empty.
+        @throw InvalidArgument when the two vectors have different
+        dimensions.
+        */
+        template <class OtherType>
+        auto operator*(const Vector<OtherType> &other) const
+        {
+            if (this->size == 0)
+                throw Exceptions::EmptyVector(
+                    "Vector: Cannot perform scaling on an empty vector.");
+            if (this->size != other.Size())
+                throw Exceptions::InvalidArgument(
+                    "Vector: Cannot perform elmenet-wise ");
+            Vector<decltype((*this)[0] * other[0])> result(*this);
+            #pragma omp parallel for schedule(dynamic)
+            for (std::size_t i = 0; i < this->size; i++)
+                result[i] *= other[i];
+            return result;
         }
 
         /*
@@ -301,15 +354,38 @@ namespace DataStructure
         @param scaler a scaler used to scale this Vector.
         @return the reference of this Vector.
         */
-        template <class OtherType>
-        Vector<T> &operator*=(const OtherType &scaler)
+        Vector<T> &operator*=(const T &scaler)
         {
+            static_assert(!std::is_base_of<Vector, T>::value, "OtherType must be a scaler.");
             if (this->size == 0)
                 throw Exceptions::EmptyVector(
                     "Vector: Cannot perform scaling on an empty vector.");
             #pragma omp parallel for schedule(dynamic)
             for (std::size_t i = 0; i < Dimension(); i++)
                 this->data[i] *= scaler;
+            return *this;
+        }
+
+        /*
+        Performs inplace element-wise vector multiplication.
+        @param other a vector.
+        @return the reference of this Vector.
+        @throw EmptyVector when this vector is empty.
+        @throw InvalidArgument when the dimensions of the vectors
+        are different.
+        */
+        Vector<T> &operator*=(const Vector<T> &other)
+        {
+            if (this->size == 0)
+                throw Exceptions::EmptyVector(
+                    "Vector: Cannot perform element-wise multiplication on an empty vector.");
+            if (Dimension() != other.Dimension())
+                throw Exceptions::InvalidArgument(
+                    "Vector: Cannot perform element-wise multiplication on vectors of "
+                    "different dimensions.");
+            #pragma omp parallel for schedule(dynamic)
+            for (std::size_t i = 0; i < Dimension(); i++)
+                this->data[i] *= other[i];
             return *this;
         }
 
@@ -323,12 +399,10 @@ namespace DataStructure
         {
             if (this->size == 0)
                 throw Exceptions::EmptyVector(
-                    "Vector: Cannot perform division on an empty vector."
-                    );
+                    "Vector: Cannot perform division on an empty vector.");
             else if (scaler == 0)
                 throw Exceptions::InvalidArgument(
-                    "Vector: Cannot divide a vector by 0."
-                    );
+                    "Vector: Cannot divide a vector by 0.");
             Vector<decltype(this->data[0] / scaler)> result(*this);
             #pragma omp parallel for schedule(dynamic)
             for (std::size_t i = 0; i < Dimension(); i++)
@@ -344,7 +418,18 @@ namespace DataStructure
         template <class OtherType>
         auto operator/(const OtherType &scaler) const
         {
-            return this->Divide(scaler);
+            try
+            {
+                return this->Divide(scaler);
+            }
+            catch (Exceptions::EmptyVector &e)
+            {
+                throw e;
+            }
+            catch (Exceptions::InvalidArgument &e)
+            {
+                throw e;
+            }
         }
 
         /*
@@ -428,7 +513,7 @@ namespace DataStructure
         @param n the number of zeros.
         @return a Vector that is filled with n zeros.
         */
-        static Vector<T> ZeroVector(const std::size_t& n)
+        static Vector<T> ZeroVector(const std::size_t &n)
         {
             Vector<T> v;
             v.size = n;
@@ -438,6 +523,9 @@ namespace DataStructure
                 v.data[i] = 0;
             return v;
         }
+
+        template <class OtherType>
+        friend class Vector;
     };
 }
 

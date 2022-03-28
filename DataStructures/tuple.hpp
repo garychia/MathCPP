@@ -112,6 +112,33 @@ namespace DataStructure
         }
 
         /*
+        Given two tuples, check if they have the same elements.
+        @return bool that indicates whether the two tuples have the same
+        elements.
+        */
+        template <class OtherType>
+        bool operator==(const Tuple<OtherType> &other) const
+        {
+            if (this->Size() != other.Size())
+                return false;
+            for (std::size_t i = 0; i < this->Size(); i++)
+                if ((*this)[i] != other[i])
+                    return false;
+            return true;
+        }
+
+        /*
+        Given two tuples, check if they have different elements.
+        @return bool that indicates whether the two tuples have different
+        elements.
+        */
+        template <class OtherType>
+        bool operator!=(const Tuple<OtherType> &other) const
+        {
+            return !operator==(other);
+        }
+
+        /*
         Converts this container to a string that shows the elements
         of this Container.
         @return a string that represents this Container.
@@ -131,6 +158,9 @@ namespace DataStructure
             ss << ")";
             return ss.str();
         }
+        
+        template <class OtherType>
+        friend class Tuple;
     };
 } // namespace Math
 
