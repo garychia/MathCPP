@@ -129,21 +129,31 @@ namespace DataStructure
         std::size_t Dimension() const { return this->size; }
 
         /*
-        Returns the length of this Vector.
-        @return the length of this Vector.
+        Returns the Euclidean norm of this Vector.
+        @return the Euclidean norm of this Vector.
         */
         template <class ReturnType>
         ReturnType Length() const
         {
-            T squaredTotal = 0;
+            return LpNorm((ReturnType)2);
+        }
+
+        /*
+        Returns the Lp Norm of this Vector.
+        @return the Lp norm of this Vector.
+        */
+        template <class ReturnType>
+        ReturnType LpNorm(ReturnType p) const
+        {
+            ReturnType squaredTotal = 0;
             #pragma omp parallel for schedule(dynamic)
             for (std::size_t i = 0; i < this->size; i++)
             {
-                T squaredElement = this->data[i] * this->data[i];
+                ReturnType squaredElement = std::pow(this->data[i], p);
                 #pragma omp atomic
                 squaredTotal += squaredElement;
             }
-            return std::sqrt(squaredTotal);
+            return std::pow(squaredTotal, 1 / p);
         }
 
         /*
