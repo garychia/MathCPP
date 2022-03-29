@@ -1,11 +1,13 @@
 #ifndef CONTAINER_H
 #define CONTAINER_H
 
+#include <vector>
+
 namespace DataStructure
 {
     /*
-Container is an abstract class that is capable of storing data.
-*/
+    Container is an abstract class that is capable of storing data.
+    */
     template <class T>
     class Container
     {
