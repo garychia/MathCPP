@@ -820,6 +820,27 @@ namespace DataStructure
             return identity;
         }
 
+
+        /*
+        Constructs a diagonal matrix.
+        @param values a Vector whose values will be the diagonal entries
+        of the output Matrix.
+        @param the diagonal matrix.
+        */
+        static Matrix<T> Diagonal(const Vector<T>& values)
+        {
+            if (values.Dimension() == 0)
+                throw Exceptions::InvalidArgument(
+                    "Matrix: Cannot construct a diagonal matrix with an empty vector."
+                );
+            const std::size_t n = values.Dimension();
+            auto result = Identity(n);
+            #pragma omp parallel for schedule(dynamic)
+            for (std::size_t i = 0; i < n; i++)
+                result[i][i] = values[i];
+            return result;
+        }
+
         template <class OtherType>
         friend class Matrix;
     };
