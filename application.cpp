@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "matrix.hpp"
+#include "DataStructures/matrix.hpp"
 
 int main(void)
 {
