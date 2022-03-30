@@ -8,6 +8,9 @@
 
 namespace DataStructure
 {
+    /*
+    List is an ordered collection of elements.
+    */
     template <class T>
     class List : public Container<T>
     {

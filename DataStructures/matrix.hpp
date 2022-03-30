@@ -10,6 +10,9 @@
 
 namespace DataStructure
 {
+    /*
+    Matrix class contains a collection of Vectors.
+    */
     template <class T>
     class Matrix : public Container<Vector<T>>
     {
