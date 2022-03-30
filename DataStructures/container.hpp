@@ -1,6 +1,10 @@
 #ifndef CONTAINER_H
 #define CONTAINER_H
 
+#ifdef _OPENMP
+#include <omp.h>
+#endif
+
 #include <vector>
 
 namespace DataStructure
@@ -33,7 +37,7 @@ namespace DataStructure
             if (s > 0)
             {
                 data = new T[s];
-                #pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(dynamic)
                 for (std::size_t i = 0; i < s; i++)
                     data[i] = value;
             }
@@ -46,12 +50,12 @@ namespace DataStructure
         @param l an initializer_list that contains the elements this Container
         will store.
         */
-        Container(const std::initializer_list<T>& l) : size(l.size())
+        Container(const std::initializer_list<T> &l) : size(l.size())
         {
             if (l.size() > 0)
             {
                 data = new T[l.size()];
-                #pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(dynamic)
                 for (std::size_t i = 0; i < l.size(); i++)
                     data[i] = *(l.begin() + i);
             }
@@ -64,12 +68,12 @@ namespace DataStructure
         @param arr an array that contains the elements this Container will store.
         */
         template <std::size_t N>
-        Container(const std::array<T, N>& arr) : size(arr.size())
+        Container(const std::array<T, N> &arr) : size(arr.size())
         {
             if (arr.size() > 0)
             {
                 data = new T[arr.size()];
-                #pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(dynamic)
                 for (std::size_t i = 0; i < arr.size(); i++)
                     data[i] = arr[i];
             }
@@ -87,7 +91,7 @@ namespace DataStructure
             if (size > 0)
             {
                 data = new T[size];
-                #pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(dynamic)
                 for (std::size_t i = 0; i < size; i++)
                     data[i] = values[i];
             }
@@ -105,7 +109,7 @@ namespace DataStructure
             if (size > 0)
             {
                 T *newData = new T[size];
-                #pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(dynamic)
                 for (std::size_t i = 0; i < size; i++)
                     newData[i] = (T)other[i];
                 data = newData;
@@ -118,14 +122,14 @@ namespace DataStructure
         Copy Constructor
         @param other a Container to be copied.
         */
-        template<class OtherType>
+        template <class OtherType>
         Container(const Container<OtherType> &other)
         {
             size = other.Size();
             if (size > 0)
             {
                 T *newData = new T[size];
-                #pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(dynamic)
                 for (std::size_t i = 0; i < size; i++)
                     newData[i] = (T)other[i];
                 data = newData;
@@ -150,7 +154,7 @@ namespace DataStructure
         Move Constructor
         @param other a Container to be moved.
         */
-        template<class OtherType>
+        template <class OtherType>
         Container(Container<OtherType> &&other)
         {
             size = move(other.size);
@@ -180,16 +184,18 @@ namespace DataStructure
         @param other a Container to be copied.
         @return a reference to this Container.
         */
-        virtual Container<T> &operator=(const Container<T> &other) {
+        virtual Container<T> &operator=(const Container<T> &other)
+        {
             if (this != &other)
             {
                 size = other.size;
                 if (data)
                     delete[] data;
                 data = nullptr;
-                if (size > 0) {
+                if (size > 0)
+                {
                     data = new T[size];
-                    #pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(dynamic)
                     for (std::size_t i = 0; i < size; i++)
                         data[i] = other.data[i];
                 }
@@ -203,16 +209,18 @@ namespace DataStructure
         @return a reference to this Container.
         */
         template <class OtherType>
-        Container<T> &operator=(const Container<OtherType> &other) {
+        Container<T> &operator=(const Container<OtherType> &other)
+        {
             if (this != &other)
             {
                 size = other.size;
                 if (data)
                     delete[] data;
                 data = nullptr;
-                if (size > 0) {
+                if (size > 0)
+                {
                     data = new T[size];
-                    #pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(dynamic)
                     for (std::size_t i = 0; i < size; i++)
                         data[i] = (T)other.data[i];
                 }

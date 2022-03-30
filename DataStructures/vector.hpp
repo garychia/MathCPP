@@ -3,9 +3,12 @@
 
 #include <initializer_list>
 #include <array>
-#include <omp.h>
 #include <sstream>
 #include <cmath>
+
+#ifdef _OPENMP
+#include <omp.h>
+#endif
 
 #include "tuple.hpp"
 #include "../Exceptions/exceptions.hpp"
