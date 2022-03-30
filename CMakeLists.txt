@@ -11,3 +11,8 @@ include_directories(
     ${PROJECT_SOURCE_DIR}/DataStructures
     ${PROJECT_SOURCE_DIR}/Exceptions)
 add_executable(MathCPP application.cpp)
+
+find_package(OpenMP)
+if(OpenMP_CXX_FOUND)
+    target_link_libraries(MathCPP PUBLIC OpenMP::OpenMP_CXX)
+endif()
