@@ -764,7 +764,7 @@ namespace DataStructure
                 if (i < nRows - 1)
                     ss << "," << std::endl;
             }
-            ss << "]" << std::endl;
+            ss << "]";
             return ss.str();
         }
 
