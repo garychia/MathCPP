@@ -2,6 +2,7 @@
 #define MATRIX_H
 
 #include <sstream>
+#include <functional>
 
 #include "container.hpp"
 #include "vector.hpp"
@@ -803,6 +804,20 @@ namespace DataStructure
                 this->data = newRows;
                 std::swap(nRows, nColumns);
             }
+        }
+
+        /*
+        Maps each element of this Matrix to a new value.
+        @param f a function that maps the value of an element to a new value.
+        @return a new Matrix with the new values defined by f.
+        */
+        Matrix<T> Map(const std::function<T(T)>& f) const
+        {
+            Matrix<T> result(*this);
+            #pragma omp parallel for schedule(dynamic)
+            for (std::size_t i = 0; i < nRows; i++)
+                result[i] = result[i].Map(f);
+            return result;
         }
 
         /*

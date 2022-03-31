@@ -5,6 +5,7 @@
 #include <array>
 #include <sstream>
 #include <cmath>
+#include <functional>
 
 #ifdef _OPENMP
 #include <omp.h>
@@ -519,6 +520,20 @@ namespace DataStructure
             if (length == 0)
                 throw Exceptions::DividedByZero("Vector: Cannot normalize a zero vector.");
             *this /= length;
+        }
+
+        /*
+        Maps each element of this vector to a new value.
+        @param f a function that maps the value of an element to a new value.
+        @return a new Vector with the new values defined by f.
+        */
+        Vector<T> Map(const std::function<T(T)>& f) const
+        {
+            Vector<T> result(*this);
+            #pragma omp parallel for schedule(dynamic)
+            for (std::size_t i = 0; i < this->size; i++)
+                result[i] = f(result[i]);
+            return result;
         }
 
         /*
