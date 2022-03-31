@@ -807,6 +807,20 @@ namespace DataStructure
         }
 
         /*
+        Calculate the summation of all the elements of this Matrix.
+        @return the summatoin of the elements.
+        */
+        T Sum() const
+        {
+            T total = 0;
+            #pragma omp parallel for schedule(dynamic)
+            for (std::size_t i = 0; i < nRows; i++)
+                #pragma omp atomic
+                total += (*this)[i].Sum();
+            return total;
+        }
+
+        /*
         Maps each element of this Matrix to a new value.
         @param f a function that maps the value of an element to a new value.
         @return a new Matrix with the new values defined by f.

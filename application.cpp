@@ -7,7 +7,7 @@ using namespace DataStructure;
 
 int main(void)
 {
-    auto diagonalM = Matrix<int>::Diagonal(Vector<int>({ 2, 5, 23, 89, 23 }));
-    std::cout << Math::Power(diagonalM, 3) << std::endl;
+    auto diagonalM = Matrix<int>::Diagonal(Vector<int>({ 1, 5, 10, 10, 1 }));
+    std::cout << Math::FrobeniusNorm(diagonalM) << std::endl;
     return 0;
 }

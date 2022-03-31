@@ -45,6 +45,18 @@ namespace Math
     {
         return m.Map([&n](T e) { return pow(e, n); });
     }
+
+    template <class T>
+    T EuclideanNorm(const Vector<T>& v)
+    {
+        return sqrt(Power<T>(v, 2).Sum());
+    }
+
+    template <class T>
+    T FrobeniusNorm(const Matrix<T>& m)
+    {
+        return sqrt(Power<T>(m, 2).Sum());
+    }
 } // namespace Math
 
 #endif

@@ -523,6 +523,19 @@ namespace DataStructure
         }
 
         /*
+        Calculate the summation of all the elements of this Vector.
+        @return the summatoin of the elements.
+        */
+        T Sum() const
+        {
+            T total = 0;
+            #pragma omp parallel for schedule(dynamic)
+            for (std::size_t i = 0; i < this->size; i++)
+                total += (*this)[i];
+            return total;
+        }
+
+        /*
         Maps each element of this vector to a new value.
         @param f a function that maps the value of an element to a new value.
         @return a new Vector with the new values defined by f.
