@@ -46,12 +46,22 @@ namespace Math
         return m.Map([&n](T e) { return pow(e, n); });
     }
 
+    /*
+    Calculates the Euclidean norm of a Vector.
+    @param v a Vector.
+    @return the Euclidean norm of the given Vector.
+    */
     template <class T>
     T EuclideanNorm(const Vector<T>& v)
     {
         return sqrt(Power<T>(v, 2).Sum());
     }
 
+    /*
+    Calculates the Frobenius norm of a Matrix.
+    @param m a Matrix.
+    @return the Frobenius norm of the given Matrix.
+    */
     template <class T>
     T FrobeniusNorm(const Matrix<T>& m)
     {
