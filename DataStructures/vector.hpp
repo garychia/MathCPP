@@ -150,11 +150,11 @@ namespace DataStructure
         ReturnType LpNorm(ReturnType p) const
         {
             ReturnType squaredTotal = 0;
-            #pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(dynamic)
             for (std::size_t i = 0; i < this->size; i++)
             {
                 ReturnType squaredElement = std::pow(this->data[i], p);
-                #pragma omp atomic
+#pragma omp atomic
                 squaredTotal += squaredElement;
             }
             return std::pow(squaredTotal, 1 / p);
@@ -181,7 +181,7 @@ namespace DataStructure
                 throw Exceptions::InvalidArgument(
                     "Vector: Cannot perform addtion on vectors with different dimensions.");
             Vector<decltype(this->data[0] + other[0])> result(*this);
-            #pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(dynamic)
             for (std::size_t i = 0; i < Dimension(); i++)
                 result[i] += other[i];
             return result;
@@ -226,7 +226,7 @@ namespace DataStructure
             else if (Dimension() != other.Dimension())
                 throw Exceptions::InvalidArgument(
                     "Vector: Cannot perform addtion on vectors with different dimensions.");
-            #pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(dynamic)
             for (std::size_t i = 0; i < Dimension(); i++)
                 this->data[i] += other[i];
             return *this;
@@ -251,7 +251,7 @@ namespace DataStructure
                     "Vector: Cannot perform subtraction on vectors with different dimensions.");
 
             Vector<decltype(this->data[0] - other[0])> result(*this);
-            #pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(dynamic)
             for (std::size_t i = 0; i < Dimension(); i++)
                 result[i] -= other[i];
             return result;
@@ -297,7 +297,7 @@ namespace DataStructure
                 throw Exceptions::InvalidArgument(
                     "Vector: Cannot perform subtraction on vectors with different dimensions.");
 
-            #pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(dynamic)
             for (std::size_t i = 0; i < Dimension(); i++)
                 this->data[i] -= other[i];
             return *this;
@@ -315,7 +315,7 @@ namespace DataStructure
                 throw Exceptions::EmptyVector(
                     "Vector: Cannot perform scaling on an empty vector.");
             Vector<decltype(this->data[0] * scaler)> result(*this);
-            #pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(dynamic)
             for (std::size_t i = 0; i < Dimension(); i++)
                 result[i] *= scaler;
             return result;
@@ -357,7 +357,7 @@ namespace DataStructure
                 throw Exceptions::InvalidArgument(
                     "Vector: Cannot perform elmenet-wise ");
             Vector<decltype((*this)[0] * other[0])> result(*this);
-            #pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(dynamic)
             for (std::size_t i = 0; i < this->size; i++)
                 result[i] *= other[i];
             return result;
@@ -374,7 +374,7 @@ namespace DataStructure
             if (this->size == 0)
                 throw Exceptions::EmptyVector(
                     "Vector: Cannot perform scaling on an empty vector.");
-            #pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(dynamic)
             for (std::size_t i = 0; i < Dimension(); i++)
                 this->data[i] *= scaler;
             return *this;
@@ -397,7 +397,7 @@ namespace DataStructure
                 throw Exceptions::InvalidArgument(
                     "Vector: Cannot perform element-wise multiplication on vectors of "
                     "different dimensions.");
-            #pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(dynamic)
             for (std::size_t i = 0; i < Dimension(); i++)
                 this->data[i] *= other[i];
             return *this;
@@ -418,7 +418,7 @@ namespace DataStructure
                 throw Exceptions::InvalidArgument(
                     "Vector: Cannot divide a vector by 0.");
             Vector<decltype(this->data[0] / scaler)> result(*this);
-            #pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(dynamic)
             for (std::size_t i = 0; i < Dimension(); i++)
                 result[i] /= scaler;
             return result;
@@ -457,7 +457,7 @@ namespace DataStructure
             if (this->size == 0)
                 throw Exceptions::EmptyVector(
                     "Vector: Cannot perform division on an empty vector.");
-            #pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(dynamic)
             for (std::size_t i = 0; i < Dimension(); i++)
                 this->data[i] /= scaler;
             return *this;
@@ -481,11 +481,11 @@ namespace DataStructure
                 throw Exceptions::InvalidArgument(
                     "Vector: Cannot perform subtraction on vectors with different dimensions.");
             decltype(this->data[0] * other[0]) result = 0;
-            #pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(dynamic)
             for (std::size_t i = 0; i < Dimension(); i++)
             {
                 decltype(result) mult = this->data[i] * other[i];
-                #pragma omp atomic
+#pragma omp atomic
                 result += mult;
             }
             return result;
@@ -529,7 +529,7 @@ namespace DataStructure
         T Sum() const
         {
             T total = 0;
-            #pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(dynamic)
             for (std::size_t i = 0; i < this->size; i++)
                 total += (*this)[i];
             return total;
@@ -540,10 +540,10 @@ namespace DataStructure
         @param f a function that maps the value of an element to a new value.
         @return a new Vector with the new values defined by f.
         */
-        Vector<T> Map(const std::function<T(T)>& f) const
+        Vector<T> Map(const std::function<T(T)> &f) const
         {
             Vector<T> result(*this);
-            #pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(dynamic)
             for (std::size_t i = 0; i < this->size; i++)
                 result[i] = f(result[i]);
             return result;
@@ -559,10 +559,30 @@ namespace DataStructure
             Vector<T> v;
             v.size = n;
             v.data = new T[n];
-            #pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(dynamic)
             for (std::size_t i = 0; i < n; i++)
                 v.data[i] = 0;
             return v;
+        }
+
+        /*
+        Generates a new Vector with elements from multiple Vectors combined.
+        @param vectors a std::initializer_list of Vectors to be combined.
+        @return a Vector with the combined elements.
+        */
+        static Vector<T> Combine(const std::initializer_list<Vector<T>> &vectors)
+        {
+            std::size_t elementTotal = 0;
+            for (auto itr = vectors.begin(); itr != vectors.end(); itr++)
+            {
+                elementTotal += itr->Size();
+            }
+            Vector<T> combined(elementTotal, 0);
+            std::size_t currentIndex = 0;
+            for (auto vector : vectors)
+                for (std::size_t j = 0; j < vector.Size(); j++)
+                    combined[currentIndex++] = vector[j];
+            return combined;
         }
 
         template <class OtherType>
