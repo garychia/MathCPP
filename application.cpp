@@ -46,5 +46,7 @@ int main(void)
 
     std::cout << Perceptron(data1, labels1, 1000) << std::endl;
     std::cout << Perceptron(data2, labels2, 1000) << std::endl;
+    std::cout << AveragedPerceptron(data1, labels1, 1000) << std::endl;
+    std::cout << AveragedPerceptron(data2, labels2, 1000) << std::endl;
     return 0;
 }
