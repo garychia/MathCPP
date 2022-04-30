@@ -13,10 +13,10 @@ include_directories(
 
 file(GLOB SOURCES CONFIGURE_DEPENDS "DataStructures/*.hpp")
 
-add_library(mathcpp_data_structures SHARED ${SOURCES})
-set_target_properties(mathcpp_data_structures PROPERTIES LINKER_LANGUAGE CXX)
+add_library(MathCPP SHARED ${SOURCES})
+set_target_properties(MathCPP PROPERTIES LINKER_LANGUAGE CXX)
 
-add_executable(MathCPP application.cpp)
+add_executable(MathCPPApplication application.cpp)
 
 find_package(OpenMP)
 if(OpenMP_CXX_FOUND)
