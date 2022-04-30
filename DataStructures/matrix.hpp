@@ -286,7 +286,7 @@ namespace DataStructure
         */
         virtual std::string ToString() const override;
 
-        friend class std::ostream;
+        friend std::ostream;
 
         /*
         Transposes this Matrix inplace.
