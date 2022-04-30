@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-#include "DataStructures/clist.h"
+#include "DataStructures/c_lib/clist.h"
 
 int main(void)
 {
