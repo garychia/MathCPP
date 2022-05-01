@@ -294,6 +294,12 @@ namespace DataStructure
         void Transpose();
 
         /*
+        Returns the transpose of this Matrix.
+        @return the tranpose of this Matrix.
+        */
+        Matrix<T> Transposed() const;
+
+        /*
         Calculate the summation of all the elements of this Matrix.
         @return the summatoin of the elements.
         */

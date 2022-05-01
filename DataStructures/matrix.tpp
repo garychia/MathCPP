@@ -628,6 +628,18 @@ namespace DataStructure
     }
 
     template <class T>
+    Matrix<T> Matrix<T>::Transposed() const
+    {
+        Matrix<T> transpose(nColumns, nRows);
+        std::size_t i, j;
+        #pragma omp parallel for private(j) schedule(dynamic) collapse(2)
+            for (i = 0; i < nColumns; i++)
+                for (j = 0; j < nRows; j++)
+                    transpose[i][j] = this->data[j][i];
+        return transpose;
+    }
+
+    template <class T>
     T Matrix<T>::Sum() const
     {
         T total = 0;
