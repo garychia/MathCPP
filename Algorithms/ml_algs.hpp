@@ -17,6 +17,19 @@ namespace MLAlgs
     }
 
     /*
+    Generates a Vector that represents a given value using One Hot encoding.
+    @param value an unsigned integer to be encoded.
+    @param k the maximum value the value can take.
+    @return a Vector of K binary features that represents the given value.
+    */
+    Vector<int> OneHot(std::size_t value, std::size_t k)
+    {
+        Vector<int> encoding(k, 0);
+        encoding[value - 1] = 1;
+        return encoding;
+    }
+
+    /*
     The Perceptron Algorithm.
     @param data a Matrix with n rows and d columns where n is the number of data points
     and d is the dimensions of them.
