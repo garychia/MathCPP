@@ -166,6 +166,12 @@ namespace Exceptions
     public:
         InvalidArgument(const std::string &message = "") : Exception(message) {}
     };
+
+    class NodeNotFound : public Exception
+    {
+    public:
+        NodeNotFound(const std::string &message = "") : Exception(message) {}
+    };
 }
 
 #endif
