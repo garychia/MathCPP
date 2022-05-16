@@ -72,6 +72,67 @@ namespace DataStructure
     Tuple<T> MinusNode<T>::Backward() { return Tuple<T>({1, -1}); }
 
     template <class T>
+    MultiplyNode<T>::MultiplyNode(ComputationGraphNode<T> *input1, ComputationGraphNode<T> *input2, std::string nodeName)
+        : FunctionNode<T>(input1, input2, nodeName) {}
+
+    template <class T>
+    T MultiplyNode<T>::Forward()
+    {
+        if (this->valuated)
+            return this->value;
+        this->valuated = true;
+        return this->value = this->firstInput->Forward() * this->secondInput->Forward();
+    }
+
+    template <class T>
+    Tuple<T> MultiplyNode<T>::Backward() { return Tuple<T>({this->secondInput->Forward(), this->firstInput->Forward()}); }
+
+    template <class T>
+    DivideNode<T>::DivideNode(ComputationGraphNode<T> *input1, ComputationGraphNode<T> *input2, std::string nodeName)
+        : FunctionNode<T>(input1, input2, nodeName) {}
+
+    template <class T>
+    T DivideNode<T>::Forward()
+    {
+        if (this->valuated)
+            return this->value;
+        this->valuated = true;
+        return this->value = this->firstInput->Forward() / this->secondInput->Forward();
+    }
+
+    template <class T>
+    Tuple<T> DivideNode<T>::Backward()
+    {
+        const T firstInputValue = this->firstInput->Forward();
+        const T secondInputValue = this->secondInput->Forward();
+        return Tuple<T>({1 / secondInputValue,
+                         -firstInputValue / (secondInputValue * secondInputValue)});
+    }
+
+    template <class T>
+    PowerNode<T>::PowerNode(ComputationGraphNode<T> *input1, ComputationGraphNode<T> *input2, std::string nodeName)
+        : FunctionNode<T>(input1, input2, nodeName) {}
+
+    template <class T>
+    T PowerNode<T>::Forward()
+    {
+        if (this->valuated)
+            return this->value;
+        this->valuated = true;
+        return this->value = Math::Power(this->firstInput->Forward(), this->secondInput->Forward());
+    }
+
+    template <class T>
+    Tuple<T> PowerNode<T>::Backward()
+    {
+        const T firstInputValue = this->firstInput->Forward();
+        const T secondInputValue = this->secondInput->Forward();
+        const T powered = Math::Power(firstInputValue, secondInputValue - 1);
+        return Tuple<T>({secondInputValue * powered,
+                         powered * firstInputValue * Math::Log(firstInputValue)});
+    }
+
+    template <class T>
     ComputationGraph<T>::ComputationGraph() : nodes() {}
 
     template <class T>
@@ -81,7 +142,7 @@ namespace DataStructure
         while (!nodesFound.IsEmpty())
         {
             FunctionNode<T> *currentNode = nodesFound.PopFront();
-            nodes.Append(currentNode);
+            nodes.Prepend(currentNode);
             ComputationGraphNode<T> *input1 = currentNode->firstInput;
             ComputationGraphNode<T> *input2 = currentNode->secondInput;
             if (auto funcNode = dynamic_cast<FunctionNode<T> *>(input1))
@@ -96,8 +157,6 @@ namespace DataStructure
     {
         if (nodes.IsEmpty())
             return 0;
-        for (std::size_t i = 0; i < nodes.Size(); i++)
-            nodes[i]->Forward();
         return nodes[nodes.Size() - 1]->Forward();
     }
 
@@ -115,8 +174,8 @@ namespace DataStructure
             ComputationGraphNode<T> *input1 = nodes[i]->firstInput;
             ComputationGraphNode<T> *input2 = nodes[i]->secondInput;
             auto gradients = nodes[i]->Backward();
-            input1->gradient = gradients[0] * nodes[i]->gradient;
-            input2->gradient = gradients[1] * nodes[i]->gradient;
+            input1->gradient += gradients[0] * nodes[i]->gradient;
+            input2->gradient += gradients[1] * nodes[i]->gradient;
             if (i == 0)
                 break;
             i--;

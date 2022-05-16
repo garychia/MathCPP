@@ -12,6 +12,7 @@
 #include "list.hpp"
 #include "tuple.hpp"
 #include "../Exceptions/exceptions.hpp"
+#include "../Algorithms/math.hpp"
 
 namespace DataStructure
 {
@@ -84,6 +85,39 @@ namespace DataStructure
     {
     public:
         MinusNode(ComputationGraphNode<T> *input1, ComputationGraphNode<T> *input2, std::string nodeName = "MinusNode");
+
+        virtual T Forward() override;
+
+        virtual Tuple<T> Backward() override;
+    };
+
+    template <class T>
+    class MultiplyNode : public FunctionNode<T>
+    {
+    public:
+        MultiplyNode(ComputationGraphNode<T> *input1, ComputationGraphNode<T> *input2, std::string nodeName = "MultiplyNode");
+
+        virtual T Forward() override;
+
+        virtual Tuple<T> Backward() override;
+    };
+
+    template <class T>
+    class DivideNode : public FunctionNode<T>
+    {
+    public:
+        DivideNode(ComputationGraphNode<T> *input1, ComputationGraphNode<T> *input2, std::string nodeName = "DivideNode");
+
+        virtual T Forward() override;
+
+        virtual Tuple<T> Backward() override;
+    };
+
+    template <class T>
+    class PowerNode : public FunctionNode<T>
+    {
+    public:
+        PowerNode(ComputationGraphNode<T> *input1, ComputationGraphNode<T> *input2, std::string nodeName = "PowerNode");
 
         virtual T Forward() override;
 
