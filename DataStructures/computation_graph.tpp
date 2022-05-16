@@ -4,40 +4,49 @@ namespace DataStructure
     ComputationGraphNode<T>::ComputationGraphNode() : valuated(false), value(), gradient() {}
 
     template <class T>
+    std::ostream &operator<<(std::ostream &stream, const ComputationGraphNode<T> &node)
+    {
+        stream << node.ToString();
+        return stream;
+    }
+
+    template <class T>
     VariableNode<T>::VariableNode(T value)
     {
         this->valuated = false;
         this->value = value;
-        this->gradient = 1;
     }
 
     template <class T>
     T VariableNode<T>::Forward() { return this->value; }
 
     template <class T>
-    Tuple<T> VariableNode<T>::Backward() { return Tuple<T>({this->gradient}); }
+    Tuple<T> VariableNode<T>::Backward() { return Tuple<T>({1}); }
 
     template <class T>
-    FunctionNode<T>::FunctionNode(FunctionNodeInput<T> input1, FunctionNodeInput<T> input2) : ComputationGraphNode<T>(), inputs({input1, input2}) {}
+    std::string VariableNode<T>::ToString() const
+    {
+        std::stringstream ss;
+        ss << "VariableNode {";
+        ss << "value: " << this->value << ", ";
+        ss << "gradient: " << this->gradient << "}";
+        return ss.str();
+    }
 
     template <class T>
-    AddNode<T>::AddNode(FunctionNodeInput<T> input1, FunctionNodeInput<T> input2) : FunctionNode<T>(input1, input2) {}
+    FunctionNode<T>::FunctionNode(ComputationGraphNode<T> *input1, ComputationGraphNode<T> *input2)
+        : ComputationGraphNode<T>(), firstInput(input1), secondInput(input2) {}
+
+    template <class T>
+    AddNode<T>::AddNode(ComputationGraphNode<T> *input1, ComputationGraphNode<T> *input2) : FunctionNode<T>(input1, input2) {}
 
     template <class T>
     T AddNode<T>::Forward()
     {
         if (this->valuated)
             return this->value;
-        auto firstInput = this->inputs[0].lock();
-        auto secondInput = this->inputs[1].lock();
-        if (firstInput && secondInput)
-        {
-            return this->value = firstInput->Forward() + secondInput->Forward();
-            this->valuated = true;
-        }
-        else
-            throw Exceptions::NodeNotFound(
-                "AddNode: A node is missing when performing addition.");
+        this->valuated = true;
+        return this->value = this->firstInput->Forward() + this->secondInput->Forward();
     }
 
     template <class T>
@@ -47,22 +56,37 @@ namespace DataStructure
     }
 
     template <class T>
+    std::string AddNode<T>::ToString() const
+    {
+        std::stringstream ss;
+        ss << "AddNode {";
+        ss << "value: ";
+        if (this->valuated)
+            ss << this->value;
+        else
+            ss << "NOT VALUATED";
+        ss << ", ";
+        ss << "gradient: " << this->gradient << "}";
+        return ss.str();
+    }
+
+    template <class T>
     ComputationGraph<T>::ComputationGraph() : nodes() {}
 
     template <class T>
-    void ComputationGraph<T>::AddComputation(const std::shared_ptr<FunctionNode<T>> &computationNode)
+    void ComputationGraph<T>::AddComputation(FunctionNode<T> *computationNode)
     {
-        List<std::shared_ptr<FunctionNode<T>>> nodesFound({computationNode});
+        List<FunctionNode<T> *> nodesFound({computationNode});
         while (!nodesFound.IsEmpty())
         {
-            std::shared_ptr<FunctionNode<T>> currentNode = nodesFound.PopFront();
+            FunctionNode<T> *currentNode = nodesFound.PopFront();
             nodes.Append(currentNode);
-            Tuple<std::weak_ptr<ComputationGraphNode<T>>> &inputs = currentNode->inputs;
-            for (std::size_t i = 0; i < inputs.Size(); i++)
-            {
-                if (auto node = std::static_pointer_cast<FunctionNode<T>>(inputs[i].lock()))
-                    nodesFound.Append(node);
-            }
+            ComputationGraphNode<T> *input1 = currentNode->firstInput;
+            ComputationGraphNode<T> *input2 = currentNode->secondInput;
+            if (auto funcNode = dynamic_cast<FunctionNode<T> *>(input1))
+                nodesFound.Append(funcNode);
+            if (auto funcNode = dynamic_cast<FunctionNode<T> *>(input2))
+                nodesFound.Append(funcNode);
         }
     }
 
@@ -87,16 +111,11 @@ namespace DataStructure
         std::size_t i = nNodes - 1;
         while (true)
         {
-            auto &inputs = nodes[i]->inputs;
+            ComputationGraphNode<T> *input1 = nodes[i]->firstInput;
+            ComputationGraphNode<T> *input2 = nodes[i]->secondInput;
             auto gradients = nodes[i]->Backward();
-            for (std::size_t j = 0; j < inputs.Size(); j++)
-            {
-                if (auto node = inputs[j].lock())
-                    node->gradient = gradients[j] * nodes[i]->gradient;
-                else
-                    throw Exceptions::NodeNotFound(
-                        "ComputationGraph: A node is missing when performing backpropagation.");
-            }
+            input1->gradient = gradients[0] * nodes[i]->gradient;
+            input2->gradient = gradients[1] * nodes[i]->gradient;
             if (i == 0)
                 break;
             i--;

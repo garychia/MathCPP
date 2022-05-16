@@ -5,7 +5,9 @@
 #include <omp.h>
 #endif
 
-#include <memory>
+#include <string>
+#include <sstream>
+#include <ostream>
 
 #include "list.hpp"
 #include "tuple.hpp"
@@ -28,8 +30,12 @@ namespace DataStructure
 
         virtual Tuple<T> Backward() = 0;
 
+        virtual std::string ToString() const = 0;
+
         template <class GraphType>
         friend class ComputationGraph;
+
+        friend std::ostream;
     };
 
     template <class T>
@@ -41,19 +47,19 @@ namespace DataStructure
         virtual T Forward() override;
 
         virtual Tuple<T> Backward() override;
-    };
 
-    template <class T>
-    using FunctionNodeInput = std::weak_ptr<ComputationGraphNode<T>>;
+        virtual std::string ToString() const override;
+    };
 
     template <class T>
     class FunctionNode : public ComputationGraphNode<T>
     {
     protected:
-        Tuple<FunctionNodeInput<T>> inputs;
+        ComputationGraphNode<T> *firstInput;
+        ComputationGraphNode<T> *secondInput;
 
     public:
-        FunctionNode(FunctionNodeInput<T> input1, FunctionNodeInput<T> input2);
+        FunctionNode(ComputationGraphNode<T> *input1, ComputationGraphNode<T> *input2);
 
         virtual T Forward() = 0;
 
@@ -67,23 +73,25 @@ namespace DataStructure
     class AddNode : public FunctionNode<T>
     {
     public:
-        AddNode(FunctionNodeInput<T> input1, FunctionNodeInput<T> input2);
+        AddNode(ComputationGraphNode<T> *input1, ComputationGraphNode<T> *input2);
 
         virtual T Forward() override;
 
         virtual Tuple<T> Backward() override;
+
+        virtual std::string ToString() const override;
     };
 
     template <class T>
     class ComputationGraph
     {
     private:
-        List<std::shared_ptr<FunctionNode<T>>> nodes;
+        List<FunctionNode<T> *> nodes;
 
     public:
         ComputationGraph();
 
-        void AddComputation(const std::shared_ptr<FunctionNode<T>> &computationNode);
+        void AddComputation(FunctionNode<T> *computationNode);
 
         T Forward();
 
