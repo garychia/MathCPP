@@ -8,19 +8,25 @@ using namespace DataStructure;
 int main(void)
 {
     ComputationGraph<float> graph;
-    VariableNode<float> x(3);
-    VariableNode<float> x2Expo(2);
-    VariableNode<float> xC(3);
-    VariableNode<float> c(85);
-    PowerNode<float> x2Term(&x, &x2Expo);
-    MultiplyNode<float> xTerm(&x, &xC);
-    AddNode<float> add1(&x2Term, &xTerm);
-    AddNode<float> add2(&add1, &c);
-    graph.AddComputation(&add2);
+    VariableNode<float> a(&graph, 5);
+    VariableNode<float> b(&graph, 13);
+    VariableNode<float> c(&graph, 23);
+    auto expression =
+        ComputationGraphNode<float>::CombineNodes(
+            ComputationGraphNode<float>::CombineNodes(
+                a,
+                b,
+                GraphOperation::Addition),
+            c,
+            GraphOperation::Division);
+    graph.AddComputation(expression);
+    std::cout << "(a + b) / c = " << graph.Forward() << std::endl;
+    std::cout << "a = " << a.Forward() << std::endl;
+    std::cout << "b = " << b.Forward() << std::endl;
+    std::cout << "c = " << c.Forward() << std::endl;
     graph.Backward();
-    std::cout << "f(x) = x ^ 2 + 3x + 85" << std::endl;
-    std::cout << "x = " << x.Forward() << std::endl;
-    std::cout << "f(x) = " << graph.Forward() << std::endl;
-    std::cout << "dx = " << x.Backward() << std::endl;
+    std::cout << "da = " << a.Backward() << std::endl;
+    std::cout << "db = " << b.Backward() << std::endl;
+    std::cout << "dc = " << c.Backward() << std::endl;
     return 0;
 }
