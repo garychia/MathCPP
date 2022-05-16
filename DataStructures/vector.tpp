@@ -14,21 +14,21 @@ namespace DataStructure
     Vector<T>::Vector(const std::array<T, N> &arr) : Tuple<T>(arr) {}
 
     template <class T>
-    Vector<T>::Vector(const Vector<T> &other) : Tuple<T>(other) {}
+    Vector<T>::Vector(const Container<T> &other) : Tuple<T>(other) {}
 
     template <class T>
     template <class OtherType>
-    Vector<T>::Vector(const Vector<OtherType> &other) : Tuple<T>(other) {}
+    Vector<T>::Vector(const Container<OtherType> &other) : Tuple<T>(other) {}
 
     template <class T>
-    Vector<T>::Vector(Vector<T> &&other) : Tuple<T>(other) {}
+    Vector<T>::Vector(Container<T> &&other) : Tuple<T>(other) {}
 
     template <class T>
     template <class OtherType>
-    Vector<T>::Vector(Vector<OtherType> &&other) : Tuple<T>(other) {}
+    Vector<T>::Vector(Container<OtherType> &&other) : Tuple<T>(other) {}
 
     template <class T>
-    Vector<T> &Vector<T>::operator=(const Vector<T> &other)
+    Vector<T> &Vector<T>::operator=(const Container<T> &other)
     {
         Tuple<T>::operator=(other);
         return *this;
@@ -36,7 +36,7 @@ namespace DataStructure
 
     template <class T>
     template <class OtherType>
-    Vector<T> &Vector<T>::operator=(const Vector<OtherType> &other)
+    Vector<T> &Vector<T>::operator=(const Container<OtherType> &other)
     {
         Tuple<T>::operator=(other);
         return *this;

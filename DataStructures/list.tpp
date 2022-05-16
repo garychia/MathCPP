@@ -48,22 +48,22 @@ namespace DataStructure
     }
 
     template <class T>
-    List<T>::List(const List<T> &other) : Container<T>(other)
+    List<T>::List(const Container<T> &other) : Container<T>(other)
     {
-        nElements = this->nElements;
+        nElements = other.Size();
     }
 
     template <class T>
-    List<T>::List(List &&other) : Container<T>(other)
+    List<T>::List(Container<T> &&other) : Container<T>(other)
     {
-        nElements = other.nElements;
+        nElements = other.size;
     }
 
     template <class T>
-    List<T> &List<T>::operator=(const List<T> &other)
+    List<T> &List<T>::operator=(const Container<T> &other)
     {
         Container<T>::operator=(other);
-        nElements = this->nElements;
+        nElements = other.Size();
         return *this;
     }
 

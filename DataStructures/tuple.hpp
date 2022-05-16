@@ -47,29 +47,29 @@ namespace DataStructure
 
         /*
         Copy Constructor
-        @param other a Tuple to be copied.
+        @param other a Container to be copied.
         */
-        Tuple(const Tuple<T> &other);
+        Tuple(const Container<T> &other);
 
         /*
         Copy Constructor
-        @param other a Tuple to be copied.
+        @param other a Container to be copied.
         */
         template <class OtherType>
-        Tuple(const Tuple<OtherType> &other);
+        Tuple(const Container<OtherType> &other);
 
         /*
         Move Constructor
-        @param other a Tuple to be moved.
+        @param other a Container to be moved.
         */
-        Tuple(Tuple<T> &&other);
+        Tuple(Container<T> &&other);
 
         /*
         Move Constructor
-        @param other a Tuple to be moved.
+        @param other a Container to be moved.
         */
         template<class OtherType>
-        Tuple(Tuple<OtherType> &&other);
+        Tuple(Container<OtherType> &&other);
 
         /*
         Access the element of a given index.
@@ -81,19 +81,19 @@ namespace DataStructure
 
         /*
         Copy Assignment
-        @param other a Tuple to be copied.
+        @param other a Container to be copied.
         @return a reference to this Tuple.
         */
-        virtual Tuple<T> &operator=(const Tuple<T> &other);
+        virtual Tuple<T> &operator=(const Container<T> &other) override;
 
         /*
         Copy Assignment
-        @param other a Tuple containing values of a different type
+        @param other a Container containing values of a different type
         to be copied.
         @return a reference to this Tuple.
         */
         template <class OtherType>
-        Tuple<T> &operator=(const Tuple<OtherType> &other);
+        Tuple<T> &operator=(const Container<OtherType> &other);
 
         /*
         Given two tuples, check if they have the same elements.

@@ -51,36 +51,36 @@ namespace DataStructure
 
         /*
         Copy Constructor
-        @param other a Vector to be copied.
+        @param other a Container to be copied.
         */
-        Vector(const Vector<T> &other);
+        Vector(const Container<T> &other);
 
         /*
         Copy Constructor
-        @param other a Vector to be copied.
+        @param other a Container to be copied.
         */
         template <class OtherType>
-        Vector(const Vector<OtherType> &other);
+        Vector(const Container<OtherType> &other);
 
         /*
         Move Constructor
-        @param other a Vector to be moved.
+        @param other a Container to be moved.
         */
-        Vector(Vector<T> &&other);
+        Vector(Container<T> &&other);
 
         /*
         Move Constructor
-        @param other a Vector to be moved.
+        @param other a Container to be moved.
         */
         template <class OtherType>
-        Vector(Vector<OtherType> &&other);
+        Vector(Container<OtherType> &&other);
 
         /*
         Copy Assignment
         @param other a Vector.
         @return a reference to this Vector.
         */
-        virtual Vector<T> &operator=(const Vector<T> &other);
+        virtual Vector<T> &operator=(const Container<T> &other) override;
 
         /*
         Copy Assignment
@@ -88,7 +88,7 @@ namespace DataStructure
         @return a reference to this Vector.
         */
         template <class OtherType>
-        Vector<T> &operator=(const Vector<OtherType> &other);
+        Vector<T> &operator=(const Container<OtherType> &other);
 
         /*
         Operator []
