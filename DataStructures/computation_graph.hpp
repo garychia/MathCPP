@@ -19,18 +19,19 @@ namespace DataStructure
     class ComputationGraphNode
     {
     protected:
+        std::string name;
         bool valuated;
         T value;
         T gradient;
 
     public:
-        ComputationGraphNode();
+        ComputationGraphNode(std::string nodeName = "ComputationGraph");
 
         virtual T Forward() = 0;
 
         virtual Tuple<T> Backward() = 0;
 
-        virtual std::string ToString() const = 0;
+        virtual std::string ToString() const;
 
         template <class GraphType>
         friend class ComputationGraph;
@@ -42,13 +43,11 @@ namespace DataStructure
     class VariableNode : public ComputationGraphNode<T>
     {
     public:
-        VariableNode(T value);
+        VariableNode(T value, std::string nodeName = "VariableNode");
 
         virtual T Forward() override;
 
         virtual Tuple<T> Backward() override;
-
-        virtual std::string ToString() const override;
     };
 
     template <class T>
@@ -59,7 +58,7 @@ namespace DataStructure
         ComputationGraphNode<T> *secondInput;
 
     public:
-        FunctionNode(ComputationGraphNode<T> *input1, ComputationGraphNode<T> *input2);
+        FunctionNode(ComputationGraphNode<T> *input1, ComputationGraphNode<T> *input2, std::string nodeName = "FunctionNode");
 
         virtual T Forward() = 0;
 
@@ -73,13 +72,22 @@ namespace DataStructure
     class AddNode : public FunctionNode<T>
     {
     public:
-        AddNode(ComputationGraphNode<T> *input1, ComputationGraphNode<T> *input2);
+        AddNode(ComputationGraphNode<T> *input1, ComputationGraphNode<T> *input2, std::string nodeName = "AddNode");
 
         virtual T Forward() override;
 
         virtual Tuple<T> Backward() override;
+    };
 
-        virtual std::string ToString() const override;
+    template <class T>
+    class MinusNode : public FunctionNode<T>
+    {
+    public:
+        MinusNode(ComputationGraphNode<T> *input1, ComputationGraphNode<T> *input2, std::string nodeName = "MinusNode");
+
+        virtual T Forward() override;
+
+        virtual Tuple<T> Backward() override;
     };
 
     template <class T>
