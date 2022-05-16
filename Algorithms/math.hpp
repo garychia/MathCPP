@@ -47,6 +47,39 @@ namespace Math
     }
 
     /*
+    Computes the natural logarithm.
+    @param scaler a scaler.
+    @return the natural logarithm of the given scaler.
+    */
+    template <class T>
+    T Log(T scaler)
+    {
+        return std::log(scaler);
+    }
+
+    /*
+    Computes the natural logarithm of each element of a Vector.
+    @param v a Vector.
+    @return a Vector with the natural logarithms of its elements.
+    */
+    template <class T>
+    Vector<T> Log(const Vector<T> &v)
+    {
+        return v.Map([](T e) { return std::log(e); });
+    }
+
+    /*
+    Computes the natural logarithm of each element of a Matrix.
+    @param m a Matrix.
+    @return a Matrix with the natural logarithms of its elements.
+    */
+    template <class T>
+    Matrix<T> Log(const Matrix<T> &m)
+    {
+        return m.Map([](T e) { return std::log(e); });
+    }
+
+    /*
     Calculates the Euclidean norm of a Vector.
     @param v a Vector.
     @return the Euclidean norm of the given Vector.
