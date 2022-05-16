@@ -44,16 +44,16 @@ namespace DataStructure
     };
 
     template <class T>
+    using FunctionNodeInput = std::weak_ptr<ComputationGraphNode<T>>;
+
+    template <class T>
     class FunctionNode : public ComputationGraphNode<T>
     {
     protected:
-        using InputNode = std::weak_ptr<ComputationGraphNode<T>>;
-
-    protected:
-        Tuple<InputNode> inputs;
+        Tuple<FunctionNodeInput<T>> inputs;
 
     public:
-        FunctionNode(InputNode input1, InputNode input2);
+        FunctionNode(FunctionNodeInput<T> input1, FunctionNodeInput<T> input2);
 
         virtual T Forward() = 0;
 
@@ -67,7 +67,7 @@ namespace DataStructure
     class AddNode : public FunctionNode<T>
     {
     public:
-        AddNode(InputNode input1, InputNode input2);
+        AddNode(FunctionNodeInput<T> input1, FunctionNodeInput<T> input2);
 
         virtual T Forward() override;
 

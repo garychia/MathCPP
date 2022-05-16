@@ -4,31 +4,36 @@ namespace DataStructure
     ComputationGraphNode<T>::ComputationGraphNode() : valuated(false), value(), gradient() {}
 
     template <class T>
-    VariableNode<T>::VariableNode(T value) : ComputationGraphNode<T>(), valuated(true), value(value), gradient(1) {}
+    VariableNode<T>::VariableNode(T value)
+    {
+        this->valuated = false;
+        this->value = value;
+        this->gradient = 1;
+    }
 
     template <class T>
-    T VariableNode<T>::Forward() { return value; }
+    T VariableNode<T>::Forward() { return this->value; }
 
     template <class T>
-    Tuple<T> VariableNode<T>::Backward() { return Tuple<T>({gradient}); }
+    Tuple<T> VariableNode<T>::Backward() { return Tuple<T>({this->gradient}); }
 
     template <class T>
-    FunctionNode<T>::FunctionNode(InputNode input1, InputNode input2) : ComputationGraphNode<T>(), inputs({input1, input2}) {}
+    FunctionNode<T>::FunctionNode(FunctionNodeInput<T> input1, FunctionNodeInput<T> input2) : ComputationGraphNode<T>(), inputs({input1, input2}) {}
 
     template <class T>
-    AddNode<T>::AddNode(InputNode input1, InputNode input2) : FunctionNode<T>(input1, input2) {}
+    AddNode<T>::AddNode(FunctionNodeInput<T> input1, FunctionNodeInput<T> input2) : FunctionNode<T>(input1, input2) {}
 
     template <class T>
     T AddNode<T>::Forward()
     {
-        if (valuated)
-            return value;
-        auto firstInput = inputs[0].lock();
-        auto secondInput = inputs[1].lock();
+        if (this->valuated)
+            return this->value;
+        auto firstInput = this->inputs[0].lock();
+        auto secondInput = this->inputs[1].lock();
         if (firstInput && secondInput)
         {
-            return value = firstInput->Forward() + secondInput->Forward();
-            valuated = true;
+            return this->value = firstInput->Forward() + secondInput->Forward();
+            this->valuated = true;
         }
         else
             throw Exceptions::NodeNotFound(
