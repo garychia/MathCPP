@@ -1,7 +1,8 @@
 namespace DataStructure
 {
     template <class T>
-    ComputationGraphNode<T>::ComputationGraphNode(std::string nodeName) : name(nodeName), valuated(false), value(), gradient() {}
+    ComputationGraphNode<T>::ComputationGraphNode(std::string nodeName)
+        : name(nodeName), valuated(false), value(), gradient() {}
 
     template <class T>
     std::string ComputationGraphNode<T>::ToString() const
@@ -39,7 +40,8 @@ namespace DataStructure
         : ComputationGraphNode<T>(nodeName), firstInput(input1), secondInput(input2) {}
 
     template <class T>
-    AddNode<T>::AddNode(ComputationGraphNode<T> *input1, ComputationGraphNode<T> *input2, std::string nodeName) : FunctionNode<T>(input1, input2, nodeName) {}
+    AddNode<T>::AddNode(ComputationGraphNode<T> *input1, ComputationGraphNode<T> *input2, std::string nodeName)
+        : FunctionNode<T>(input1, input2, nodeName) {}
 
     template <class T>
     T AddNode<T>::Forward()
@@ -51,10 +53,7 @@ namespace DataStructure
     }
 
     template <class T>
-    Tuple<T> AddNode<T>::Backward()
-    {
-        return Tuple<T>({1, 1});
-    }
+    Tuple<T> AddNode<T>::Backward() { return Tuple<T>({1, 1}); }
 
     template <class T>
     MinusNode<T>::MinusNode(ComputationGraphNode<T> *input1, ComputationGraphNode<T> *input2, std::string nodeName)
@@ -70,10 +69,7 @@ namespace DataStructure
     }
 
     template <class T>
-    Tuple<T> MinusNode<T>::Backward()
-    {
-        return Tuple<T>({1, -1});
-    }
+    Tuple<T> MinusNode<T>::Backward() { return Tuple<T>({1, -1}); }
 
     template <class T>
     ComputationGraph<T>::ComputationGraph() : nodes() {}
