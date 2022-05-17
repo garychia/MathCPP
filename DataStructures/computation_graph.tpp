@@ -1,11 +1,120 @@
+#include "computation_graph.hpp"
+
 namespace DataStructure
 {
     template <class T>
-    ComputationGraphNode<T>::ComputationGraphNode(ComputationGraph<T> *graph, std::string nodeName)
-        : name(nodeName), valuated(false), value(), gradient(), compGraph(graph) {}
+    ComputationGraph<T>::ComputationGraph() : nodes(), funcNodes() {}
 
     template <class T>
-    std::string ComputationGraphNode<T>::ToString() const
+    ComputationGraph<T>::~ComputationGraph()
+    {
+        for (std::size_t i = 0; i < nodes.Size(); i++)
+            delete nodes[i];
+        nodes.Clear();
+    }
+
+    template <class T>
+    T ComputationGraph<T>::Forward()
+    {
+        if (funcNodes.IsEmpty())
+            return 0;
+        return funcNodes[funcNodes.Size() - 1]->Forward();
+    }
+
+    template <class T>
+    void ComputationGraph<T>::Backward()
+    {
+        if (funcNodes.IsEmpty())
+            return;
+        const std::size_t nNodes = funcNodes.Size();
+        funcNodes[nNodes - 1]->gradient = 1;
+
+        std::size_t i = nNodes - 1;
+        while (true)
+        {
+            ComputationGraphNode *input1 = funcNodes[i]->firstInput;
+            ComputationGraphNode *input2 = funcNodes[i]->secondInput;
+            auto gradients = funcNodes[i]->Backward();
+            input1->gradient += gradients[0] * funcNodes[i]->gradient;
+            input2->gradient += gradients[1] * funcNodes[i]->gradient;
+            if (i == 0)
+                break;
+            i--;
+        }
+    }
+
+    template <class T>
+    ComputationGraphNodeHandler<T> ComputationGraph<T>::CreateVariableNode(const T &value, const std::string &name)
+    {
+        VariableNode *newNode = new VariableNode(value, name);
+        auto nodeIndex = nodes.Size();
+        nodes.Append(newNode);
+        return ComputationGraphNodeHandler<T>(this, nodeIndex);
+    }
+
+    template <class T>
+    ComputationGraphNodeHandler<T> ComputationGraph<T>::CreateFunctionNode(
+        const ComputationGraphNodeHandler<T> &inputNodeHandler1,
+        const ComputationGraphNodeHandler<T> &inputNodeHandler2,
+        const GraphOperation &operation,
+        const std::string &name)
+    {
+        FunctionNode *newNode;
+        std::size_t input1Index = inputNodeHandler1.index;
+        std::size_t input2Index = inputNodeHandler2.index;
+        std::size_t newNodeIndex = nodes.Size();
+        switch (operation)
+        {
+        case GraphOperation::Addition:
+            newNode = new AddNode(nodes[input1Index], nodes[input2Index], name);
+            break;
+        case GraphOperation::Subtraction:
+            newNode = new MinusNode(nodes[input1Index], nodes[input2Index], name);
+            break;
+        case GraphOperation::Multiplication:
+            newNode = new MultiplyNode(nodes[input1Index], nodes[input2Index], name);
+            break;
+        case GraphOperation::Division:
+            newNode = new DivideNode(nodes[input1Index], nodes[input2Index], name);
+            break;
+        case GraphOperation::Power:
+            newNode = new PowerNode(nodes[input1Index], nodes[input2Index], name);
+            break;
+        default:
+            throw Exceptions::InvalidArgument("ComputationGraph: Operation not recognized.");
+        }
+        nodes.Append(newNode);
+        funcNodes.Append(newNode);
+        return ComputationGraphNodeHandler<T>(this, newNodeIndex);
+    }
+
+    template <class T>
+    std::string ComputationGraph<T>::ToString() const
+    {
+        std::stringstream ss;
+        ss << "ComputationGraph {\n";
+        for (std::size_t i = 0; i < nodes.Size(); i++)
+            ss << nodes[i]->ToString() << "\n";
+        ss << "}";
+        return ss.str();
+    }
+
+    template <typename T>
+    std::ostream &operator<<(std::ostream &stream, const ComputationGraph<T> &graph)
+    {
+        stream << graph.ToString();
+        return stream;
+    }
+
+    template <class T>
+    ComputationGraph<T>::ComputationGraphNode::ComputationGraphNode(std::string nodeName)
+        : name(nodeName), valuated(false), value(0), gradient(0) {}
+
+    template <class T>
+    std::string ComputationGraph<T>::ComputationGraphNode::GetName() const { return name; }
+
+    template <class T>
+    std::string ComputationGraph<T>::ComputationGraphNode::ToString() const
     {
         std::stringstream ss;
         ss << name << " "
@@ -16,94 +125,28 @@ namespace DataStructure
     }
 
     template <class T>
-    FunctionNode<T> *ComputationGraphNode<T>::CombineNodes(
-        ComputationGraphNode<T> *node1,
-        ComputationGraphNode<T> *node2,
-        const GraphOperation &operation)
+    ComputationGraph<T>::VariableNode::VariableNode(T value, std::string nodeName) : ComputationGraphNode(nodeName)
     {
-        ComputationGraph<T> *graph = node1->compGraph;
-        FunctionNode<T> *newNode;
-        switch (operation)
-        {
-        case GraphOperation::Addition:
-            newNode = new AddNode<T>(graph, node1, node2);
-            break;
-        case GraphOperation::Subtraction:
-            newNode = new MinusNode<T>(graph, node1, node2);
-            break;
-        case GraphOperation::Multiplication:
-            newNode = new MultiplyNode<T>(graph, node1, node2);
-            break;
-        case GraphOperation::Division:
-            newNode = new DivideNode<T>(graph, node1, node2);
-            break;
-        case GraphOperation::Power:
-            newNode = new PowerNode<T>(graph, node1, node2);
-            break;
-        default:
-            return nullptr;
-        }
-        graph->tempNodes.Append(newNode);
-        return newNode;
-    }
-
-    template <class T>
-    FunctionNode<T> *ComputationGraphNode<T>::CombineNodes(
-        ComputationGraphNode<T> &node1,
-        ComputationGraphNode<T> &node2,
-        const GraphOperation &operation)
-    {
-        return ComputationGraphNode<T>::CombineNodes(&node1, &node2, operation);
-    }
-
-    template <class T>
-    FunctionNode<T> *ComputationGraphNode<T>::CombineNodes(
-        ComputationGraphNode<T> *node1,
-        ComputationGraphNode<T> &node2,
-        const GraphOperation &operation)
-    {
-        return ComputationGraphNode<T>::CombineNodes(node1, &node2, operation);
-    }
-
-    template <class T>
-    FunctionNode<T> *ComputationGraphNode<T>::CombineNodes(
-        ComputationGraphNode<T> &node1,
-        ComputationGraphNode<T> *node2,
-        const GraphOperation &operation)
-    {
-        return ComputationGraphNode<T>::CombineNodes(&node1, node2, operation);
-    }
-
-    template <class T>
-    std::ostream &operator<<(std::ostream &stream, const ComputationGraphNode<T> &node)
-    {
-        stream << node.ToString();
-        return stream;
-    }
-
-    template <class T>
-    VariableNode<T>::VariableNode(ComputationGraph<T> *graph, T value, std::string nodeName) : ComputationGraphNode<T>(graph, nodeName)
-    {
-        this->valuated = false;
+        this->valuated = true;
         this->value = value;
     }
 
     template <class T>
-    T VariableNode<T>::Forward() { return this->value; }
+    T ComputationGraph<T>::VariableNode::Forward() { return this->value; }
 
     template <class T>
-    Tuple<T> VariableNode<T>::Backward() { return Tuple<T>({this->gradient}); }
+    Tuple<T> ComputationGraph<T>::VariableNode::Backward() { return Tuple<T>({this->gradient}); }
 
     template <class T>
-    FunctionNode<T>::FunctionNode(ComputationGraph<T> *graph, ComputationGraphNode<T> *input1, ComputationGraphNode<T> *input2, std::string nodeName)
-        : ComputationGraphNode<T>(graph, nodeName), firstInput(input1), secondInput(input2) {}
+    ComputationGraph<T>::FunctionNode::FunctionNode(ComputationGraphNode *input1, ComputationGraphNode *input2, std::string nodeName)
+        : ComputationGraphNode(nodeName), firstInput(input1), secondInput(input2) {}
 
     template <class T>
-    AddNode<T>::AddNode(ComputationGraph<T> *graph, ComputationGraphNode<T> *input1, ComputationGraphNode<T> *input2, std::string nodeName)
-        : FunctionNode<T>(graph, input1, input2, nodeName) {}
+    ComputationGraph<T>::AddNode::AddNode(ComputationGraphNode *input1, ComputationGraphNode *input2, std::string nodeName)
+        : FunctionNode(input1, input2, nodeName) {}
 
     template <class T>
-    T AddNode<T>::Forward()
+    T ComputationGraph<T>::AddNode::Forward()
     {
         if (this->valuated)
             return this->value;
@@ -112,14 +155,14 @@ namespace DataStructure
     }
 
     template <class T>
-    Tuple<T> AddNode<T>::Backward() { return Tuple<T>({1, 1}); }
+    Tuple<T> ComputationGraph<T>::AddNode::Backward() { return Tuple<T>({1, 1}); }
 
     template <class T>
-    MinusNode<T>::MinusNode(ComputationGraph<T> *graph, ComputationGraphNode<T> *input1, ComputationGraphNode<T> *input2, std::string nodeName)
-        : FunctionNode<T>(graph, input1, input2, nodeName) {}
+    ComputationGraph<T>::MinusNode::MinusNode(ComputationGraphNode *input1, ComputationGraphNode *input2, std::string nodeName)
+        : FunctionNode(input1, input2, nodeName) {}
 
     template <class T>
-    T MinusNode<T>::Forward()
+    T ComputationGraph<T>::MinusNode::Forward()
     {
         if (this->valuated)
             return this->value;
@@ -128,14 +171,14 @@ namespace DataStructure
     }
 
     template <class T>
-    Tuple<T> MinusNode<T>::Backward() { return Tuple<T>({1, -1}); }
+    Tuple<T> ComputationGraph<T>::MinusNode::Backward() { return Tuple<T>({1, -1}); }
 
     template <class T>
-    MultiplyNode<T>::MultiplyNode(ComputationGraph<T> *graph, ComputationGraphNode<T> *input1, ComputationGraphNode<T> *input2, std::string nodeName)
-        : FunctionNode<T>(graph, input1, input2, nodeName) {}
+    ComputationGraph<T>::MultiplyNode::MultiplyNode(ComputationGraphNode *input1, ComputationGraphNode *input2, std::string nodeName)
+        : FunctionNode(input1, input2, nodeName) {}
 
     template <class T>
-    T MultiplyNode<T>::Forward()
+    T ComputationGraph<T>::MultiplyNode::Forward()
     {
         if (this->valuated)
             return this->value;
@@ -144,14 +187,17 @@ namespace DataStructure
     }
 
     template <class T>
-    Tuple<T> MultiplyNode<T>::Backward() { return Tuple<T>({this->secondInput->Forward(), this->firstInput->Forward()}); }
+    Tuple<T> ComputationGraph<T>::MultiplyNode::Backward()
+    {
+        return Tuple<T>({this->secondInput->Forward(), this->firstInput->Forward()});
+    }
 
     template <class T>
-    DivideNode<T>::DivideNode(ComputationGraph<T> *graph, ComputationGraphNode<T> *input1, ComputationGraphNode<T> *input2, std::string nodeName)
-        : FunctionNode<T>(graph, input1, input2, nodeName) {}
+    ComputationGraph<T>::DivideNode::DivideNode(ComputationGraphNode *input1, ComputationGraphNode *input2, std::string nodeName)
+        : FunctionNode(input1, input2, nodeName) {}
 
     template <class T>
-    T DivideNode<T>::Forward()
+    T ComputationGraph<T>::DivideNode::Forward()
     {
         if (this->valuated)
             return this->value;
@@ -160,7 +206,7 @@ namespace DataStructure
     }
 
     template <class T>
-    Tuple<T> DivideNode<T>::Backward()
+    Tuple<T> ComputationGraph<T>::DivideNode::Backward()
     {
         const T firstInputValue = this->firstInput->Forward();
         const T secondInputValue = this->secondInput->Forward();
@@ -169,11 +215,11 @@ namespace DataStructure
     }
 
     template <class T>
-    PowerNode<T>::PowerNode(ComputationGraph<T> *graph, ComputationGraphNode<T> *input1, ComputationGraphNode<T> *input2, std::string nodeName)
-        : FunctionNode<T>(graph, input1, input2, nodeName) {}
+    ComputationGraph<T>::PowerNode::PowerNode(ComputationGraphNode *input1, ComputationGraphNode *input2, std::string nodeName)
+        : FunctionNode(input1, input2, nodeName) {}
 
     template <class T>
-    T PowerNode<T>::Forward()
+    T ComputationGraph<T>::PowerNode::Forward()
     {
         if (this->valuated)
             return this->value;
@@ -182,7 +228,7 @@ namespace DataStructure
     }
 
     template <class T>
-    Tuple<T> PowerNode<T>::Backward()
+    Tuple<T> ComputationGraph<T>::PowerNode::Backward()
     {
         const T firstInputValue = this->firstInput->Forward();
         const T secondInputValue = this->secondInput->Forward();
@@ -192,60 +238,98 @@ namespace DataStructure
     }
 
     template <class T>
-    ComputationGraph<T>::ComputationGraph() : nodes(), tempNodes() {}
+    ComputationGraphNodeHandler<T>::ComputationGraphNodeHandler(ComputationGraph<T> *ownerGraph, std::size_t nodeIndex)
+        : index(nodeIndex), graph(ownerGraph) {}
 
     template <class T>
-    ComputationGraph<T>::~ComputationGraph()
+    T ComputationGraphNodeHandler<T>::Forward() const
     {
-        for (std::size_t i = 0; i < tempNodes.Size(); i++)
-            delete tempNodes[i];
-        tempNodes.Clear();
+        return graph->nodes[index]->Forward();
     }
 
     template <class T>
-    void ComputationGraph<T>::AddComputation(FunctionNode<T> *computationNode)
+    Tuple<T> ComputationGraphNodeHandler<T>::Backward() const
     {
-        List<FunctionNode<T> *> nodesFound({computationNode});
-        while (!nodesFound.IsEmpty())
-        {
-            FunctionNode<T> *currentNode = nodesFound.PopFront();
-            nodes.Prepend(currentNode);
-            ComputationGraphNode<T> *input1 = currentNode->firstInput;
-            ComputationGraphNode<T> *input2 = currentNode->secondInput;
-            if (auto funcNode = dynamic_cast<FunctionNode<T> *>(input1))
-                nodesFound.Append(funcNode);
-            if (auto funcNode = dynamic_cast<FunctionNode<T> *>(input2))
-                nodesFound.Append(funcNode);
-        }
+        return graph->nodes[index]->Backward();
     }
 
     template <class T>
-    T ComputationGraph<T>::Forward()
+    std::string ComputationGraphNodeHandler<T>::GetNodeName() const
     {
-        if (nodes.IsEmpty())
-            return 0;
-        return nodes[nodes.Size() - 1]->Forward();
+        return graph->nodes[index]->GetName();
     }
 
     template <class T>
-    void ComputationGraph<T>::Backward()
+    ComputationGraphNodeHandler<T> ComputationGraphNodeHandler<T>::operator+(const ComputationGraphNodeHandler &other) const
     {
-        if (nodes.IsEmpty())
-            return;
-        const std::size_t nNodes = nodes.Size();
-        nodes[nNodes - 1]->gradient = 1;
+        if (this->graph != other.graph)
+            throw Exceptions::InvalidArgument(
+                "ComputationGraphNodeHandler: "
+                "Cannot perform operations on nodes from different CompurationGraphs.");
+        std::stringstream ss;
+        ss << "AddNode(" << GetNodeName() << ", " << other.GetNodeName() << ")";
+        return this->graph->CreateFunctionNode(
+            *this, other,
+            GraphOperation::Addition,
+            ss.str());
+    }
+    template <class T>
+    ComputationGraphNodeHandler<T> ComputationGraphNodeHandler<T>::operator-(const ComputationGraphNodeHandler &other) const
+    {
+        if (this->graph != other.graph)
+            throw Exceptions::InvalidArgument(
+                "ComputationGraphNodeHandler: "
+                "Cannot perform operations on nodes from different CompurationGraphs.");
+        std::stringstream ss;
+        ss << "MinusNode(" << GetNodeName() << ", " << other.GetNodeName() << ")";
+        return this->graph->CreateFunctionNode(
+            *this, other,
+            GraphOperation::Subtraction,
+            ss.str());
+    }
 
-        std::size_t i = nNodes - 1;
-        while (true)
-        {
-            ComputationGraphNode<T> *input1 = nodes[i]->firstInput;
-            ComputationGraphNode<T> *input2 = nodes[i]->secondInput;
-            auto gradients = nodes[i]->Backward();
-            input1->gradient += gradients[0] * nodes[i]->gradient;
-            input2->gradient += gradients[1] * nodes[i]->gradient;
-            if (i == 0)
-                break;
-            i--;
-        }
+    template <class T>
+    ComputationGraphNodeHandler<T> ComputationGraphNodeHandler<T>::operator*(const ComputationGraphNodeHandler &other) const
+    {
+        if (this->graph != other.graph)
+            throw Exceptions::InvalidArgument(
+                "ComputationGraphNodeHandler: "
+                "Cannot perform operations on nodes from different CompurationGraphs.");
+        std::stringstream ss;
+        ss << "MultiplyNode(" << GetNodeName() << ", " << other.GetNodeName() << ")";
+        return this->graph->CreateFunctionNode(
+            *this, other,
+            GraphOperation::Multiplication,
+            ss.str());
+    }
+
+    template <class T>
+    ComputationGraphNodeHandler<T> ComputationGraphNodeHandler<T>::operator/(const ComputationGraphNodeHandler &other) const
+    {
+        if (this->graph != other.graph)
+            throw Exceptions::InvalidArgument(
+                "ComputationGraphNodeHandler: "
+                "Cannot perform operations on nodes from different CompurationGraphs.");
+        std::stringstream ss;
+        ss << "DivideNode(" << GetNodeName() << ", " << other.GetNodeName() << ")";
+        return this->graph->CreateFunctionNode(
+            *this, other,
+            GraphOperation::Division,
+            ss.str());
+    }
+
+    template <class T>
+    ComputationGraphNodeHandler<T> ComputationGraphNodeHandler<T>::operator^(const ComputationGraphNodeHandler &other) const
+    {
+        if (this->graph != other.graph)
+            throw Exceptions::InvalidArgument(
+                "ComputationGraphNodeHandler: "
+                "Cannot perform operations on nodes from different CompurationGraphs.");
+        std::stringstream ss;
+        ss << "PowerNode(" << GetNodeName() << ", " << other.GetNodeName() << ")";
+        return this->graph->CreateFunctionNode(
+            *this, other,
+            GraphOperation::Power,
+            ss.str());
     }
 }
