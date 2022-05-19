@@ -28,8 +28,8 @@ namespace Math
     @param n the exponent.
     @return a Vector with the powers of its elements.
     */
-    template <class T>
-    Vector<T> Power(const Vector<T>& v, T n)
+    template <class T, class PowerType>
+    Vector<T> Power(const Vector<T>& v, PowerType n)
     {
         return v.Map([&n](T e) { return pow(e, n); });
     }
