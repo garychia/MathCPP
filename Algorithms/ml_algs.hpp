@@ -1,3 +1,6 @@
+#ifndef ML_ALGS_HPP
+#define ML_ALGS_HPP
+
 #include "../DataStructures/vector.hpp"
 #include "../DataStructures/matrix.hpp"
 
@@ -92,3 +95,5 @@ namespace MLAlgs
         return Vector<double>::Combine({std::move(ths), Vector<double>(1, th0s)});
     }
 } // namespace MLAlgs
+
+#endif

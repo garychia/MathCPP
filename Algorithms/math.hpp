@@ -1,5 +1,5 @@
-#ifndef MATH_H
-#define MATH_H
+#ifndef MATH_HPP
+#define MATH_HPP
 
 #include "../DataStructures/vector.hpp"
 #include "../DataStructures/matrix.hpp"

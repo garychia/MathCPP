@@ -1,5 +1,5 @@
-#ifndef BINARY_SEARCH_H
-#define BINARY_SEARCH_H
+#ifndef BINARY_SEARCH_HPP
+#define BINARY_SEARCH_HPP
 
 #include <cstddef>
 
