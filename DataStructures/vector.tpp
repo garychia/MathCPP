@@ -97,13 +97,13 @@ namespace DataStructure
         else if (other.size == 0)
             throw Exceptions::InvalidArgument(
                 "Vector: Cannot perform addtion on the given empty vector.");
-        else if (Dimension() != other.Dimension())
+        else if (Dimension() % other.Dimension() != 0)
             throw Exceptions::InvalidArgument(
-                "Vector: Cannot perform addtion on vectors with different dimensions.");
+                "Vector: Expected the dimension of the second vector to be a factor of that of the first.");
         Vector<decltype(this->data[0] + other[0])> result(*this);
 #pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < Dimension(); i++)
-            result[i] += other[i];
+            result[i] += other[i % other.Dimension()];
         return result;
     }
 
@@ -153,12 +153,12 @@ namespace DataStructure
         else if (other.Size() == 0)
             throw Exceptions::InvalidArgument(
                 "Vector: Cannot perform addtion on the given empty vector.");
-        else if (Dimension() != other.Dimension())
+        else if (Dimension() % other.Dimension() != 0)
             throw Exceptions::InvalidArgument(
-                "Vector: Cannot perform addtion on vectors with different dimensions.");
+                "Vector: Expected the dimension of the second vector to be a factor of that of the first.");
 #pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < Dimension(); i++)
-            this->data[i] += other[i];
+            this->data[i] += other[i % other.Dimension()];
         return *this;
     }
 
@@ -172,14 +172,14 @@ namespace DataStructure
         else if (other.size == 0)
             throw Exceptions::InvalidArgument(
                 "Vector: Cannot perform subtraction on the given empty vector.");
-        else if (Dimension() != other.Dimension())
+        else if (Dimension() % other.Dimension() != 0)
             throw Exceptions::InvalidArgument(
-                "Vector: Cannot perform subtraction on vectors with different dimensions.");
+                "Vector: Expected the dimension of the second vector to be a factor of that of the first.");
 
         Vector<decltype(this->data[0] - other[0])> result(*this);
 #pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < Dimension(); i++)
-            result[i] -= other[i];
+            result[i] -= other[i % other.Dimension()];
         return result;
     }
 
@@ -229,13 +229,13 @@ namespace DataStructure
         else if (other.Size() == 0)
             throw Exceptions::InvalidArgument(
                 "Vector: Cannot perform subtraction on the given empty vector.");
-        else if (Dimension() != other.Dimension())
+        else if (Dimension() % other.Dimension() != 0)
             throw Exceptions::InvalidArgument(
-                "Vector: Cannot perform subtraction on vectors with different dimensions.");
+                "Vector: Expected the dimension of the second vector to be a factor of that of the first.");
 
 #pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < Dimension(); i++)
-            this->data[i] -= other[i];
+            this->data[i] -= other[i % other.Dimension()];
         return *this;
     }
 
@@ -274,9 +274,9 @@ namespace DataStructure
         if (this->size == 0)
             throw Exceptions::EmptyVector(
                 "Vector: Cannot perform scaling on an empty vector.");
-        if (this->size != other.Size())
+        if (this->Dimension() != other.Dimension())
             throw Exceptions::InvalidArgument(
-                "Vector: Cannot perform elmenet-wise ");
+                "Vector: Cannot perform elmenet-wise multiplication on vectors with different dimensions.");
         Vector<decltype((*this)[0] * other[0])> result(*this);
 #pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < this->size; i++)
@@ -420,9 +420,10 @@ namespace DataStructure
     }
 
     template <class T>
-    Vector<T> Vector<T>::Map(const std::function<T(T)> &f) const
+    template <class OtherType>
+    Vector<OtherType> Vector<T>::Map(const std::function<OtherType(T)> &f) const
     {
-        Vector<T> result(*this);
+        Vector<OtherType> result(*this);
 #pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < this->size; i++)
             result[i] = f(result[i]);

@@ -3,6 +3,7 @@
 
 #include <sstream>
 #include <functional>
+#include <type_traits>
 
 #include "container.hpp"
 #include "vector.hpp"
@@ -125,7 +126,7 @@ namespace DataStructure
         @throw InvalidArgument when the given matrix is empty.
         @throw EmptyMatrix when this matrix is empty.
         @throw MatrixShapeMismatch when the two shapes of the
-        matrices are different.
+        matrices do not match.
         */
         template <class OtherType>
         auto Add(const Matrix<OtherType> &other) const;
@@ -136,8 +137,8 @@ namespace DataStructure
         @return the result of the matrix addition.
         @throw InvalidArgument when the given matrix is empty.
         @throw EmptyMatrix when this matrix is empty.
-        @throw MatrixShapeMismatch when the two shapes of the
-        matrices are different.
+        @throw MatrixShapeMismatch when the shape of the first
+        matrix is not a multiple of that of the second.
         */
         template <class OtherType>
         auto operator+(const Matrix<OtherType> &other) const;
@@ -317,7 +318,8 @@ namespace DataStructure
         @param f a function that maps the value of an element to a new value.
         @return a new Matrix with the new values defined by f.
         */
-        Matrix<T> Map(const std::function<T(T)>& f) const;
+        template <class OtherType>
+        Matrix<OtherType> Map(const std::function<OtherType(T)>& f) const;
 
         /*
         Constructs an identity matrix.
@@ -334,58 +336,6 @@ namespace DataStructure
         @param the diagonal matrix.
         */
         static Matrix<T> Diagonal(const Vector<T>& values);
-
-        template <class ScalerType>
-        friend auto operator+(const ScalerType &scaler, const Matrix<T> &m)
-        {
-            Matrix<decltype(scaler + m[0][0])> result(m);
-#pragma omp parallel for schedule(dynamic)
-            for (std::size_t i = 0; i < result.nRows; i++)
-                result[i] = scaler + result[i];
-            return result;
-        }
-
-        template <class ScalerType>
-        friend auto operator+(const Matrix<T> &m, const ScalerType &scaler)
-        {
-            return scaler + m;
-        }
-
-        template <class ScalerType>
-        friend auto operator-(const ScalerType &scaler, const Matrix<T> &m)
-        {
-            Matrix<decltype(scaler + m[0][0])> result(m);
-#pragma omp parallel for schedule(dynamic)
-            for (std::size_t i = 0; i < result.nRows; i++)
-                result[i] = scaler - result[i];
-            return result;
-        }
-
-        template <class ScalerType>
-        friend auto operator-(const Matrix<T> &m, const ScalerType &scaler)
-        {
-            return m + (-scaler);
-        }
-
-        template <class ScalerType>
-        friend auto operator*(const ScalerType &scaler, const Matrix<T> &m)
-        {
-            Matrix<decltype(scaler + m[0][0])> result(m);
-#pragma omp parallel for schedule(dynamic)
-            for (std::size_t i = 0; i < result.nRows; i++)
-                result[i] = scaler * result[i];
-            return result;
-        }
-
-        template <class ScalerType>
-        friend auto operator/(const ScalerType &scaler, const Matrix<T> &m)
-        {
-            Matrix<decltype(scaler + m[0][0])> result(m);
-#pragma omp parallel for schedule(dynamic)
-            for (std::size_t i = 0; i < result.nRows; i++)
-                result[i] = scaler / result[i];
-            return result;
-        }
 
         template <class OtherType>
         friend class Matrix;

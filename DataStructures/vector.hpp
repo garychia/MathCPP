@@ -307,7 +307,8 @@ namespace DataStructure
         @param f a function that maps the value of an element to a new value.
         @return a new Vector with the new values defined by f.
         */
-        Vector<T> Map(const std::function<T(T)> &f) const;
+        template <class OtherType>
+        Vector<OtherType> Map(const std::function<OtherType(T)> &f) const;
 
         /*
         Generates a vector filled with zeros.
