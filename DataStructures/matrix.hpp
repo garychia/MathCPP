@@ -86,6 +86,13 @@ namespace DataStructure
         Matrix(Matrix<OtherType> &&other);
 
         /*
+        Copy Assignment
+        @param other a Matrix to be copied.
+        @return a reference to this Matrix.
+        */
+        virtual Matrix<T> &operator=(const Matrix<T> &other);
+
+        /*
         Accesses the vector at a given index.
         @return the vector at the given index.
         @throw IndexOutOfBound when the index exceeds the greatest possible index.
@@ -327,6 +334,58 @@ namespace DataStructure
         @param the diagonal matrix.
         */
         static Matrix<T> Diagonal(const Vector<T>& values);
+
+        template <class ScalerType>
+        friend auto operator+(const ScalerType &scaler, const Matrix<T> &m)
+        {
+            Matrix<decltype(scaler + m[0][0])> result(m);
+#pragma omp parallel for schedule(dynamic)
+            for (std::size_t i = 0; i < result.nRows; i++)
+                result[i] = scaler + result[i];
+            return result;
+        }
+
+        template <class ScalerType>
+        friend auto operator+(const Matrix<T> &m, const ScalerType &scaler)
+        {
+            return scaler + m;
+        }
+
+        template <class ScalerType>
+        friend auto operator-(const ScalerType &scaler, const Matrix<T> &m)
+        {
+            Matrix<decltype(scaler + m[0][0])> result(m);
+#pragma omp parallel for schedule(dynamic)
+            for (std::size_t i = 0; i < result.nRows; i++)
+                result[i] = scaler - result[i];
+            return result;
+        }
+
+        template <class ScalerType>
+        friend auto operator-(const Matrix<T> &m, const ScalerType &scaler)
+        {
+            return m + (-scaler);
+        }
+
+        template <class ScalerType>
+        friend auto operator*(const ScalerType &scaler, const Matrix<T> &m)
+        {
+            Matrix<decltype(scaler + m[0][0])> result(m);
+#pragma omp parallel for schedule(dynamic)
+            for (std::size_t i = 0; i < result.nRows; i++)
+                result[i] = scaler * result[i];
+            return result;
+        }
+
+        template <class ScalerType>
+        friend auto operator/(const ScalerType &scaler, const Matrix<T> &m)
+        {
+            Matrix<decltype(scaler + m[0][0])> result(m);
+#pragma omp parallel for schedule(dynamic)
+            for (std::size_t i = 0; i < result.nRows; i++)
+                result[i] = scaler / result[i];
+            return result;
+        }
 
         template <class OtherType>
         friend class Matrix;
