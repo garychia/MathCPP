@@ -291,6 +291,74 @@ namespace DataStructure
         */
         static Vector<T> Combine(const std::initializer_list<Vector<T>> &vectors);
 
+        template <class ScalerType>
+        friend auto operator+(const ScalerType &scaler, const Vector<T> &v)
+        {
+            Vector<decltype(scaler + v[0])> result(v);
+#pragma omp parallel for
+            for (std::size_t i = 0; i < result.Dimension(); i++)
+                result[i] += scaler;
+            return result;
+        }
+
+        template <class ScalerType>
+        friend auto operator+(const Vector<T> &v, const ScalerType &scaler)
+        {
+            return scaler + v;
+        }
+
+        template <class ScalerType>
+        friend auto operator-(const ScalerType &scaler, const Vector<T> &v)
+        {
+            Vector<decltype(scaler - v[0])> result(v);
+#pragma omp parallel for
+            for (std::size_t i = 0; i < result.Dimension(); i++)
+                result[i] = scaler - result[i];
+            return result;
+        }
+
+        template <class ScalerType>
+        friend auto operator-(const Vector<T> &v, const ScalerType &scaler)
+        {
+            return v + (-scaler);
+        }
+
+        template <class ScalerType>
+        friend auto operator*(const ScalerType &scaler, const Vector<T> &v)
+        {
+            Vector<decltype(scaler * v[0])> result(v);
+#pragma omp parallel for
+            for (std::size_t i = 0; i < result.Dimension(); i++)
+                result[i] *= scaler;
+            return result;
+        }
+
+        template <class ScalerType>
+        friend auto operator*(const Vector<T> &v, const ScalerType &scaler)
+        {
+            return scaler * v;
+        }
+
+        template <class ScalerType>
+        friend auto operator/(const ScalerType &scaler, const Vector<T> &v)
+        {
+            Vector<decltype(scaler / v[0])> result(v);
+#pragma omp parallel for
+            for (std::size_t i = 0; i < result.Dimension(); i++)
+                result[i] = scaler / result[i];
+            return result;
+        }
+
+        template <class ScalerType>
+        friend auto operator/(const Vector<T> &v, const ScalerType &scaler)
+        {
+            Vector<decltype(v[0] / scaler)> result(v);
+#pragma omp parallel for
+            for (std::size_t i = 0; i < result.Dimension(); i++)
+                result[i] /= scaler;
+            return result;
+        }
+
         template <class OtherType>
         friend class Vector;
     };
