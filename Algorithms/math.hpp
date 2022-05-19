@@ -16,8 +16,8 @@ namespace Math
     @param n the exponent.
     @return the power of the scaler.
     */
-    template <class T>
-    T Power(const T& scaler, T n)
+    template <class T, class PowerType>
+    T Power(const T& scaler, PowerType n)
     {
         return pow(scaler, n);
     }
@@ -40,8 +40,8 @@ namespace Math
     @param n the exponent.
     @return a Matrix with the powers of its elements.
     */
-    template <class T>
-    Matrix<T> Power(const Matrix<T>& m, T n)
+    template <class T, class PowerType>
+    Matrix<T> Power(const Matrix<T>& m, PowerType n)
     {
         return m.Map([&n](T e) { return pow(e, n); });
     }
