@@ -50,6 +50,8 @@ namespace DataStructure
 
             virtual Tuple<T> Backward() = 0;
 
+            virtual void Reset();
+
             virtual void UpdateGradient(T partialGradient);
 
             virtual void MarkGradientValuated();
@@ -156,6 +158,9 @@ namespace DataStructure
 
         List<FunctionNode *> funcNodes;
 
+    private:
+        void reset() const;
+
     public:
         ComputationGraph();
 
@@ -177,6 +182,8 @@ namespace DataStructure
 
         T GetValue(const ComputationGraphNodeHandler<T> &handler) const;
 
+        void SetValue(const ComputationGraphNodeHandler<T> &handler, const T &newValue) const;
+
         T GetGradient(const ComputationGraphNodeHandler<T> &handler) const;
 
         std::string GetNodeName(const ComputationGraphNodeHandler<T> &handler) const;
@@ -194,14 +201,20 @@ namespace DataStructure
 
         ComputationGraph<T> *graph;
 
+        bool isVariable;
+
     public:
-        ComputationGraphNodeHandler(ComputationGraph<T> *ownerGraph, std::size_t nodeIndex);
+        ComputationGraphNodeHandler(ComputationGraph<T> *ownerGraph, std::size_t nodeIndex, bool isVariable = false);
 
         T Forward() const;
 
         T Gradient() const;
 
         std::string GetNodeName() const;
+
+        bool IsVariable() const;
+
+        void SetValue(const T &newValue) const;
 
         ComputationGraphNodeHandler<T> operator+(const ComputationGraphNodeHandler &other) const;
         ComputationGraphNodeHandler<T> operator-(const ComputationGraphNodeHandler &other) const;

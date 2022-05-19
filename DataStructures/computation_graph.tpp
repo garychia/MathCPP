@@ -12,6 +12,14 @@ namespace DataStructure
     }
 
     template <class T>
+    void ComputationGraph<T>::reset() const
+    {
+#pragma omp parallel for schedule(dynamic)
+        for (std::size_t i = 0; i < nodes.Size(); i++)
+            nodes[i]->Reset();
+    }
+
+    template <class T>
     T ComputationGraph<T>::Forward()
     {
         if (funcNodes.IsEmpty())
@@ -59,7 +67,7 @@ namespace DataStructure
         VariableNode *newNode = new VariableNode(value, name);
         auto nodeIndex = nodes.Size();
         nodes.Append(newNode);
-        return ComputationGraphNodeHandler<T>(this, nodeIndex);
+        return ComputationGraphNodeHandler<T>(this, nodeIndex, true);
     }
 
     template <class T>
@@ -105,6 +113,25 @@ namespace DataStructure
             throw Exceptions::NodeNotFound(
                 "ComputationGraph: Node could not be found.");
         return nodes[handler.index]->Forward();
+    }
+
+    template <class T>
+    void ComputationGraph<T>::SetValue(const ComputationGraphNodeHandler<T> &handler, const T &newValue) const
+    {
+        if (handler.index > this->nodes.Size() - 1)
+            throw Exceptions::NodeNotFound(
+                "ComputationGraph: Node could not be found.");
+        try
+        {
+            auto variable = dynamic_cast<VariableNode *>(nodes[handler.index]);
+            variable->SetValue(newValue);
+            reset();
+        }
+        catch(const std::bad_cast&)
+        {
+            throw Exceptions::InvalidArgument(
+                "ComputationGraph: The handler does not represent a variable node.");
+        }
     }
 
     template <class T>
@@ -167,6 +194,13 @@ namespace DataStructure
 
     template <class T>
     std::string ComputationGraph<T>::ComputationGraphNode::GetName() const { return name; }
+
+    template <class T>
+    void ComputationGraph<T>::ComputationGraphNode::Reset()
+    {
+        gradientValuated = false;
+        gradient = 0;
+    }
 
     template <class T>
     void ComputationGraph<T>::ComputationGraphNode::UpdateGradient(T partialGradient)
@@ -331,8 +365,8 @@ namespace DataStructure
     }
 
     template <class T>
-    ComputationGraphNodeHandler<T>::ComputationGraphNodeHandler(ComputationGraph<T> *ownerGraph, std::size_t nodeIndex)
-        : index(nodeIndex), graph(ownerGraph) {}
+    ComputationGraphNodeHandler<T>::ComputationGraphNodeHandler(ComputationGraph<T> *ownerGraph, std::size_t nodeIndex, bool isVariable)
+        : index(nodeIndex), graph(ownerGraph), isVariable(isVariable) {}
 
     template <class T>
     T ComputationGraphNodeHandler<T>::Forward() const
@@ -350,6 +384,15 @@ namespace DataStructure
     std::string ComputationGraphNodeHandler<T>::GetNodeName() const
     {
         return graph->GetNodeName(*this);
+    }
+
+    template <class T>
+    bool ComputationGraphNodeHandler<T>::IsVariable() const { return isVariable; }
+
+    template <class T>
+    void ComputationGraphNodeHandler<T>::SetValue(const T &newValue) const
+    {
+        graph->SetValue(*this, newValue);
     }
 
     template <class T>
