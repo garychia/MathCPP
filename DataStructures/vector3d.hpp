@@ -239,7 +239,7 @@ namespace DataStructure
         */
         void Normalize();
 
-        friend class std::ostream;
+        friend std::ostream;
     };
 
 }
