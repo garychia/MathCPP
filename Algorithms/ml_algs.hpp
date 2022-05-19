@@ -1,8 +1,11 @@
 #ifndef ML_ALGS_HPP
 #define ML_ALGS_HPP
 
+#include <functional>
+
 #include "../DataStructures/vector.hpp"
 #include "../DataStructures/matrix.hpp"
+#include "../DataStructures/list.hpp"
 
 using namespace DataStructure;
 
@@ -14,10 +17,7 @@ namespace MLAlgs
     @return +1 if the value is positive, or 0 if the value is 0. -1, otherwise.
     */
     template <class T>
-    T Sign(T value)
-    {
-        return value == 0 ? 0 : (value > 0 ? 1 : -1);
-    }
+    T Sign(T value);
 
     /*
     Generates a Vector that represents a given value using One Hot encoding.
@@ -25,12 +25,7 @@ namespace MLAlgs
     @param k the maximum value the value can take.
     @return a Vector of K binary features that represents the given value.
     */
-    Vector<int> OneHot(std::size_t value, std::size_t k)
-    {
-        Vector<int> encoding(k, 0);
-        encoding[value - 1] = 1;
-        return encoding;
-    }
+    Vector<int> OneHot(std::size_t value, std::size_t k);
 
     /*
     The Perceptron Algorithm.
@@ -42,22 +37,7 @@ namespace MLAlgs
     @return a Vector packed with the parameters (theta and offset at the end).
     */
     template <class DataType, class LabelType>
-    Vector<double> Perceptron(const Matrix<DataType>& data, const Vector<LabelType>& labels, std::size_t T = 1000)
-    {
-        const auto dataShape = data.Shape();
-        const auto n = dataShape[0];
-        const auto d = dataShape[1];
-        Vector<double> th(d, 0.0);
-        double th0 = 0.0;
-        for (std::size_t i = 0; i < T; i++)
-            for (std::size_t j = 0; j < n; j++)
-                if (Sign(th.Dot(data[j]) + th0) != labels[j])
-                {
-                    th += data[j] * labels[j];
-                    th0 += labels[j];
-                }
-        return Vector<double>::Combine({std::move(th), Vector<double>(1, th0)});
-    }
+    Vector<double> Perceptron(const Matrix<DataType> &data, const Vector<LabelType> &labels, std::size_t T = 1000);
 
     /*
     The Averaged Perceptron Algorithm.
@@ -69,31 +49,37 @@ namespace MLAlgs
     @return a Vector packed with the averaged parameters (theta and offset at the end).
     */
     template <class DataType, class LabelType>
-    Vector<double> AveragedPerceptron(const Matrix<DataType>& data, const Vector<LabelType>& labels, std::size_t T = 1000)
-    {
-        const auto dataShape = data.Shape();
-        const auto n = dataShape[0];
-        const auto d = dataShape[1];
-        Vector<double> th(d, 0.0);
-        Vector<double> ths(d, 0.0);
-        double th0 = 0.0;
-        double th0s = 0.0;
-        for (std::size_t i = 0; i < T; i++)
-            for (std::size_t j = 0; j < n; j++)
-            {
-                if (Sign(th.Dot(data[j]) + th0) != labels[j])
-                {
-                    th += data[j] * labels[j];
-                    th0 += labels[j];
-                }
-            ths += th;
-            th0s += th0;
-            }
-        const auto totalIterations = n * T;
-        ths /= totalIterations;
-        th0s /= totalIterations;
-        return Vector<double>::Combine({std::move(ths), Vector<double>(1, th0s)});
-    }
+    Vector<double> AveragedPerceptron(const Matrix<DataType> &data, const Vector<LabelType> &labels, std::size_t T = 1000);
+
+    /*
+    Gradient Descent
+    @param f a function whose output will be minimized.
+    @param df a function that outputs the gradient of f.
+    @param initialX the initial input to f.
+    @param stepFunc a function that takes the current number of iterations and
+    returns the step size the gradient descent algorithm should take.
+    @param iterations the number of iterations to perform gradient descent.
+    @param recordHistory a bool indicates whether the input to and the output
+    of f are recorded in xHistory and outputHistory, respectively.
+    @param xHistory a pointer to the List used to record the inputs to f
+    during the process if recordHistory is set to true.
+    @param outputHistory a pointer to the List used to record the outputs of
+    f during the process if recordHistory is set to true.
+    @return the value of the input of f at the final step of gradient descent.
+    */
+    template <class InputType, class OutputType, class StepType>
+    InputType GradientDescent(
+        const std::function<OutputType(const InputType &)> &f,
+        const std::function<InputType(const InputType &)> &df,
+        const InputType &initialX,
+        const std::function<StepType(std::size_t)> &stepFunc,
+        std::size_t iterations,
+        bool recordHistory = false,
+        List<InputType> *xHistory = nullptr,
+        List<OutputType> *outputHistory = nullptr);
+
 } // namespace MLAlgs
+
+#include "ml_algs.tpp"
 
 #endif
