@@ -36,12 +36,11 @@ namespace DataStructure
         {
         protected:
             std::string name;
-            bool valuated;
-            T value;
+            bool gradientValuated;
             T gradient;
 
         public:
-            ComputationGraphNode(std::string nodeName = "ComputationGraph");
+            ComputationGraphNode(const std::string &nodeName = "ComputationGraph");
 
             virtual ~ComputationGraphNode() = default;
 
@@ -51,19 +50,38 @@ namespace DataStructure
 
             virtual Tuple<T> Backward() = 0;
 
-            virtual std::string ToString() const;
+            virtual void UpdateGradient(T partialGradient);
 
-            friend class ComputationGraph<T>;
+            virtual void MarkGradientValuated();
+
+            virtual T GetGradient() const;
+
+            virtual T GetPartialGradient() const;
+
+            virtual std::string ToString() const;
         };
 
-        class VariableNode : public ComputationGraphNode
+        class ConstantNode : public ComputationGraphNode
         {
+        protected:
+            T value;
+
         public:
-            VariableNode(T value, std::string nodeName = "VariableNode");
+            ConstantNode(const T &value, const std::string &nodeName = "ConstantNode");
 
             virtual T Forward() override;
 
             virtual Tuple<T> Backward() override;
+
+            virtual std::string ToString() const override;
+        };
+
+        class VariableNode : public ConstantNode
+        {
+        public:
+            VariableNode(const T &value, const std::string &nodeName = "VariableNode");
+
+            void SetValue(const T &newValue);
         };
 
         class FunctionNode : public ComputationGraphNode
@@ -73,19 +91,21 @@ namespace DataStructure
             ComputationGraphNode *secondInput;
 
         public:
-            FunctionNode(ComputationGraphNode *input1, ComputationGraphNode *input2, std::string nodeName = "FunctionNode");
+            FunctionNode(ComputationGraphNode *input1, ComputationGraphNode *input2, const std::string &nodeName = "FunctionNode");
 
             virtual T Forward() = 0;
 
             virtual Tuple<T> Backward() = 0;
 
-            friend class ComputationGraph<T>;
+            ComputationGraphNode *GetFirstInput() const;
+
+            ComputationGraphNode *GetSecondInput() const;
         };
 
         class AddNode : public FunctionNode
         {
         public:
-            AddNode(ComputationGraphNode *input1, ComputationGraphNode *input2, std::string nodeName = "AddNode");
+            AddNode(ComputationGraphNode *input1, ComputationGraphNode *input2, const std::string &nodeName = "AddNode");
 
             virtual T Forward() override;
 
@@ -95,7 +115,7 @@ namespace DataStructure
         class MinusNode : public FunctionNode
         {
         public:
-            MinusNode(ComputationGraphNode *input1, ComputationGraphNode *input2, std::string nodeName = "MinusNode");
+            MinusNode(ComputationGraphNode *input1, ComputationGraphNode *input2, const std::string &nodeName = "MinusNode");
 
             virtual T Forward() override;
 
@@ -105,7 +125,7 @@ namespace DataStructure
         class MultiplyNode : public FunctionNode
         {
         public:
-            MultiplyNode(ComputationGraphNode *input1, ComputationGraphNode *input2, std::string nodeName = "MultiplyNode");
+            MultiplyNode(ComputationGraphNode *input1, ComputationGraphNode *input2, const std::string &nodeName = "MultiplyNode");
 
             virtual T Forward() override;
 
@@ -115,7 +135,7 @@ namespace DataStructure
         class DivideNode : public FunctionNode
         {
         public:
-            DivideNode(ComputationGraphNode *input1, ComputationGraphNode *input2, std::string nodeName = "DivideNode");
+            DivideNode(ComputationGraphNode *input1, ComputationGraphNode *input2, const std::string &nodeName = "DivideNode");
 
             virtual T Forward() override;
 
@@ -125,7 +145,7 @@ namespace DataStructure
         class PowerNode : public FunctionNode
         {
         public:
-            PowerNode(ComputationGraphNode *input1, ComputationGraphNode *input2, std::string nodeName = "PowerNode");
+            PowerNode(ComputationGraphNode *input1, ComputationGraphNode *input2, const std::string &nodeName = "PowerNode");
 
             virtual T Forward() override;
 
@@ -141,6 +161,8 @@ namespace DataStructure
 
         ~ComputationGraph();
 
+        ComputationGraphNodeHandler<T> CreateConstantNode(const T &value, const std::string &name = "ConstantNode");
+
         ComputationGraphNodeHandler<T> CreateVariableNode(const T &value, const std::string &name = "VariableNode");
 
         ComputationGraphNodeHandler<T> CreateFunctionNode(
@@ -153,13 +175,13 @@ namespace DataStructure
 
         void Backward();
 
+        T GetValue(const ComputationGraphNodeHandler<T> &handler) const;
+
+        T GetGradient(const ComputationGraphNodeHandler<T> &handler) const;
+
+        std::string GetNodeName(const ComputationGraphNodeHandler<T> &handler) const;
+
         std::string ToString() const;
-
-        friend T ComputationGraphNodeHandler<T>::Forward() const;
-
-        friend Tuple<T> ComputationGraphNodeHandler<T>::Backward() const;
-
-        friend std::string ComputationGraphNodeHandler<T>::GetNodeName() const;
 
         friend std::ostream;
     };
@@ -177,7 +199,7 @@ namespace DataStructure
 
         T Forward() const;
 
-        Tuple<T> Backward() const;
+        T Gradient() const;
 
         std::string GetNodeName() const;
 
@@ -191,100 +213,80 @@ namespace DataStructure
         friend ComputationGraphNodeHandler<T> operator+(const OtherType &scaler, const ComputationGraphNodeHandler<T> &handler)
         {
             ComputationGraph<T> *graph = handler.graph;
-            auto scalerVariable = graph->CreateVariableNode(scaler);
-            std::stringstream ss;
-            ss << "AddNode(" << scaler << ", " << handler.GetNodeName() << ")";
-            return graph->CreateFunctionNode(scalerVariable, handler, GraphOperation::Addition, ss.str());
+            auto scalerVariable = graph->CreateConstantNode(scaler);
+            return scalerVariable + handler;
         }
 
         template <class OtherType>
         friend ComputationGraphNodeHandler<T> operator+(const ComputationGraphNodeHandler<T> &handler, const OtherType &scaler)
         {
             ComputationGraph<T> *graph = handler.graph;
-            auto scalerVariable = graph->CreateVariableNode(scaler);
-            std::stringstream ss;
-            ss << "AddNode(" << handler.GetNodeName() << ", " << scaler << ")";
-            return graph->CreateFunctionNode(handler, scalerVariable, GraphOperation::Addition, ss.str());
+            auto scalerVariable = graph->CreateConstantNode(scaler);
+            return handler + scalerVariable;
         }
 
         template <class OtherType>
         friend ComputationGraphNodeHandler<T> operator-(const OtherType &scaler, const ComputationGraphNodeHandler<T> &handler)
         {
             ComputationGraph<T> *graph = handler.graph;
-            auto scalerVariable = graph->CreateVariableNode(scaler);
-            std::stringstream ss;
-            ss << "MinusNode(" << scaler << ", " << handler.GetNodeName() << ")";
-            return graph->CreateFunctionNode(scalerVariable, handler, GraphOperation::Subtraction, ss.str());
+            auto scalerVariable = graph->CreateConstantNode(scaler);
+            return scalerVariable - handler;
         }
 
         template <class OtherType>
         friend ComputationGraphNodeHandler<T> operator-(const ComputationGraphNodeHandler<T> &handler, const OtherType &scaler)
         {
             ComputationGraph<T> *graph = handler.graph;
-            auto scalerVariable = graph->CreateVariableNode(scaler);
-            std::stringstream ss;
-            ss << "MinusNode(" << handler.GetNodeName() << ", " << scaler << ")";
-            return graph->CreateFunctionNode(handler, scalerVariable, GraphOperation::Subtraction, ss.str());
+            auto scalerVariable = graph->CreateConstantNode(scaler);
+            return handler - scalerVariable;
         }
 
         template <class OtherType>
         friend ComputationGraphNodeHandler<T> operator*(const OtherType &scaler, const ComputationGraphNodeHandler<T> &handler)
         {
             ComputationGraph<T> *graph = handler.graph;
-            auto scalerVariable = graph->CreateVariableNode(scaler);
-            std::stringstream ss;
-            ss << "MultiplyNode(" << scaler << ", " << handler.GetNodeName() << ")";
-            return graph->CreateFunctionNode(scalerVariable, handler, GraphOperation::Multiplication, ss.str());
+            auto scalerVariable = graph->CreateConstantNode(scaler);
+            return scalerVariable * handler;
         }
 
         template <class OtherType>
         friend ComputationGraphNodeHandler<T> operator*(const ComputationGraphNodeHandler<T> &handler, const OtherType &scaler)
         {
             ComputationGraph<T> *graph = handler.graph;
-            auto scalerVariable = graph->CreateVariableNode(scaler);
-            std::stringstream ss;
-            ss << "MultiplyNode(" << handler.GetNodeName() << ", " << scaler << ")";
-            return graph->CreateFunctionNode(handler, scalerVariable, GraphOperation::Multiplication, ss.str());
+            auto scalerVariable = graph->CreateConstantNode(scaler);
+            return handler * scalerVariable;
         }
 
         template <class OtherType>
         friend ComputationGraphNodeHandler<T> operator/(const OtherType &scaler, const ComputationGraphNodeHandler<T> &handler)
         {
             ComputationGraph<T> *graph = handler.graph;
-            auto scalerVariable = graph->CreateVariableNode(scaler);
-            std::stringstream ss;
-            ss << "DivideNode(" << scaler << ", " << handler.GetNodeName() << ")";
-            return graph->CreateFunctionNode(scalerVariable, handler, GraphOperation::Division, ss.str());
+            auto scalerVariable = graph->CreateConstantNode(scaler);
+            return scalerVariable / handler;
         }
 
         template <class OtherType>
         friend ComputationGraphNodeHandler<T> operator/(const ComputationGraphNodeHandler<T> &handler, const OtherType &scaler)
         {
             ComputationGraph<T> *graph = handler.graph;
-            auto scalerVariable = graph->CreateVariableNode(scaler);
-            std::stringstream ss;
-            ss << "DivideNode(" << handler.GetNodeName() << ", " << scaler << ")";
-            return graph->CreateFunctionNode(handler, scalerVariable, GraphOperation::Division, ss.str());
+            auto scalerVariable = graph->CreateConstantNode(scaler);
+            return handler / scalerVariable;
         }
-        
+
         template <class OtherType>
         friend ComputationGraphNodeHandler<T> operator^(const OtherType &scaler, const ComputationGraphNodeHandler<T> &handler)
         {
             ComputationGraph<T> *graph = handler.graph;
-            auto scalerVariable = graph->CreateVariableNode(scaler);
-            std::stringstream ss;
-            ss << "PowerNode(" << scaler << ", " << handler.GetNodeName() << ")";
-            return graph->CreateFunctionNode(scalerVariable, handler, GraphOperation::Power, ss.str());
+            auto scalerVariable = graph->CreateConstantNode(scaler);
+            return scalerVariable ^ handler;
         }
 
         template <class OtherType>
         friend ComputationGraphNodeHandler<T> operator^(const ComputationGraphNodeHandler<T> &handler, const OtherType &scaler)
         {
             ComputationGraph<T> *graph = handler.graph;
-            auto scalerVariable = graph->CreateVariableNode(scaler);
-            std::stringstream ss;
-            ss << "PowerNode(" << handler.GetNodeName() << ", " << scaler << ")";
-            return graph->CreateFunctionNode(handler, scalerVariable, GraphOperation::Power, ss.str());
+            auto scalerVariable = graph->CreateConstantNode(scaler);
+            return handler ^ scalerVariable;
         }
 
         friend class ComputationGraph<T>;

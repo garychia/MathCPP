@@ -172,6 +172,12 @@ namespace Exceptions
     public:
         NodeNotFound(const std::string &message = "") : Exception(message) {}
     };
+
+    class GradientNotEvaluated : public Exception
+    {
+    public:
+        GradientNotEvaluated(const std::string &message = "") : Exception(message) {}
+    };
 }
 
 #endif
