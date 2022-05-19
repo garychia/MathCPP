@@ -162,6 +162,18 @@ namespace DataStructure
     }
 
     template <class T>
+    Matrix<T> &Matrix<T>::operator=(const Matrix<T> &other)
+    {
+        if (this != &other)
+        {
+            Container<Vector<T>>::operator=(other);
+            nRows = other.nRows;
+            nColumns = other.nColumns;
+        }
+        return *this;
+    }
+
+    template <class T>
     Vector<T> &Matrix<T>::operator[](const std::size_t &index)
     {
         try
