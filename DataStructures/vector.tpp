@@ -108,6 +108,17 @@ namespace DataStructure
     }
 
     template <class T>
+    template <class ScalerType>
+    auto Vector<T>::Add(const ScalerType &scaler) const
+    {
+        Vector<decltype(this->data[0] + scaler)> result(*this);
+#pragma omp parallel for schedule(dynamic)
+        for (std::size_t i = 0; i < Dimension(); i++)
+            result[i] += scaler;
+        return result;
+    }
+
+    template <class T>
     template <class OtherType>
     auto Vector<T>::operator+(const Vector<OtherType> &other) const
     {
@@ -123,6 +134,13 @@ namespace DataStructure
         {
             throw e;
         }
+    }
+
+    template <class T>
+    template <class ScalerType>
+    auto Vector<T>::operator+(const ScalerType &scaler) const
+    {
+        return this->Add(scaler);
     }
 
     template <class T>
@@ -166,6 +184,17 @@ namespace DataStructure
     }
 
     template <class T>
+    template <class ScalerType>
+    auto Vector<T>::Minus(const ScalerType &scaler) const
+    {
+        Vector<decltype(this->data[0] - scaler)> result(*this);
+#pragma omp parallel for schedule(dynamic)
+        for (std::size_t i = 0; i < Dimension(); i++)
+            result[i] -= scaler;
+        return result;
+    }
+
+    template <class T>
     template <class OtherType>
     auto Vector<T>::operator-(const Vector<OtherType> &other) const
     {
@@ -181,6 +210,13 @@ namespace DataStructure
         {
             throw e;
         }
+    }
+
+    template <class T>
+    template <class ScalerType>
+    auto Vector<T>::operator-(const ScalerType &scaler) const
+    {
+        return this->Minus(scaler);
     }
 
     template <class T>
