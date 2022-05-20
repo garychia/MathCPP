@@ -396,7 +396,7 @@ namespace DataStructure
     }
 
     template <class T>
-    ComputationGraphNodeHandler<T> ComputationGraphNodeHandler<T>::operator+(const ComputationGraphNodeHandler &other) const
+    ComputationGraphNodeHandler<T> ComputationGraphNodeHandler<T>::operator+(const ComputationGraphNodeHandler<T> &other) const
     {
         if (this->graph != other.graph)
             throw Exceptions::InvalidArgument(
@@ -410,7 +410,7 @@ namespace DataStructure
             ss.str());
     }
     template <class T>
-    ComputationGraphNodeHandler<T> ComputationGraphNodeHandler<T>::operator-(const ComputationGraphNodeHandler &other) const
+    ComputationGraphNodeHandler<T> ComputationGraphNodeHandler<T>::operator-(const ComputationGraphNodeHandler<T> &other) const
     {
         if (this->graph != other.graph)
             throw Exceptions::InvalidArgument(
@@ -425,7 +425,7 @@ namespace DataStructure
     }
 
     template <class T>
-    ComputationGraphNodeHandler<T> ComputationGraphNodeHandler<T>::operator*(const ComputationGraphNodeHandler &other) const
+    ComputationGraphNodeHandler<T> ComputationGraphNodeHandler<T>::operator*(const ComputationGraphNodeHandler<T> &other) const
     {
         if (this->graph != other.graph)
             throw Exceptions::InvalidArgument(
@@ -440,7 +440,7 @@ namespace DataStructure
     }
 
     template <class T>
-    ComputationGraphNodeHandler<T> ComputationGraphNodeHandler<T>::operator/(const ComputationGraphNodeHandler &other) const
+    ComputationGraphNodeHandler<T> ComputationGraphNodeHandler<T>::operator/(const ComputationGraphNodeHandler<T> &other) const
     {
         if (this->graph != other.graph)
             throw Exceptions::InvalidArgument(

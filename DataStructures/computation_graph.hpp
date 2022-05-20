@@ -216,11 +216,11 @@ namespace DataStructure
 
         void SetValue(const T &newValue) const;
 
-        ComputationGraphNodeHandler<T> operator+(const ComputationGraphNodeHandler &other) const;
-        ComputationGraphNodeHandler<T> operator-(const ComputationGraphNodeHandler &other) const;
-        ComputationGraphNodeHandler<T> operator*(const ComputationGraphNodeHandler &other) const;
-        ComputationGraphNodeHandler<T> operator/(const ComputationGraphNodeHandler &other) const;
-        ComputationGraphNodeHandler<T> operator^(const ComputationGraphNodeHandler &other) const;
+        ComputationGraphNodeHandler<T> operator+(const ComputationGraphNodeHandler<T> &other) const;
+        ComputationGraphNodeHandler<T> operator-(const ComputationGraphNodeHandler<T> &other) const;
+        ComputationGraphNodeHandler<T> operator*(const ComputationGraphNodeHandler<T> &other) const;
+        ComputationGraphNodeHandler<T> operator/(const ComputationGraphNodeHandler<T> &other) const;
+        ComputationGraphNodeHandler<T> operator^(const ComputationGraphNodeHandler<T> &other) const;
 
         template <class OtherType>
         friend ComputationGraphNodeHandler<T> operator+(const OtherType &scaler, const ComputationGraphNodeHandler<T> &handler)
@@ -304,6 +304,12 @@ namespace DataStructure
 
         friend class ComputationGraph<T>;
     };
+
+    template <class MatrixElementType>
+    class ComputationGraphNodeHandler<Matrix<MatrixElementType>>;
+
+    template <class MatrixElementType>
+    class ComputationGraph<Matrix<MatrixElementType>>;
 
 } // namespace DataStructures
 
