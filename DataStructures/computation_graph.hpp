@@ -31,7 +31,7 @@ namespace DataStructure
     template <class T>
     class ComputationGraph
     {
-    private:
+    protected:
         class ComputationGraphNode
         {
         protected:
@@ -170,7 +170,7 @@ namespace DataStructure
 
         ComputationGraphNodeHandler<T> CreateVariableNode(const T &value, const std::string &name = "VariableNode");
 
-        ComputationGraphNodeHandler<T> CreateFunctionNode(
+        virtual ComputationGraphNodeHandler<T> CreateFunctionNode(
             const ComputationGraphNodeHandler<T> &inputNodeHandler1,
             const ComputationGraphNodeHandler<T> &inputNodeHandler2,
             const GraphOperation &operation,
@@ -305,11 +305,15 @@ namespace DataStructure
         friend class ComputationGraph<T>;
     };
 
-    template <class MatrixElementType>
-    class ComputationGraphNodeHandler<Matrix<MatrixElementType>>;
-
-    template <class MatrixElementType>
-    class ComputationGraph<Matrix<MatrixElementType>>;
+    template <class T>
+    class MatrixComputationGraph : public ComputationGraph<Matrix<T>>
+    {
+        virtual ComputationGraphNodeHandler<Matrix<T>> CreateFunctionNode(
+            const ComputationGraphNodeHandler<Matrix<T>> &inputNodeHandler1,
+            const ComputationGraphNodeHandler<Matrix<T>> &inputNodeHandler2,
+            const GraphOperation &operation,
+            const std::string &name = "FunctionNode") override;
+    };
 
 } // namespace DataStructures
 
