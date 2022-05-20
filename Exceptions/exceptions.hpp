@@ -167,10 +167,10 @@ namespace Exceptions
         InvalidArgument(const std::string &message = "") : Exception(message) {}
     };
 
-    class NodeNotFound : public Exception
+    class NoImplementation : public Exception
     {
     public:
-        NodeNotFound(const std::string &message = "") : Exception(message) {}
+        NoImplementation(const std::string &message = "") : Exception(message) {}
     };
 
     class GradientNotEvaluated : public Exception

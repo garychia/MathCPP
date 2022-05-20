@@ -7,7 +7,7 @@ using namespace DataStructure;
 
 int main(void)
 {
-    ComputationGraph<float> graph;
+    ScalerComputationGraph<float> graph;
     auto x = graph.CreateVariableNode(12, "x");
     auto y = graph.CreateVariableNode(12, "y");
     3 * (x^3) + 5 * (x^2) - 12 * x + 37 * y;
