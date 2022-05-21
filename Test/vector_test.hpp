@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "../DataStructures/vector.hpp"
+#include "../DataStructures/Vector.hpp"
 
 using namespace DataStructure;
 

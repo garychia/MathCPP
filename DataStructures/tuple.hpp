@@ -4,8 +4,8 @@
 #include <sstream>
 #include <vector>
 
-#include "container.hpp"
-#include "../Exceptions/exceptions.hpp"
+#include "Container.hpp"
+#include "../Exceptions/Exceptions.hpp"
 
 namespace DataStructure
 {
@@ -123,6 +123,6 @@ namespace DataStructure
     };
 } // namespace Math
 
-#include "tuple.tpp"
+#include "Tuple.tpp"
 
 #endif

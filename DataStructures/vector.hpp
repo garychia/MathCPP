@@ -11,8 +11,8 @@
 #include <omp.h>
 #endif
 
-#include "tuple.hpp"
-#include "../Exceptions/exceptions.hpp"
+#include "Tuple.hpp"
+#include "../Exceptions/Exceptions.hpp"
 
 namespace DataStructure
 {
@@ -381,6 +381,6 @@ namespace DataStructure
     };
 }
 
-#include "vector.tpp"
+#include "Vector.tpp"
 
 #endif

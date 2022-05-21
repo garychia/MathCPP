@@ -5,8 +5,8 @@
 #include <sstream>
 #include <ostream>
 
-#include "container.hpp"
-#include "../Exceptions/exceptions.hpp"
+#include "Container.hpp"
+#include "../Exceptions/Exceptions.hpp"
 
 #define NUM_COMPONENTS 3
 #define X_INDEX 0
@@ -244,6 +244,6 @@ namespace DataStructure
 
 }
 
-#include "vector3d.tpp"
+#include "Vector3D.tpp"
 
 #endif

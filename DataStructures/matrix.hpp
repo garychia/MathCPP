@@ -5,11 +5,11 @@
 #include <functional>
 #include <type_traits>
 
-#include "container.hpp"
-#include "vector.hpp"
-#include "list.hpp"
-#include "tuple.hpp"
-#include "../Exceptions/exceptions.hpp"
+#include "Container.hpp"
+#include "Vector.hpp"
+#include "List.hpp"
+#include "Tuple.hpp"
+#include "../Exceptions/Exceptions.hpp"
 
 namespace DataStructure
 {

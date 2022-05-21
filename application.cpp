@@ -1,7 +1,7 @@
 #include <iostream>
 #include <memory>
 
-#include "DataStructures/computation_graph.hpp"
+#include "DataStructures/ScalerComputationGraph.hpp"
 
 using namespace DataStructure;
 

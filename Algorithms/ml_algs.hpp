@@ -3,9 +3,9 @@
 
 #include <functional>
 
-#include "../DataStructures/vector.hpp"
-#include "../DataStructures/matrix.hpp"
-#include "../DataStructures/list.hpp"
+#include "../DataStructures/Vector.hpp"
+#include "../DataStructures/Matrix.hpp"
+#include "../DataStructures/List.hpp"
 
 using namespace DataStructure;
 
@@ -80,6 +80,6 @@ namespace MLAlgs
 
 } // namespace MLAlgs
 
-#include "ml_algs.tpp"
+#include "ML_Algs.tpp"
 
 #endif
