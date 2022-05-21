@@ -44,43 +44,27 @@ namespace DataStructure
 
             virtual ~ComputationGraphNode() = default;
 
-            std::string GetName() const;
-
             virtual T Forward() = 0;
 
             virtual Tuple<T> Backward() = 0;
 
-            virtual void Reset();
+            virtual void Reset() = 0;
 
-            virtual void UpdateGradient(T partialGradient);
+            virtual void UpdateGradient(const T &partialGradient) = 0;
 
-            virtual void MarkGradientValuated();
+            std::string GetName() const;
 
-            virtual T GetGradient() const;
+            T GetGradient() const;
 
-            virtual T GetPartialGradient() const;
+            T GetPartialGradient() const;
+
+            bool IsGradientValuated() const;
+
+            void MarkGradientValuated();
 
             virtual std::string ToString() const;
         };
 
-        class ConstantNode : public ComputationGraphNode
-        {
-        protected:
-            T value;
-
-        public:
-            ConstantNode(const T &value, const std::string &nodeName = "ConstantNode");
-
-            T Forward() override;
-        };
-
-        class VariableNode : public ConstantNode
-        {
-        public:
-            VariableNode(const T &value, const std::string &nodeName = "VariableNode");
-
-            void SetValue(const T &newValue);
-        };
 
         class FunctionNode : public ComputationGraphNode
         {
@@ -96,49 +80,10 @@ namespace DataStructure
             ComputationGraphNode *GetSecondInput() const;
         };
 
-        class AddNode : public FunctionNode
-        {
-        public:
-            AddNode(ComputationGraphNode *input1, ComputationGraphNode *input2, const std::string &nodeName = "AddNode");
-
-            virtual T Forward() override;
-
-            virtual Tuple<T> Backward() override;
-        };
-
-        class MinusNode : public FunctionNode
-        {
-        public:
-            MinusNode(ComputationGraphNode *input1, ComputationGraphNode *input2, const std::string &nodeName = "MinusNode");
-
-            virtual T Forward() override;
-
-            virtual Tuple<T> Backward() override;
-        };
-
-        class MultiplyNode : public FunctionNode
-        {
-        public:
-            MultiplyNode(ComputationGraphNode *input1, ComputationGraphNode *input2, const std::string &nodeName = "MultiplyNode");
-
-            virtual T Forward() override;
-        };
-
-        class PowerNode : public FunctionNode
-        {
-        public:
-            PowerNode(ComputationGraphNode *input1, ComputationGraphNode *input2, const std::string &nodeName = "PowerNode");
-
-            virtual T Forward() override;
-
-            virtual Tuple<T> Backward() override;
-        };
-
         List<ComputationGraphNode *> nodes;
 
         List<FunctionNode *> funcNodes;
 
-    private:
         void reset() const;
 
     public:
@@ -162,7 +107,7 @@ namespace DataStructure
 
         T GetValue(const ComputationGraphNodeHandler<T> &handler) const;
 
-        void SetValue(const ComputationGraphNodeHandler<T> &handler, const T &newValue) const;
+        virtual void SetValue(const ComputationGraphNodeHandler<T> &handler, const T &newValue) const = 0;
 
         T GetGradient(const ComputationGraphNodeHandler<T> &handler) const;
 
@@ -296,44 +241,103 @@ namespace DataStructure
     class ScalerComputationGraph : public ComputationGraph<T>
     {
     private:
-        class ScalerConstantNode : public ConstantNode
+        class ScalerComputationGraphNode : public ComputationGraphNode
         {
         public:
-            ScalerConstantNode(const T& value, const std::string& nodeName = "ScalerConstantNode");
+            ScalerComputationGraphNode(const std::string& nodeName = "ScalerComputationGraphNode");
+
+            void Reset() override;
+
+            void UpdateGradient(const T& partialGradient) override;
+        };
+
+        class ConstantNode : public ScalerComputationGraphNode
+        {
+        protected:
+            T value;
+
+        public:
+            ConstantNode(const T& value, const std::string& nodeName = "ConstantNode");
+
+            T Forward() override;
 
             Tuple<T> Backward() override;
         };
 
-        class ScalerVariableNode : public VariableNode
+        class VariableNode : public ConstantNode
         {
         public:
-            ScalerVariableNode(const T& value, const std::string& nodeName = "ScalerVariableNode");
+            VariableNode(const T& value, const std::string& nodeName = "VariableNode");
+
+            void SetValue(const T& newValue);
+        };
+
+        class ScalerFunctionNode : public FunctionNode
+        {
+        public:
+            ScalerFunctionNode(class ComputationGraphNode* input1, class  ComputationGraphNode* input2, const std::string& nodeName = "ScalerFunctionNode");
+
+            void Reset() override;
+
+            void UpdateGradient(const T& partialGradient) override;
+        };
+
+        class AddNode : public ScalerFunctionNode
+        {
+        public:
+            AddNode(ComputationGraphNode* input1, ComputationGraphNode* input2, const std::string& nodeName = "AddNode");
+
+            T Forward() override;
 
             Tuple<T> Backward() override;
         };
 
-        class ScalerMultiplyNode : public MultiplyNode
+        class MinusNode : public ScalerFunctionNode
         {
         public:
-            ScalerMultiplyNode(class ComputationGraphNode* input1, class ComputationGraphNode* input2, const std::string& nodeName = "ScalerMultiplyNode");
+            MinusNode(class ComputationGraphNode* input1, class ComputationGraphNode* input2, const std::string& nodeName = "MinusNode");
+
+            T Forward() override;
 
             Tuple<T> Backward() override;
         };
 
-        class DivideNode : public FunctionNode
+        class MultiplyNode : public ScalerFunctionNode
+        {
+        public:
+            MultiplyNode(class ComputationGraphNode* input1, class ComputationGraphNode* input2, const std::string& nodeName = "ScalerMultiplyNode");
+
+            T Forward() override;
+
+            Tuple<T> Backward() override;
+        };
+
+        class DivideNode : public ScalerFunctionNode
         {
         public:
             DivideNode(class ComputationGraphNode* input1, class ComputationGraphNode* input2, const std::string& nodeName = "DivideNode");
 
-            virtual T Forward() override;
+            T Forward() override;
 
-            virtual Tuple<T> Backward() override;
+            Tuple<T> Backward() override;
+        };
+
+        class PowerNode : public ScalerFunctionNode
+        {
+        public:
+            PowerNode(class ComputationGraphNode* input1, class ComputationGraphNode* input2, const std::string& nodeName = "PowerNode");
+
+            T Forward() override;
+
+            Tuple<T> Backward() override;
         };
 
     public:
         T Forward() override;
 
         void Backward() override;
+
+        void SetValue(const ComputationGraphNodeHandler<T>& handler, const T& newValue) const override;
 
         ComputationGraphNodeHandler<T> CreateConstantNode(const T& value, const std::string& name) override;
 
@@ -344,30 +348,6 @@ namespace DataStructure
             const ComputationGraphNodeHandler<T>& inputNodeHandler2,
             const GraphOperation& operation,
             const std::string& name) override;
-    };
-
-    template <class T>
-    class MatrixComputationGraph : public ComputationGraph<Matrix<T>>
-    {
-    private:
-        class MatrixMultiplyNode : public MultiplyNode
-        {
-        public:
-            MatrixMultiplyNode(class ComputationGraphNode *input1, class ComputationGraphNode *input2, const std::string &nodeName = "MatrixMultiplyNode");
-
-            virtual Tuple<Matrix<T>> Backward() override;
-        };
-
-    public:
-        Matrix<T> Forward() override;
-
-        void Backward() override;
-
-        virtual ComputationGraphNodeHandler<Matrix<T>> CreateFunctionNode(
-            const ComputationGraphNodeHandler<Matrix<T>> &inputNodeHandler1,
-            const ComputationGraphNodeHandler<Matrix<T>> &inputNodeHandler2,
-            const GraphOperation &operation,
-            const std::string &name = "FunctionNode") override;
     };
 
 } // namespace DataStructures
