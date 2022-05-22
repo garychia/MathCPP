@@ -166,6 +166,18 @@ namespace Exceptions
     public:
         InvalidArgument(const std::string &message = "") : Exception(message) {}
     };
+
+    class NoImplementation : public Exception
+    {
+    public:
+        NoImplementation(const std::string &message = "") : Exception(message) {}
+    };
+
+    class GradientNotEvaluated : public Exception
+    {
+    public:
+        GradientNotEvaluated(const std::string &message = "") : Exception(message) {}
+    };
 }
 
 #endif

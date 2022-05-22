@@ -3,8 +3,8 @@
 
 #define INITIAL_SIZE 4
 
-#include "container.hpp"
-#include "../Exceptions/exceptions.hpp"
+#include "Container.hpp"
+#include "../Exceptions/Exceptions.hpp"
 
 namespace DataStructure
 {
@@ -52,22 +52,22 @@ namespace DataStructure
 
         /*
         Copy Constructor
-        @param other a List to be copied.
+        @param other a Container to be copied.
         */
-        List(const List<T> &other);
+        List(const Container<T> &other);
 
         /*
         Move Constructor
-        @param other a Vector to be moved.
+        @param other a Container to be moved.
         */
-        List(List &&other);
+        List(Container<T> &&other);
 
         /*
         Copy Assignment
         @param other a List.
         @return a reference to this List.
         */
-        virtual List<T> &operator=(const List<T> &other);
+        virtual List<T> &operator=(const Container<T> &other) override;
 
         /*
         Operator []

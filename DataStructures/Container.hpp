@@ -1,5 +1,5 @@
-#ifndef CONTAINER_H
-#define CONTAINER_H
+#ifndef CONTAINER_HPP
+#define CONTAINER_HPP
 
 #ifdef _OPENMP
 #include <omp.h>

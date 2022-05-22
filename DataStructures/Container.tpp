@@ -96,8 +96,8 @@ namespace DataStructure
     template <class T>
     Container<T>::Container(Container<T> &&other)
     {
-        size = move(other.size);
-        data = move(other.data);
+        size = std::move(other.size);
+        data = std::move(other.data);
         other.size = 0;
         other.data = nullptr;
     }

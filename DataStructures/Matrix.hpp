@@ -1,14 +1,15 @@
-#ifndef MATRIX_H
-#define MATRIX_H
+#ifndef MATRIX_HPP
+#define MATRIX_HPP
 
 #include <sstream>
 #include <functional>
+#include <type_traits>
 
-#include "container.hpp"
-#include "vector.hpp"
-#include "list.hpp"
-#include "tuple.hpp"
-#include "../Exceptions/exceptions.hpp"
+#include "Container.hpp"
+#include "Vector.hpp"
+#include "List.hpp"
+#include "Tuple.hpp"
+#include "../Exceptions/Exceptions.hpp"
 
 namespace DataStructure
 {
@@ -86,6 +87,13 @@ namespace DataStructure
         Matrix(Matrix<OtherType> &&other);
 
         /*
+        Copy Assignment
+        @param other a Matrix to be copied.
+        @return a reference to this Matrix.
+        */
+        virtual Matrix<T> &operator=(const Matrix<T> &other);
+
+        /*
         Accesses the vector at a given index.
         @return the vector at the given index.
         @throw IndexOutOfBound when the index exceeds the greatest possible index.
@@ -118,7 +126,7 @@ namespace DataStructure
         @throw InvalidArgument when the given matrix is empty.
         @throw EmptyMatrix when this matrix is empty.
         @throw MatrixShapeMismatch when the two shapes of the
-        matrices are different.
+        matrices do not match.
         */
         template <class OtherType>
         auto Add(const Matrix<OtherType> &other) const;
@@ -129,8 +137,8 @@ namespace DataStructure
         @return the result of the matrix addition.
         @throw InvalidArgument when the given matrix is empty.
         @throw EmptyMatrix when this matrix is empty.
-        @throw MatrixShapeMismatch when the two shapes of the
-        matrices are different.
+        @throw MatrixShapeMismatch when the shape of the first
+        matrix is not a multiple of that of the second.
         */
         template <class OtherType>
         auto operator+(const Matrix<OtherType> &other) const;
@@ -310,7 +318,8 @@ namespace DataStructure
         @param f a function that maps the value of an element to a new value.
         @return a new Matrix with the new values defined by f.
         */
-        Matrix<T> Map(const std::function<T(T)>& f) const;
+        template <class OtherType>
+        Matrix<OtherType> Map(const std::function<OtherType(T)>& f) const;
 
         /*
         Constructs an identity matrix.

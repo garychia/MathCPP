@@ -1,5 +1,5 @@
-#ifndef VECTOR_H
-#define VECTOR_H
+#ifndef VECTOR_HPP
+#define VECTOR_HPP
 
 #include <initializer_list>
 #include <array>
@@ -11,8 +11,8 @@
 #include <omp.h>
 #endif
 
-#include "tuple.hpp"
-#include "../Exceptions/exceptions.hpp"
+#include "Tuple.hpp"
+#include "../Exceptions/Exceptions.hpp"
 
 namespace DataStructure
 {
@@ -51,36 +51,36 @@ namespace DataStructure
 
         /*
         Copy Constructor
-        @param other a Vector to be copied.
+        @param other a Container to be copied.
         */
-        Vector(const Vector<T> &other);
+        Vector(const Container<T> &other);
 
         /*
         Copy Constructor
-        @param other a Vector to be copied.
+        @param other a Container to be copied.
         */
         template <class OtherType>
-        Vector(const Vector<OtherType> &other);
+        Vector(const Container<OtherType> &other);
 
         /*
         Move Constructor
-        @param other a Vector to be moved.
+        @param other a Container to be moved.
         */
-        Vector(Vector<T> &&other);
+        Vector(Container<T> &&other);
 
         /*
         Move Constructor
-        @param other a Vector to be moved.
+        @param other a Container to be moved.
         */
         template <class OtherType>
-        Vector(Vector<OtherType> &&other);
+        Vector(Container<OtherType> &&other);
 
         /*
         Copy Assignment
         @param other a Vector.
         @return a reference to this Vector.
         */
-        virtual Vector<T> &operator=(const Vector<T> &other);
+        virtual Vector<T> &operator=(const Container<T> &other) override;
 
         /*
         Copy Assignment
@@ -88,7 +88,7 @@ namespace DataStructure
         @return a reference to this Vector.
         */
         template <class OtherType>
-        Vector<T> &operator=(const Vector<OtherType> &other);
+        Vector<T> &operator=(const Container<OtherType> &other);
 
         /*
         Operator []
@@ -136,12 +136,28 @@ namespace DataStructure
         auto Add(const Vector<OtherType> &other) const;
 
         /*
+        Performs addition with a scaler.
+        @param scaler a scaler.
+        @return a Vector that is the result of the addition.
+        */
+        template <class ScalerType>
+        auto Add(const ScalerType &scaler) const;
+
+        /*
         Performs addition with another Vector. Reference: Vector.Add.
         @param other a Vector to be added.
         @return a Vector that is the result of the addition.
         */
         template <class OtherType>
         auto operator+(const Vector<OtherType> &other) const;
+
+        /*
+        Performs addition with a scaler. Reference: Vector.Add.
+        @param scaler a scaler to be added.
+        @return a Vector that is the result of the addition.
+        */
+        template <class ScalerType>
+        auto operator+(const ScalerType &scaler) const;
 
         /*
         Performs inplace addition with another Vector.
@@ -160,12 +176,28 @@ namespace DataStructure
         auto Minus(const Vector<OtherType> &other) const;
 
         /*
+        Performs subtraction with a scaler.
+        @param scaler a scaler to be subtracted.
+        @return a Vector that is the result of the subtraction.
+        */
+        template <class ScalerType>
+        auto Minus(const ScalerType &scaler) const;
+
+        /*
         Performs subtraction with another Vector. Reference: Vector.Minus.
         @param other a Vector to be subtracted.
         @return a Vector that is the result of the subtraction.
         */
         template <class OtherType>
         auto operator-(const Vector<OtherType> &other) const;
+
+        /*
+        Performs subtraction with a scaler. Reference: Vector.Minus.
+        @param scaler a scaler to be subtracted.
+        @return a Vector that is the result of the subtraction.
+        */
+        template <class ScalerType>
+        auto operator-(const ScalerType &scaler) const;
 
         /*
         Performs inplace subtraction with another Vector.
@@ -275,7 +307,8 @@ namespace DataStructure
         @param f a function that maps the value of an element to a new value.
         @return a new Vector with the new values defined by f.
         */
-        Vector<T> Map(const std::function<T(T)> &f) const;
+        template <class OtherType>
+        Vector<OtherType> Map(const std::function<OtherType(T)> &f) const;
 
         /*
         Generates a vector filled with zeros.
@@ -291,11 +324,63 @@ namespace DataStructure
         */
         static Vector<T> Combine(const std::initializer_list<Vector<T>> &vectors);
 
+        template <class ScalerType>
+        friend auto operator+(const ScalerType &scaler, const Vector<T> &v)
+        {
+            Vector<decltype(scaler + v[0])> result(v);
+#pragma omp parallel for
+            for (std::size_t i = 0; i < result.Dimension(); i++)
+                result[i] += scaler;
+            return result;
+        }
+
+        template <class ScalerType>
+        friend auto operator+(const Vector<T> &v, const ScalerType &scaler)
+        {
+            return scaler + v;
+        }
+
+        template <class ScalerType>
+        friend auto operator-(const ScalerType &scaler, const Vector<T> &v)
+        {
+            Vector<decltype(scaler - v[0])> result(v);
+#pragma omp parallel for
+            for (std::size_t i = 0; i < result.Dimension(); i++)
+                result[i] = scaler - result[i];
+            return result;
+        }
+
+        template <class ScalerType>
+        friend auto operator-(const Vector<T> &v, const ScalerType &scaler)
+        {
+            return v + (-scaler);
+        }
+
+        template <class ScalerType>
+        friend auto operator*(const ScalerType &scaler, const Vector<T> &v)
+        {
+            Vector<decltype(scaler * v[0])> result(v);
+#pragma omp parallel for
+            for (std::size_t i = 0; i < result.Dimension(); i++)
+                result[i] *= scaler;
+            return result;
+        }
+
+        template <class ScalerType>
+        friend auto operator/(const ScalerType &scaler, const Vector<T> &v)
+        {
+            Vector<decltype(scaler / v[0])> result(v);
+#pragma omp parallel for
+            for (std::size_t i = 0; i < result.Dimension(); i++)
+                result[i] = scaler / result[i];
+            return result;
+        }
+
         template <class OtherType>
         friend class Vector;
     };
 }
 
-#include "vector.tpp"
+#include "Vector.tpp"
 
 #endif

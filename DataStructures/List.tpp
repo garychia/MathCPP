@@ -48,22 +48,46 @@ namespace DataStructure
     }
 
     template <class T>
-    List<T>::List(const List<T> &other) : Container<T>(other)
+    List<T>::List(const Container<T> &other) : Container<T>(other)
     {
-        nElements = this->nElements;
+        try
+        {
+            const List<T> &otherList = dynamic_cast<const List<T> &>(other);
+            nElements = otherList.nElements;
+        }
+        catch (std::bad_cast)
+        {
+            nElements = other.Size();
+        }
     }
 
     template <class T>
-    List<T>::List(List &&other) : Container<T>(other)
+    List<T>::List(Container<T> &&other) : Container<T>(other)
     {
-        nElements = other.nElements;
+        try
+        {
+            List<T> &&otherList = dynamic_cast<List<T> &&>(other);
+            nElements = otherList.nElements;
+        }
+        catch (std::bad_cast)
+        {
+            nElements = other.Size();
+        }
     }
 
     template <class T>
-    List<T> &List<T>::operator=(const List<T> &other)
+    List<T> &List<T>::operator=(const Container<T> &other)
     {
         Container<T>::operator=(other);
-        nElements = this->nElements;
+        try
+        {
+            const List<T> &otherList = dynamic_cast<const List<T> &>(other);
+            nElements = otherList.nElements;
+        }
+        catch (std::bad_cast)
+        {
+            nElements = other.Size();
+        }
         return *this;
     }
 
@@ -78,7 +102,7 @@ namespace DataStructure
     }
 
     template <class T>
-    const T & List<T>::operator[](const std::size_t &index) const
+    const T &List<T>::operator[](const std::size_t &index) const
     {
         if (index > nElements - 1)
             throw Exceptions::IndexOutOfBound(

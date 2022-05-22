@@ -162,6 +162,18 @@ namespace DataStructure
     }
 
     template <class T>
+    Matrix<T> &Matrix<T>::operator=(const Matrix<T> &other)
+    {
+        if (this != &other)
+        {
+            Container<Vector<T>>::operator=(other);
+            nRows = other.nRows;
+            nColumns = other.nColumns;
+        }
+        return *this;
+    }
+
+    template <class T>
     Vector<T> &Matrix<T>::operator[](const std::size_t &index)
     {
         try
@@ -209,13 +221,12 @@ namespace DataStructure
                 "Matrix: Cannot perform addition with an empty matrix.");
         const auto otherShape = other.Shape();
         const auto thisShape = Shape();
-        if (thisShape[1] != otherShape[0])
+        if (!(thisShape[0] % otherShape[0] == 0 && thisShape[1] % otherShape[1] == 0))
         {
             std::stringstream errorMessageStream;
             errorMessageStream
-                << "Expected shape of the target matrix to be "
-                << thisShape
-                << "when performing addition."
+                << "Expected the numbers of rows and columns of the second matrix"
+                   " to be factors of these of the first matrix."
                 << std::endl;
             throw Exceptions::MatrixShapeMismatch(
                 thisShape,
@@ -226,7 +237,7 @@ namespace DataStructure
         Matrix<decltype((*this)[0][0] + other[0][0])> result(*this);
 #pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < nRows; i++)
-            result[i] += other[i];
+            result[i] += other[i % other.nRows];
         return result;
     }
 
@@ -264,13 +275,12 @@ namespace DataStructure
                 "Matrix: Cannot perform addition with an empty matrix.");
         const auto otherShape = other.Shape();
         const auto thisShape = Shape();
-        if (thisShape[1] != otherShape[0])
+        if (!(thisShape[0] % otherShape[0] == 0 && thisShape[1] % otherShape[1] == 0))
         {
             std::stringstream errorMessageStream;
             errorMessageStream
-                << "Expected shape of the target matrix to be "
-                << thisShape
-                << "when performing addition."
+                << "Expected the numbers of rows and columns of the second matrix"
+                   " to be factors of these of the first matrix."
                 << std::endl;
             throw Exceptions::MatrixShapeMismatch(
                 thisShape,
@@ -280,7 +290,7 @@ namespace DataStructure
 
 #pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < nRows; i++)
-            (*this)[i] += other[i];
+            (*this)[i] += other[i % other.nRows];
         return *this;
     }
 
@@ -296,13 +306,12 @@ namespace DataStructure
                 "Matrix: Cannot perform subtraction with an empty matrix.");
         const auto otherShape = other.Shape();
         const auto thisShape = Shape();
-        if (thisShape[1] != otherShape[0])
+        if (!(thisShape[0] % otherShape[0] == 0 && thisShape[1] % otherShape[1] == 0))
         {
             std::stringstream errorMessageStream;
             errorMessageStream
-                << "Expected shape of the target matrix to be "
-                << thisShape
-                << "when performing subtraction."
+                << "Expected the numbers of rows and columns of the second matrix"
+                   " to be factors of these of the first matrix."
                 << std::endl;
             throw Exceptions::MatrixShapeMismatch(
                 thisShape,
@@ -313,7 +322,7 @@ namespace DataStructure
         Matrix<decltype((*this)[0][0] + other[0][0])> result(*this);
 #pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < nRows; i++)
-            result[i] -= other[i];
+            result[i] -= other[i % other.nRows];
         return result;
     }
 
@@ -351,13 +360,12 @@ namespace DataStructure
                 "Matrix: Cannot perform subtraction with an empty matrix.");
         const auto otherShape = other.Shape();
         const auto thisShape = Shape();
-        if (thisShape[1] != otherShape[0])
+        if (!(thisShape[0] % otherShape[0] == 0 && thisShape[1] % otherShape[1] == 0))
         {
             std::stringstream errorMessageStream;
             errorMessageStream
-                << "Expected shape of the target matrix to be "
-                << thisShape
-                << "when performing subtraction."
+                << "Expected the numbers of rows and columns of the second matrix"
+                   " to be factors of these of the first matrix."
                 << std::endl;
             throw Exceptions::MatrixShapeMismatch(
                 thisShape,
@@ -367,7 +375,7 @@ namespace DataStructure
 
 #pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < nRows; i++)
-            (*this)[i] -= other[i];
+            (*this)[i] -= other[i % other.nRows];
         return *this;
     }
 
@@ -632,10 +640,10 @@ namespace DataStructure
     {
         Matrix<T> transpose(nColumns, nRows);
         std::size_t i, j;
-        #pragma omp parallel for private(j) schedule(dynamic) collapse(2)
-            for (i = 0; i < nColumns; i++)
-                for (j = 0; j < nRows; j++)
-                    transpose[i][j] = this->data[j][i];
+#pragma omp parallel for private(j) schedule(dynamic) collapse(2)
+        for (i = 0; i < nColumns; i++)
+            for (j = 0; j < nRows; j++)
+                transpose[i][j] = this->data[j][i];
         return transpose;
     }
 
@@ -651,9 +659,10 @@ namespace DataStructure
     }
 
     template <class T>
-    Matrix<T> Matrix<T>::Map(const std::function<T(T)> &f) const
+    template <class OtherType>
+    Matrix<OtherType> Matrix<T>::Map(const std::function<OtherType(T)> &f) const
     {
-        Matrix<T> result(*this);
+        Matrix<OtherType> result(*this);
 #pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < nRows; i++)
             result[i] = result[i].Map(f);

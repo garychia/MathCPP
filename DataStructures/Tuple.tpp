@@ -17,18 +17,18 @@ namespace DataStructure
     Tuple<T>::Tuple(const std::vector<T> &values) : Container<T>(values) {}
 
     template <class T>
-    Tuple<T>::Tuple(const Tuple<T> &other) : Container<T>(other) {}
+    Tuple<T>::Tuple(const Container<T> &other) : Container<T>(other) {}
 
     template <class T>
     template <class OtherType>
-    Tuple<T>::Tuple(const Tuple<OtherType> &other) : Container<T>(other) {}
+    Tuple<T>::Tuple(const Container<OtherType> &other) : Container<T>(other) {}
 
     template <class T>
-    Tuple<T>::Tuple(Tuple<T> &&other) : Container<T>(other) {}
+    Tuple<T>::Tuple(Container<T> &&other) : Container<T>(other) {}
 
     template <class T>
     template <class OtherType>
-    Tuple<T>::Tuple(Tuple<OtherType> &&other) : Container<T>(other) {}
+    Tuple<T>::Tuple(Container<OtherType> &&other) : Container<T>(other) {}
 
     template <class T>
     const T &Tuple<T>::operator[](const std::size_t &index) const
@@ -42,7 +42,7 @@ namespace DataStructure
     }
 
     template <class T>
-    Tuple<T> &Tuple<T>::operator=(const Tuple<T> &other)
+    Tuple<T> &Tuple<T>::operator=(const Container<T> &other)
     {
         Container<T>::operator=(other);
         return *this;
@@ -50,7 +50,7 @@ namespace DataStructure
 
     template <class T>
     template <class OtherType>
-    Tuple<T> &Tuple<T>::operator=(const Tuple<OtherType> &other)
+    Tuple<T> &Tuple<T>::operator=(const Container<OtherType> &other)
     {
         Container<T>::operator=(other);
         return *this;

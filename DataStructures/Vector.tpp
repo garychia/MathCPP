@@ -14,21 +14,21 @@ namespace DataStructure
     Vector<T>::Vector(const std::array<T, N> &arr) : Tuple<T>(arr) {}
 
     template <class T>
-    Vector<T>::Vector(const Vector<T> &other) : Tuple<T>(other) {}
+    Vector<T>::Vector(const Container<T> &other) : Tuple<T>(other) {}
 
     template <class T>
     template <class OtherType>
-    Vector<T>::Vector(const Vector<OtherType> &other) : Tuple<T>(other) {}
+    Vector<T>::Vector(const Container<OtherType> &other) : Tuple<T>(other) {}
 
     template <class T>
-    Vector<T>::Vector(Vector<T> &&other) : Tuple<T>(other) {}
+    Vector<T>::Vector(Container<T> &&other) : Tuple<T>(other) {}
 
     template <class T>
     template <class OtherType>
-    Vector<T>::Vector(Vector<OtherType> &&other) : Tuple<T>(other) {}
+    Vector<T>::Vector(Container<OtherType> &&other) : Tuple<T>(other) {}
 
     template <class T>
-    Vector<T> &Vector<T>::operator=(const Vector<T> &other)
+    Vector<T> &Vector<T>::operator=(const Container<T> &other)
     {
         Tuple<T>::operator=(other);
         return *this;
@@ -36,7 +36,7 @@ namespace DataStructure
 
     template <class T>
     template <class OtherType>
-    Vector<T> &Vector<T>::operator=(const Vector<OtherType> &other)
+    Vector<T> &Vector<T>::operator=(const Container<OtherType> &other)
     {
         Tuple<T>::operator=(other);
         return *this;
@@ -97,13 +97,24 @@ namespace DataStructure
         else if (other.size == 0)
             throw Exceptions::InvalidArgument(
                 "Vector: Cannot perform addtion on the given empty vector.");
-        else if (Dimension() != other.Dimension())
+        else if (Dimension() % other.Dimension() != 0)
             throw Exceptions::InvalidArgument(
-                "Vector: Cannot perform addtion on vectors with different dimensions.");
+                "Vector: Expected the dimension of the second vector to be a factor of that of the first.");
         Vector<decltype(this->data[0] + other[0])> result(*this);
 #pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < Dimension(); i++)
-            result[i] += other[i];
+            result[i] += other[i % other.Dimension()];
+        return result;
+    }
+
+    template <class T>
+    template <class ScalerType>
+    auto Vector<T>::Add(const ScalerType &scaler) const
+    {
+        Vector<decltype(this->data[0] + scaler)> result(*this);
+#pragma omp parallel for schedule(dynamic)
+        for (std::size_t i = 0; i < Dimension(); i++)
+            result[i] += scaler;
         return result;
     }
 
@@ -126,6 +137,13 @@ namespace DataStructure
     }
 
     template <class T>
+    template <class ScalerType>
+    auto Vector<T>::operator+(const ScalerType &scaler) const
+    {
+        return this->Add(scaler);
+    }
+
+    template <class T>
     template <class OtherType>
     Vector<T> &Vector<T>::operator+=(const Vector<OtherType> &other)
     {
@@ -135,12 +153,12 @@ namespace DataStructure
         else if (other.Size() == 0)
             throw Exceptions::InvalidArgument(
                 "Vector: Cannot perform addtion on the given empty vector.");
-        else if (Dimension() != other.Dimension())
+        else if (Dimension() % other.Dimension() != 0)
             throw Exceptions::InvalidArgument(
-                "Vector: Cannot perform addtion on vectors with different dimensions.");
+                "Vector: Expected the dimension of the second vector to be a factor of that of the first.");
 #pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < Dimension(); i++)
-            this->data[i] += other[i];
+            this->data[i] += other[i % other.Dimension()];
         return *this;
     }
 
@@ -154,14 +172,25 @@ namespace DataStructure
         else if (other.size == 0)
             throw Exceptions::InvalidArgument(
                 "Vector: Cannot perform subtraction on the given empty vector.");
-        else if (Dimension() != other.Dimension())
+        else if (Dimension() % other.Dimension() != 0)
             throw Exceptions::InvalidArgument(
-                "Vector: Cannot perform subtraction on vectors with different dimensions.");
+                "Vector: Expected the dimension of the second vector to be a factor of that of the first.");
 
         Vector<decltype(this->data[0] - other[0])> result(*this);
 #pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < Dimension(); i++)
-            result[i] -= other[i];
+            result[i] -= other[i % other.Dimension()];
+        return result;
+    }
+
+    template <class T>
+    template <class ScalerType>
+    auto Vector<T>::Minus(const ScalerType &scaler) const
+    {
+        Vector<decltype(this->data[0] - scaler)> result(*this);
+#pragma omp parallel for schedule(dynamic)
+        for (std::size_t i = 0; i < Dimension(); i++)
+            result[i] -= scaler;
         return result;
     }
 
@@ -184,6 +213,13 @@ namespace DataStructure
     }
 
     template <class T>
+    template <class ScalerType>
+    auto Vector<T>::operator-(const ScalerType &scaler) const
+    {
+        return this->Minus(scaler);
+    }
+
+    template <class T>
     template <class OtherType>
     Vector<T> &Vector<T>::operator-=(const Vector<OtherType> &other)
     {
@@ -193,13 +229,13 @@ namespace DataStructure
         else if (other.Size() == 0)
             throw Exceptions::InvalidArgument(
                 "Vector: Cannot perform subtraction on the given empty vector.");
-        else if (Dimension() != other.Dimension())
+        else if (Dimension() % other.Dimension() != 0)
             throw Exceptions::InvalidArgument(
-                "Vector: Cannot perform subtraction on vectors with different dimensions.");
+                "Vector: Expected the dimension of the second vector to be a factor of that of the first.");
 
 #pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < Dimension(); i++)
-            this->data[i] -= other[i];
+            this->data[i] -= other[i % other.Dimension()];
         return *this;
     }
 
@@ -238,9 +274,9 @@ namespace DataStructure
         if (this->size == 0)
             throw Exceptions::EmptyVector(
                 "Vector: Cannot perform scaling on an empty vector.");
-        if (this->size != other.Size())
+        if (this->Dimension() != other.Dimension())
             throw Exceptions::InvalidArgument(
-                "Vector: Cannot perform elmenet-wise ");
+                "Vector: Cannot perform elmenet-wise multiplication on vectors with different dimensions.");
         Vector<decltype((*this)[0] * other[0])> result(*this);
 #pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < this->size; i++)
@@ -384,9 +420,10 @@ namespace DataStructure
     }
 
     template <class T>
-    Vector<T> Vector<T>::Map(const std::function<T(T)> &f) const
+    template <class OtherType>
+    Vector<OtherType> Vector<T>::Map(const std::function<OtherType(T)> &f) const
     {
-        Vector<T> result(*this);
+        Vector<OtherType> result(*this);
 #pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < this->size; i++)
             result[i] = f(result[i]);

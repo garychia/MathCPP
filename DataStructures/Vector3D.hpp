@@ -1,12 +1,12 @@
-#ifndef VECTOR3D_H
-#define VECTOR3D_H
+#ifndef VECTOR3D_HPP
+#define VECTOR3D_HPP
 
 #include <cmath>
 #include <sstream>
 #include <ostream>
 
-#include "container.hpp"
-#include "../Exceptions/exceptions.hpp"
+#include "Container.hpp"
+#include "../Exceptions/Exceptions.hpp"
 
 #define NUM_COMPONENTS 3
 #define X_INDEX 0
@@ -239,11 +239,11 @@ namespace DataStructure
         */
         void Normalize();
 
-        friend class std::ostream;
+        friend std::ostream;
     };
 
 }
 
-#include "vector3d.tpp"
+#include "Vector3D.tpp"
 
 #endif
