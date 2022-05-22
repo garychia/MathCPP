@@ -3,7 +3,7 @@
 
 #include <cstddef>
 
-#include "../DataStructures/Tuple.hpp"
+#include "Tuple.hpp"
 
 namespace Algorithms
 {

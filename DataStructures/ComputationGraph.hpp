@@ -11,8 +11,8 @@
 
 #include "List.hpp"
 #include "Tuple.hpp"
-#include "../Exceptions/Exceptions.hpp"
-#include "../Algorithms/Math.hpp"
+#include "Exceptions.hpp"
+#include "Math.hpp"
 
 namespace DataStructure
 {

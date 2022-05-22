@@ -1,8 +1,8 @@
 #ifndef MATH_HPP
 #define MATH_HPP
 
-#include "../DataStructures/vector.hpp"
-#include "../DataStructures/matrix.hpp"
+#include "Vector.hpp"
+#include "Matrix.hpp"
 
 #include <cmath>
 

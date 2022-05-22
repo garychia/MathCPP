@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "Container.hpp"
-#include "../Exceptions/Exceptions.hpp"
+#include "Exceptions.hpp"
 
 namespace DataStructure
 {

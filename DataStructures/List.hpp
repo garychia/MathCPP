@@ -4,7 +4,7 @@
 #define INITIAL_SIZE 4
 
 #include "Container.hpp"
-#include "../Exceptions/Exceptions.hpp"
+#include "Exceptions.hpp"
 
 namespace DataStructure
 {

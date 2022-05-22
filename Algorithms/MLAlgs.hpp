@@ -3,9 +3,9 @@
 
 #include <functional>
 
-#include "../DataStructures/Vector.hpp"
-#include "../DataStructures/Matrix.hpp"
-#include "../DataStructures/List.hpp"
+#include "Vector.hpp"
+#include "Matrix.hpp"
+#include "List.hpp"
 
 using namespace DataStructure;
 

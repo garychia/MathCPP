@@ -6,7 +6,7 @@
 #include <ostream>
 
 #include "Container.hpp"
-#include "../Exceptions/Exceptions.hpp"
+#include "Exceptions.hpp"
 
 #define NUM_COMPONENTS 3
 #define X_INDEX 0

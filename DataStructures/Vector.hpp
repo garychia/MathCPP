@@ -12,7 +12,7 @@
 #endif
 
 #include "Tuple.hpp"
-#include "../Exceptions/Exceptions.hpp"
+#include "Exceptions.hpp"
 
 namespace DataStructure
 {
