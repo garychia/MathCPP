@@ -80,6 +80,6 @@ namespace MLAlgs
 
 } // namespace MLAlgs
 
-#include "ML_Algs.tpp"
+#include "MLAlgs.tpp"
 
 #endif
