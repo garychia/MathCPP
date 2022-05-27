@@ -706,4 +706,15 @@ namespace DataStructure
             translationM[i][n - 1] = deltas[i];
         return translationM;
     }
-} // namespace Math
+
+    template <class T>
+    Matrix<T> Matrix<T>::Scaling(const Vector<T>& factors)
+    {
+        const std::size_t n = factors.Size() + 1;
+        auto scalingM = Identity(n);
+#pragma omp parallel for schedule(dynamic)
+        for (std::size_t i = 0; i < n - 1; i++)
+            scalingM[i][i] *= factors[i];
+        return scalingM;
+    }
+} // namespace DataStructure

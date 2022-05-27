@@ -344,6 +344,13 @@ namespace DataStructure
         */
         static Matrix<T> Translation(const Vector<T>& deltas);
 
+        /*
+        Constructs a scaling matrix.
+        @param factors a vector having the factors on each axis.
+        @return the scaling matrix defined by factors.
+        */
+        static Matrix<T> Scaling(const Vector<T>& factors);
+
         template <class OtherType>
         friend class Matrix;
     };

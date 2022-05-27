@@ -7,9 +7,9 @@ using namespace DataStructure;
 
 int main(void)
 {
-    Vector<float> transV({ 4, 5, 9 });
-    Matrix<float> transM = Matrix<float>::Translation(transV);
-    std::cout << "Translation Vector:\n" << transV << std::endl;
-    std::cout << "Translation Matrix:\n" << transM << std::endl;
+    Vector<float> factors({ 4, 5, 9 });
+    Matrix<float> scaleM = Matrix<float>::Scaling(factors);
+    std::cout << "Scaling Vector:\n" << factors << std::endl;
+    std::cout << "Scaling Matrix:\n" << scaleM << std::endl;
     return 0;
 }
