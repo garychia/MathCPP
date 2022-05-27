@@ -342,6 +342,6 @@ namespace DataStructure
     };
 } // namespace Math
 
-#include "matrix.tpp"
+#include "Matrix.tpp"
 
 #endif

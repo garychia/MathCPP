@@ -6,14 +6,6 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_CXX_FLAGS "-Wall")
 
-add_subdirectory(Algorithms)
-add_subdirectory(DataStructures)
-add_subdirectory(Exceptions)
-
-set_target_properties(Algorithms PROPERTIES LINKER_LANGUAGE CXX)
-set_target_properties(DataStructures PROPERTIES LINKER_LANGUAGE CXX)
-set_target_properties(Exceptions PROPERTIES LINKER_LANGUAGE CXX)
-
 add_executable(MathCPP application.cpp)
 
 target_include_directories(MathCPP PUBLIC

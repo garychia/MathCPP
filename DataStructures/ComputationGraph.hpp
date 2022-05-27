@@ -151,7 +151,9 @@ namespace DataStructure
         friend ComputationGraphNodeHandler<T> operator+(const OtherType &scaler, const ComputationGraphNodeHandler<T> &handler)
         {
             ComputationGraph<T> *graph = handler.graph;
-            auto scalerVariable = graph->CreateConstantNode(scaler);
+            std::stringstream ss;
+            ss << "Constant(" << scaler << ")";
+            auto scalerVariable = graph->CreateConstantNode(scaler, ss.str());
             return scalerVariable + handler;
         }
 
@@ -159,7 +161,9 @@ namespace DataStructure
         friend ComputationGraphNodeHandler<T> operator+(const ComputationGraphNodeHandler<T> &handler, const OtherType &scaler)
         {
             ComputationGraph<T> *graph = handler.graph;
-            auto scalerVariable = graph->CreateConstantNode(scaler);
+            std::stringstream ss;
+            ss << "Constant(" << scaler << ")";
+            auto scalerVariable = graph->CreateConstantNode(scaler, ss.str());
             return handler + scalerVariable;
         }
 
@@ -167,7 +171,9 @@ namespace DataStructure
         friend ComputationGraphNodeHandler<T> operator-(const OtherType &scaler, const ComputationGraphNodeHandler<T> &handler)
         {
             ComputationGraph<T> *graph = handler.graph;
-            auto scalerVariable = graph->CreateConstantNode(scaler);
+            std::stringstream ss;
+            ss << "Constant(" << scaler << ")";
+            auto scalerVariable = graph->CreateConstantNode(scaler, ss.str());
             return scalerVariable - handler;
         }
 
@@ -175,7 +181,9 @@ namespace DataStructure
         friend ComputationGraphNodeHandler<T> operator-(const ComputationGraphNodeHandler<T> &handler, const OtherType &scaler)
         {
             ComputationGraph<T> *graph = handler.graph;
-            auto scalerVariable = graph->CreateConstantNode(scaler);
+            std::stringstream ss;
+            ss << "Constant(" << scaler << ")";
+            auto scalerVariable = graph->CreateConstantNode(scaler, ss.str());
             return handler - scalerVariable;
         }
 
@@ -183,7 +191,9 @@ namespace DataStructure
         friend ComputationGraphNodeHandler<T> operator*(const OtherType &scaler, const ComputationGraphNodeHandler<T> &handler)
         {
             ComputationGraph<T> *graph = handler.graph;
-            auto scalerVariable = graph->CreateConstantNode(scaler);
+            std::stringstream ss;
+            ss << "Constant(" << scaler << ")";
+            auto scalerVariable = graph->CreateConstantNode(scaler, ss.str());
             return scalerVariable * handler;
         }
 
@@ -191,7 +201,9 @@ namespace DataStructure
         friend ComputationGraphNodeHandler<T> operator*(const ComputationGraphNodeHandler<T> &handler, const OtherType &scaler)
         {
             ComputationGraph<T> *graph = handler.graph;
-            auto scalerVariable = graph->CreateConstantNode(scaler);
+            std::stringstream ss;
+            ss << "Constant(" << scaler << ")";
+            auto scalerVariable = graph->CreateConstantNode(scaler, ss.str());
             return handler * scalerVariable;
         }
 
@@ -199,7 +211,9 @@ namespace DataStructure
         friend ComputationGraphNodeHandler<T> operator/(const OtherType &scaler, const ComputationGraphNodeHandler<T> &handler)
         {
             ComputationGraph<T> *graph = handler.graph;
-            auto scalerVariable = graph->CreateConstantNode(scaler);
+            std::stringstream ss;
+            ss << "Constant(" << scaler << ")";
+            auto scalerVariable = graph->CreateConstantNode(scaler, ss.str());
             return scalerVariable / handler;
         }
 
@@ -207,7 +221,9 @@ namespace DataStructure
         friend ComputationGraphNodeHandler<T> operator/(const ComputationGraphNodeHandler<T> &handler, const OtherType &scaler)
         {
             ComputationGraph<T> *graph = handler.graph;
-            auto scalerVariable = graph->CreateConstantNode(scaler);
+            std::stringstream ss;
+            ss << "Constant(" << scaler << ")";
+            auto scalerVariable = graph->CreateConstantNode(scaler, ss.str());
             return handler / scalerVariable;
         }
 
@@ -215,8 +231,9 @@ namespace DataStructure
         friend ComputationGraphNodeHandler<T> operator^(const OtherType &scaler, const ComputationGraphNodeHandler<T> &handler)
         {
             ComputationGraph<T> *graph = handler.graph;
+            std::stringstream ss;
             ss << "Constant(" << scaler << ")";
-            auto scalerVariable = graph->CreateConstantNode(scaler);
+            auto scalerVariable = graph->CreateConstantNode(scaler, ss.str());
             return scalerVariable ^ handler;
         }
 
@@ -224,7 +241,9 @@ namespace DataStructure
         friend ComputationGraphNodeHandler<T> operator^(const ComputationGraphNodeHandler<T> &handler, const OtherType &scaler)
         {
             ComputationGraph<T> *graph = handler.graph;
-            auto scalerVariable = graph->CreateConstantNode(scaler);
+            std::stringstream ss;
+            ss << "Constant(" << scaler << ")";
+            auto scalerVariable = graph->CreateConstantNode(scaler, ss.str());
             return handler ^ scalerVariable;
         }
 

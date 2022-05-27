@@ -9,7 +9,7 @@ namespace DataStructure
     class ScalerComputationGraph : public ComputationGraph<T>
     {
     private:
-        class ScalerComputationGraphNode : public ComputationGraphNode
+        class ScalerComputationGraphNode : public ComputationGraph<T>::ComputationGraphNode
         {
         public:
             ScalerComputationGraphNode(const std::string& nodeName = "ScalerComputationGraphNode");
@@ -40,10 +40,10 @@ namespace DataStructure
             void SetValue(const T& newValue);
         };
 
-        class ScalerFunctionNode : public FunctionNode
+        class ScalerFunctionNode : public ComputationGraph<T>::FunctionNode
         {
         public:
-            ScalerFunctionNode(class ComputationGraphNode* input1, class  ComputationGraphNode* input2, const std::string& nodeName = "ScalerFunctionNode");
+            ScalerFunctionNode(class ComputationGraph<T>::ComputationGraphNode* input1, class  ComputationGraph<T>::ComputationGraphNode* input2, const std::string& nodeName = "ScalerFunctionNode");
 
             void Reset() override;
 
@@ -53,7 +53,7 @@ namespace DataStructure
         class AddNode : public ScalerFunctionNode
         {
         public:
-            AddNode(ComputationGraphNode* input1, ComputationGraphNode* input2, const std::string& nodeName = "AddNode");
+            AddNode(class ComputationGraph<T>::ComputationGraphNode* input1, class ComputationGraph<T>::ComputationGraphNode* input2, const std::string& nodeName = "AddNode");
 
             T Forward() override;
 
@@ -63,7 +63,7 @@ namespace DataStructure
         class MinusNode : public ScalerFunctionNode
         {
         public:
-            MinusNode(class ComputationGraphNode* input1, class ComputationGraphNode* input2, const std::string& nodeName = "MinusNode");
+            MinusNode(class ComputationGraph<T>::ComputationGraphNode* input1, class ComputationGraph<T>::ComputationGraphNode* input2, const std::string& nodeName = "MinusNode");
 
             T Forward() override;
 
@@ -73,7 +73,7 @@ namespace DataStructure
         class MultiplyNode : public ScalerFunctionNode
         {
         public:
-            MultiplyNode(class ComputationGraphNode* input1, class ComputationGraphNode* input2, const std::string& nodeName = "ScalerMultiplyNode");
+            MultiplyNode(class ComputationGraph<T>::ComputationGraphNode* input1, class ComputationGraph<T>::ComputationGraphNode* input2, const std::string& nodeName = "ScalerMultiplyNode");
 
             T Forward() override;
 
@@ -83,7 +83,7 @@ namespace DataStructure
         class DivideNode : public ScalerFunctionNode
         {
         public:
-            DivideNode(class ComputationGraphNode* input1, class ComputationGraphNode* input2, const std::string& nodeName = "DivideNode");
+            DivideNode(class ComputationGraph<T>::ComputationGraphNode* input1, class ComputationGraph<T>::ComputationGraphNode* input2, const std::string& nodeName = "DivideNode");
 
             T Forward() override;
 
@@ -93,7 +93,7 @@ namespace DataStructure
         class PowerNode : public ScalerFunctionNode
         {
         public:
-            PowerNode(class ComputationGraphNode* input1, class ComputationGraphNode* input2, const std::string& nodeName = "PowerNode");
+            PowerNode(class ComputationGraph<T>::ComputationGraphNode* input1, class ComputationGraph<T>::ComputationGraphNode* input2, const std::string& nodeName = "PowerNode");
 
             T Forward() override;
 
