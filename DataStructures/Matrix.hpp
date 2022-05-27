@@ -337,6 +337,13 @@ namespace DataStructure
         */
         static Matrix<T> Diagonal(const Vector<T>& values);
 
+        /*
+        Constructs a translation matrix.
+        @param deltas a translation vector.
+        @return the translation matrix.
+        */
+        static Matrix<T> Translation(const Vector<T>& deltas);
+
         template <class OtherType>
         friend class Matrix;
     };

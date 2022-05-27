@@ -695,4 +695,15 @@ namespace DataStructure
             result[i][i] = values[i];
         return result;
     }
+
+    template <class T>
+    Matrix<T> Matrix<T>::Translation(const Vector<T>& deltas)
+    {
+        const std::size_t n = deltas.Size() + 1;
+        auto translationM = Identity(n);
+#pragma omp parallel for schedule(dynamic)
+        for (std::size_t i = 0; i < n - 1; i++)
+            translationM[i][n - 1] = deltas[i];
+        return translationM;
+    }
 } // namespace Math
