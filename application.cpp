@@ -1,15 +1,13 @@
 #include <iostream>
 #include <memory>
 
-#include "Matrix.hpp"
+#include "Math.hpp"
 
-using namespace DataStructure;
+using namespace Math;
 
 int main(void)
 {
-    Vector<float> factors({ 4, 5, 9 });
-    Matrix<float> scaleM = Matrix<float>::Scaling(factors);
-    std::cout << "Scaling Vector:\n" << factors << std::endl;
-    std::cout << "Scaling Matrix:\n" << scaleM << std::endl;
+    std::cout << "e^23 = " << Exponent(23.0) << std::endl;
+    std::cout << "ln(e^23) = " << NaturalLog<double>(Exponent<double>(23)) << std::endl;
     return 0;
 }
