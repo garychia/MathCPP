@@ -721,6 +721,17 @@ namespace DataStructure
     }
 
     template <class T>
+    Matrix<T> Matrix<T>::Rotation2D(const T &radians)
+    {
+        const T sinValue = Math::Sine(radians);
+        const T cosValue = Math::Cosine(radians);
+        return Matrix<T>(
+            {{cosValue, -sinValue, 0},
+             {sinValue, cosValue, 0},
+             {0, 0, 1}});
+    }
+
+    template <class T>
     Matrix<T> Matrix<T>::Rotation3D(const Vector<T> &axis, const T &radians)
     {
         if (axis.Dimension() != 3)
