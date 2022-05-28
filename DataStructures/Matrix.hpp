@@ -310,11 +310,13 @@ namespace DataStructure
         /*
         Constructs a new Matrix by flattening this Matrix in row-major or
         column-major order.
-        @param rowMajor a bool set to true if flattening in row-major
-        or false if flattening in column-major order.
+        @param rowMajor true if flattening in row-major. False if flattening
+        in column-major order.
+        @param keepInRow true if all the elements will be placed in a
+        single row. False if they will be placed in a single column.
         @return a Matrix with a single row or column.
         */
-        Matrix<T> Flattened(bool rowMajor = true) const;
+        Matrix<T> Flattened(bool rowMajor = true, bool keepInRow = true) const;
 
         /*
         Calculate the summation of all the elements of this Matrix.

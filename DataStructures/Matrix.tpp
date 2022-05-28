@@ -650,22 +650,32 @@ namespace DataStructure
     }
 
     template <class T>
-    Matrix<T> Matrix<T>::Flattened(bool rowMajor) const
+    Matrix<T> Matrix<T>::Flattened(bool rowMajor, bool keepInRow) const
     {
+        auto flattened = keepInRow ?
+            Matrix<T>(1, nRows * nColumns) :
+            Matrix<T>(nRows * nColumns, 1);
         if (rowMajor)
         {
-            Matrix<T> flatten(1, nRows * nColumns);
-            auto &singleRow = flatten[0];
             for (std::size_t i = 0; i < nRows; i++)
                 for (std::size_t j = 0; j < nColumns; j++)
-                    singleRow[i * nColumns + j] = (*this)[i][j];
-            return flatten;
+                {
+                    if (keepInRow)
+                        flattened[0][i * nColumns + j] = (*this)[i][j];
+                    else
+                        flattened[i * nColumns + j][0] = (*this)[i][j];
+                }
+            return flattened;
         }
-        Matrix<T> flatten(nRows * nColumns, 1);
         for (std::size_t i = 0; i < nColumns; i++)
             for (std::size_t j = 0; j < nRows; j++)
-                flatten[i * nRows + j][0] = (*this)[j][i];
-        return flatten;
+            {
+                if (keepInRow)
+                    flattened[0][i * nRows + j] = (*this)[j][i];
+                else
+                    flattened[i * nRows + j][0] = (*this)[j][i];
+            }
+        return flattened;
     }
 
     template <class T>
