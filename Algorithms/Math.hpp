@@ -30,6 +30,22 @@ namespace Math
     T NaturalLog(const T& x);
 
     /*
+    Sine Function
+    @param x the input to the function in radians.
+    @return the value of sine of x.
+    */
+    template <class T>
+    T Sine(const T& x);
+
+    /*
+    Cosine Function
+    @param x the input to the function in radians.
+    @return the value of cosine of x.
+    */
+    template <class T>
+    T Cosine(const T& x);
+
+    /*
     Calculates the power of a scaler.
     @param scaler a scaler.
     @param n the exponent.

@@ -1,5 +1,7 @@
-#define EPSILON 0.000001
+#define EPSILON 0.00000001
 #define LN_2 0.69314718
+#define PI 3.14159265
+#define PI_TIMES_2 6.28318531
 
 namespace Math
 {
@@ -50,6 +52,52 @@ namespace Math
             denominator++;
         }
         return result + exponent * LN_2;
+    }
+
+    template <class T>
+    T Sine(const T& x)
+    {
+        T input = x < 0 ? -x : x;
+        while (input >= PI_TIMES_2)
+            input -= PI_TIMES_2;
+        T squaredInput = input * input;
+        T factor = 1;
+        T numerator = input;
+        T denominator = 1;
+        T result = numerator / denominator;
+        std::size_t i = 3;
+        while (numerator / denominator > EPSILON)
+        {
+            factor = -factor;
+            numerator *= squaredInput;
+            denominator *= i * (i - 1);
+            i += 2;
+            result += factor * numerator / denominator;
+        }
+        return x < 0 ? -result : result;
+    }
+
+    template <class T>
+    T Cosine(const T& x)
+    {
+        T input = x < 0 ? -x : x;
+        while (input >= PI_TIMES_2)
+            input -= PI_TIMES_2;
+        T squaredInput = input * input;
+        T factor = 1;
+        T numerator = 1;
+        T denominator = 1;
+        T result = numerator / denominator;
+        std::size_t i = 2;
+        while (numerator / denominator > EPSILON)
+        {
+            factor = -factor;
+            numerator *= squaredInput;
+            denominator *= i * (i - 1);
+            i += 2;
+            result += factor * numerator / denominator;
+        }
+        return result;
     }
 
     template <class T, class PowerType>
