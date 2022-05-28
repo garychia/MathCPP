@@ -650,6 +650,25 @@ namespace DataStructure
     }
 
     template <class T>
+    Matrix<T> Matrix<T>::Flattened(bool rowMajor) const
+    {
+        if (rowMajor)
+        {
+            Matrix<T> flatten(1, nRows * nColumns);
+            auto &singleRow = flatten[0];
+            for (std::size_t i = 0; i < nRows; i++)
+                for (std::size_t j = 0; j < nColumns; j++)
+                    singleRow[i * nColumns + j] = (*this)[i][j];
+            return flatten;
+        }
+        Matrix<T> flatten(nRows * nColumns, 1);
+        for (std::size_t i = 0; i < nColumns; i++)
+            for (std::size_t j = 0; j < nRows; j++)
+                flatten[i * nRows + j][0] = (*this)[j][i];
+        return flatten;
+    }
+
+    template <class T>
     T Matrix<T>::Sum() const
     {
         T total = 0;

@@ -7,24 +7,18 @@ using namespace DataStructure;
 
 int main(void)
 {
-    float angle = PI / 2;
-    auto rotation = Matrix<float>::Rotation2D(angle);
-    Matrix<float> point({{32.3}, {64.3}, {1}});
-    std::cout << "Rotating ("
-              << point[0][0]
-              << ", "
-              << point[1][0]
-              << ") by "
-              << angle
-              << " radians."
-              << std::endl;
-    std::cout << "Rotation Matrix:" << std::endl;
-    std::cout << rotation << std::endl;
-    auto pointAfterRotate = rotation * point;
-    std::cout << "The point after the rotation is ("
-              << pointAfterRotate[0][0]
-              << ", "
-              << pointAfterRotate[1][0]
-              << ").\n";
+    Matrix<int> a(
+        {
+            {3, 45, 63, 434},
+            {23, 43, 3, 12},
+            {3, 4, 32, 13}
+        }
+    );
+    std::cout << "Matrix a =\n";
+    std::cout << a << std::endl;
+    std::cout << "Flattened in row-major order:\n";
+    std::cout << a.Flattened() << std::endl;
+    std::cout << "Flattened in column-major order:\n";
+    std::cout << a.Flattened(false) << std::endl;
     return 0;
 }

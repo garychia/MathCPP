@@ -308,6 +308,15 @@ namespace DataStructure
         Matrix<T> Transposed() const;
 
         /*
+        Constructs a new Matrix by flattening this Matrix in row-major or
+        column-major order.
+        @param rowMajor a bool set to true if flattening in row-major
+        or false if flattening in column-major order.
+        @return a Matrix with a single row or column.
+        */
+        Matrix<T> Flattened(bool rowMajor = true) const;
+
+        /*
         Calculate the summation of all the elements of this Matrix.
         @return the summatoin of the elements.
         */
