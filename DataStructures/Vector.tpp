@@ -431,6 +431,9 @@ namespace DataStructure
     }
 
     template <class T>
+    const T *Vector<T>::AsRawPointer() const { return this->data; }
+
+    template <class T>
     Vector<T> Vector<T>::ZeroVector(const std::size_t &n)
     {
         Vector<T> v;
