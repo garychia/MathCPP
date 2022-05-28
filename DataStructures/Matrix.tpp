@@ -655,10 +655,12 @@ namespace DataStructure
         auto flattened = keepInRow ?
             Matrix<T>(1, nRows * nColumns) :
             Matrix<T>(nRows * nColumns, 1);
+        std::size_t i, j;
         if (rowMajor)
         {
-            for (std::size_t i = 0; i < nRows; i++)
-                for (std::size_t j = 0; j < nColumns; j++)
+#pragma omp parallel for private(j) schedule(dynamic) collapse(2)
+            for (i = 0; i < nRows; i++)
+                for (j = 0; j < nColumns; j++)
                 {
                     if (keepInRow)
                         flattened[0][i * nColumns + j] = (*this)[i][j];
@@ -667,8 +669,9 @@ namespace DataStructure
                 }
             return flattened;
         }
-        for (std::size_t i = 0; i < nColumns; i++)
-            for (std::size_t j = 0; j < nRows; j++)
+#pragma omp parallel for private(j) schedule(dynamic) collapse(2)
+        for (i = 0; i < nColumns; i++)
+            for (j = 0; j < nRows; j++)
             {
                 if (keepInRow)
                     flattened[0][i * nRows + j] = (*this)[j][i];
