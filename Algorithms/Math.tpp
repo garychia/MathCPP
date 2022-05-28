@@ -100,6 +100,12 @@ namespace Math
         return result;
     }
 
+    template <class T>
+    T Tangent(const T& x)
+    {
+        return Sine(x) / Cosine(x);
+    }
+
     template <class T, class PowerType>
     T Power(const T& scaler, PowerType n)
     {

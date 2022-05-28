@@ -46,6 +46,14 @@ namespace Math
     T Cosine(const T& x);
 
     /*
+    Tangent Function
+    @param x the input to the function in radians.
+    @return the value of tangent of x.
+    */
+    template <class T>
+    T Tangent(const T& x);
+
+    /*
     Calculates the power of a scaler.
     @param scaler a scaler.
     @param n the exponent.
