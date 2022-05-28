@@ -351,6 +351,14 @@ namespace DataStructure
         */
         static Matrix<T> Scaling(const Vector<T>& factors);
 
+        /*
+        Constructs a rotation matrix in 3D space.
+        @param radians the angle to rotate by.
+        @param axis a 3D vector that represents the axis to rotate around.
+        @return the rotation matrix defined by radians.
+        */
+        static Matrix<T> Rotation3D(const Vector<T>& axis, const T& radians);
+
         template <class OtherType>
         friend class Matrix;
     };

@@ -1,3 +1,5 @@
+#include "Math.hpp"
+
 namespace DataStructure
 {
 
@@ -697,7 +699,7 @@ namespace DataStructure
     }
 
     template <class T>
-    Matrix<T> Matrix<T>::Translation(const Vector<T>& deltas)
+    Matrix<T> Matrix<T>::Translation(const Vector<T> &deltas)
     {
         const std::size_t n = deltas.Size() + 1;
         auto translationM = Identity(n);
@@ -708,7 +710,7 @@ namespace DataStructure
     }
 
     template <class T>
-    Matrix<T> Matrix<T>::Scaling(const Vector<T>& factors)
+    Matrix<T> Matrix<T>::Scaling(const Vector<T> &factors)
     {
         const std::size_t n = factors.Size() + 1;
         auto scalingM = Identity(n);
@@ -716,5 +718,31 @@ namespace DataStructure
         for (std::size_t i = 0; i < n - 1; i++)
             scalingM[i][i] *= factors[i];
         return scalingM;
+    }
+
+    template <class T>
+    Matrix<T> Matrix<T>::Rotation3D(const Vector<T> &axis, const T &radians)
+    {
+        if (axis.Dimension() != 3)
+        {
+            std::stringstream ss;
+            ss << "Matrix: Rotation3D requires an axis defined in 3D space "
+                  "but got an axis of dimension "
+               << axis.Dimension()
+               << ".";
+            throw Exceptions::InvalidArgument(ss.str());
+        }
+        const auto normalizedAxis = axis.Normalized();
+        const T &x = normalizedAxis[0];
+        const T &y = normalizedAxis[1];
+        const T &z = normalizedAxis[2];
+        const T sinValue = Math::Sine(radians);
+        const T cosValue = Math::Cosine(radians);
+        const T oneMinusCosValue = 1 - cosValue;
+        return Matrix<T>(
+            {{cosValue + x * x * oneMinusCosValue, x * y * oneMinusCosValue - z * sinValue, x * z * oneMinusCosValue + y * sinValue, 0},
+             {y * x * oneMinusCosValue + z * sinValue, cosValue + y * y * oneMinusCosValue, y * z * oneMinusCosValue - x * sinValue, 0},
+             {z * x * oneMinusCosValue - y * sinValue, z * y * oneMinusCosValue + x * sinValue, cosValue + z * z * oneMinusCosValue, 0},
+             {0, 0, 0, 1}});
     }
 } // namespace DataStructure

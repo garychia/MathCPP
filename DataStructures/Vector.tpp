@@ -391,7 +391,7 @@ namespace DataStructure
         if (this->size == 0)
             throw Exceptions::EmptyVector(
                 "Vector: Cannot perform normalization on an empty vector.");
-        const T length = Length();
+        const T length = Length<T>();
         if (length == 0)
             throw Exceptions::DividedByZero("Vector: Cannot normalize a zero vector.");
         return *this / length;
@@ -403,7 +403,7 @@ namespace DataStructure
         if (this->size == 0)
             throw Exceptions::EmptyVector(
                 "Vector: Cannot perform normalization on an empty vector.");
-        const T length = Length();
+        const T length = Length<T>();
         if (length == 0)
             throw Exceptions::DividedByZero("Vector: Cannot normalize a zero vector.");
         *this /= length;
