@@ -40,17 +40,21 @@ namespace DataStructure
             void SetValue(const T& newValue);
         };
 
-        class ScalerFunctionNode : public ComputationGraph<T>::FunctionNode
+        class FunctionNode : public ScalerComputationGraphNode
         {
+        protected:
+            class ComputationGraph<T>::ComputationGraphNode *firstInput;
+            class ComputationGraph<T>::ComputationGraphNode *secondInput;
+
         public:
-            ScalerFunctionNode(class ComputationGraph<T>::ComputationGraphNode* input1, class  ComputationGraph<T>::ComputationGraphNode* input2, const std::string& nodeName = "ScalerFunctionNode");
+            FunctionNode(class ComputationGraph<T>::ComputationGraphNode *input1, class ComputationGraph<T>::ComputationGraphNode *input2, const std::string &nodeName = "FunctionNode");
 
-            void Reset() override;
+            typename ComputationGraph<T>::ComputationGraphNode *GetFirstInput() const;
 
-            void UpdateGradient(const T& partialGradient) override;
+            typename ComputationGraph<T>::ComputationGraphNode *GetSecondInput() const;
         };
 
-        class AddNode : public ScalerFunctionNode
+        class AddNode : public FunctionNode
         {
         public:
             AddNode(class ComputationGraph<T>::ComputationGraphNode* input1, class ComputationGraph<T>::ComputationGraphNode* input2, const std::string& nodeName = "AddNode");
@@ -60,7 +64,7 @@ namespace DataStructure
             Tuple<T> Backward() override;
         };
 
-        class MinusNode : public ScalerFunctionNode
+        class MinusNode : public FunctionNode
         {
         public:
             MinusNode(class ComputationGraph<T>::ComputationGraphNode* input1, class ComputationGraph<T>::ComputationGraphNode* input2, const std::string& nodeName = "MinusNode");
@@ -70,7 +74,7 @@ namespace DataStructure
             Tuple<T> Backward() override;
         };
 
-        class MultiplyNode : public ScalerFunctionNode
+        class MultiplyNode : public FunctionNode
         {
         public:
             MultiplyNode(class ComputationGraph<T>::ComputationGraphNode* input1, class ComputationGraph<T>::ComputationGraphNode* input2, const std::string& nodeName = "ScalerMultiplyNode");
@@ -80,7 +84,7 @@ namespace DataStructure
             Tuple<T> Backward() override;
         };
 
-        class DivideNode : public ScalerFunctionNode
+        class DivideNode : public FunctionNode
         {
         public:
             DivideNode(class ComputationGraph<T>::ComputationGraphNode* input1, class ComputationGraph<T>::ComputationGraphNode* input2, const std::string& nodeName = "DivideNode");
@@ -90,7 +94,7 @@ namespace DataStructure
             Tuple<T> Backward() override;
         };
 
-        class PowerNode : public ScalerFunctionNode
+        class PowerNode : public FunctionNode
         {
         public:
             PowerNode(class ComputationGraph<T>::ComputationGraphNode* input1, class ComputationGraph<T>::ComputationGraphNode* input2, const std::string& nodeName = "PowerNode");
@@ -100,7 +104,11 @@ namespace DataStructure
             Tuple<T> Backward() override;
         };
 
+        List<FunctionNode *> funcNodes;
+
     public:
+        ScalerComputationGraph();
+
         T Forward() override;
 
         void Backward() override;
