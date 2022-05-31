@@ -377,6 +377,26 @@ namespace DataStructure
         */
         static Matrix<T> Rotation3D(const Vector<T>& axis, const T& radians);
 
+        /*
+        Constructs a perspective projection matrix.
+        @param fov the field of view in radians.
+        @param aspect the aspect ratio (width / height of the viewport).
+        @param near the distance from the camera to the near plane.
+        @param far the distance from the camera to the far plane.
+        */
+        static Matrix<T> Perspective(T fov, T aspect, T near, T far);
+
+        /*
+        Constructs an othographic projection matrix.
+        @param left the horizontal coordinate of the left of the frustum.
+        @param right the horizontal coordinate of the right of the frustum.
+        @param bottom the vertical coordinate of the bottom of the frustum.
+        @param top the vertical coordinate of the top of the frustum.
+        @param near the distance from the camera to the near plane.
+        @param far the distance from the camera to the far plane.
+        */
+        static Matrix<T> Orthographic(T left, T right, T bottom, T top, T near, T far);
+
         template <class OtherType>
         friend class Matrix;
     };

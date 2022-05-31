@@ -652,9 +652,7 @@ namespace DataStructure
     template <class T>
     Matrix<T> Matrix<T>::Flattened(bool rowMajor, bool keepInRow) const
     {
-        auto flattened = keepInRow ?
-            Matrix<T>(1, nRows * nColumns) :
-            Matrix<T>(nRows * nColumns, 1);
+        auto flattened = keepInRow ? Matrix<T>(1, nRows * nColumns) : Matrix<T>(nRows * nColumns, 1);
         std::size_t i, j;
         if (rowMajor)
         {
@@ -787,5 +785,46 @@ namespace DataStructure
              {y * x * oneMinusCosValue + z * sinValue, cosValue + y * y * oneMinusCosValue, y * z * oneMinusCosValue - x * sinValue, 0},
              {z * x * oneMinusCosValue - y * sinValue, z * y * oneMinusCosValue + x * sinValue, cosValue + z * z * oneMinusCosValue, 0},
              {0, 0, 0, 1}});
+    }
+
+    template <class T>
+    Matrix<T> Matrix<T>::Perspective(T fov, T aspect, T near, T far)
+    {
+        if (fov <= 0)
+        {
+            std::stringstream ss;
+            ss << "Matrix::Perspective: Field of View must be positive but got " << fov;
+            throw Exceptions::InvalidArgument(ss.str());
+        }
+        if (aspect == 0)
+        {
+            std::stringstream ss;
+            ss << "Matrix::Perspective: Aspect Ratio must be non-zero but got " << aspect;
+            throw Exceptions::InvalidArgument(ss.str());
+        }
+        const T scale = 1 / Math::Tangent(fov * 0.5);
+        const T farNearDiff = far - near;
+        return Matrix<T>({{scale * aspect, 0, 0, 0},
+                          {0, scale, 0, 0},
+                          {0, 0, -(far + near) / farNearDiff, -2 * near * far / farNearDiff},
+                          {0, 0, -1, 0}});
+    }
+
+    template <class T>
+    Matrix<T> Matrix<T>::Orthographic(T left, T right, T bottom, T top, T near, T far)
+    {
+        if (left == right)
+            throw Exceptions::InvalidArgument("Matrix::Orthographic: 'left' and 'right' should not be the same value.");
+        if (bottom == top)
+            throw Exceptions::InvalidArgument("Matrix::Orthographic: 'top' and 'bottom' should not be the same value.");
+        if (near == far)
+            throw Exceptions::InvalidArgument("Matrix::Orthographic: 'near' and 'far' should not be the same value.");
+        const T rightLeftDiff = right - left;
+        const T topBottomDiff = top - bottom;
+        const T farNearDist = far - near;
+        return Matrix<T>({{2 / rightLeftDiff, 0, 0, -(right + left) / rightLeftDiff},
+                          {0, 2 / topBottomDiff, 0, -(top + bottom) / topBottomDiff},
+                          {0, 0, -2 / farNearDist, -(far + near) / farNearDist},
+                          {0, 0, 0, 1}});
     }
 } // namespace DataStructure
