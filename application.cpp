@@ -11,7 +11,6 @@ int main(void)
     auto x = graph.CreateVariableNode(12, "x");
     auto y = graph.CreateVariableNode(12, "y");
     3 * (x^3) + 5 * (x^2) - 12 * x + 37 * y + x / y;
-    
     std::cout << "f(x, y) = 3x^3 + 5x^2 - 12x + 37 * y + x / y = " << graph.Forward() << std::endl;
     graph.Backward();
     std::cout << "x = " << x.Forward() << std::endl;

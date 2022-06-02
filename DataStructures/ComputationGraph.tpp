@@ -1,7 +1,7 @@
 namespace DataStructure
 {
     template <class T>
-    ComputationGraph<T>::ComputationGraph() : nodes(), funcNodes() {}
+    ComputationGraph<T>::ComputationGraph() : nodes() {}
 
     template <class T>
     ComputationGraph<T>::~ComputationGraph()
@@ -126,16 +126,6 @@ namespace DataStructure
         ss << "\n}";
         return ss.str();
     }
-
-    template <class T>
-    ComputationGraph<T>::FunctionNode::FunctionNode(ComputationGraphNode* input1, ComputationGraphNode* input2, const std::string& nodeName)
-        : ComputationGraphNode(nodeName), firstInput(input1), secondInput(input2) {}
-
-    template <class T>
-    typename ComputationGraph<T>::ComputationGraphNode* ComputationGraph<T>::FunctionNode::GetFirstInput() const { return firstInput; }
-
-    template <class T>
-    typename ComputationGraph<T>::ComputationGraphNode* ComputationGraph<T>::FunctionNode::GetSecondInput() const { return secondInput; }
 
     template <class T>
     ComputationGraphNodeHandler<T>::ComputationGraphNodeHandler(ComputationGraph<T> *ownerGraph, std::size_t nodeIndex, bool isVariable)

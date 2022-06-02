@@ -65,24 +65,7 @@ namespace DataStructure
             virtual std::string ToString() const;
         };
 
-
-        class FunctionNode : public ComputationGraphNode
-        {
-        protected:
-            ComputationGraphNode *firstInput;
-            ComputationGraphNode *secondInput;
-
-        public:
-            FunctionNode(ComputationGraphNode *input1, ComputationGraphNode *input2, const std::string &nodeName = "FunctionNode");
-
-            ComputationGraphNode *GetFirstInput() const;
-
-            ComputationGraphNode *GetSecondInput() const;
-        };
-
         List<ComputationGraphNode *> nodes;
-
-        List<FunctionNode *> funcNodes;
 
         void reset() const;
 

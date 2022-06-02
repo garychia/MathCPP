@@ -100,6 +100,19 @@ namespace Math
     {
         return sqrt(Power<T>(m, 2).Sum());
     }
+
+    /*
+    Rectified Linear Unit Function.
+    @param x the input to the function.
+    @return the output of ReLU function.
+    */
+    template <class T>
+    T ReLU(const T &x)
+    {
+        if (x < 0)
+            return 0;
+        return x;
+    }
 } // namespace Math
 
 #endif
