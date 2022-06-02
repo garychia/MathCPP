@@ -118,10 +118,7 @@ namespace Math
     @return the Frobenius norm of the given Matrix.
     */
     template <class T>
-    T FrobeniusNorm(const Matrix<T>& m)
-    {
-        return sqrt(Power<T>(m, 2).Sum());
-    }
+    T FrobeniusNorm(const Matrix<T>& m);
 
     /*
     Rectified Linear Unit Function.
@@ -129,12 +126,7 @@ namespace Math
     @return the output of ReLU function.
     */
     template <class T>
-    T ReLU(const T &x)
-    {
-        if (x < 0)
-            return 0;
-        return x;
-    }
+    T ReLU(const T &x);
 } // namespace Math
 
 #include "Math.tpp"
