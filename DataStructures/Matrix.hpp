@@ -308,6 +308,17 @@ namespace DataStructure
         Matrix<T> Transposed() const;
 
         /*
+        Constructs a new Matrix by flattening this Matrix in row-major or
+        column-major order.
+        @param rowMajor true if flattening in row-major. False if flattening
+        in column-major order.
+        @param keepInRow true if all the elements will be placed in a
+        single row. False if they will be placed in a single column.
+        @return a Matrix with a single row or column.
+        */
+        Matrix<T> Flattened(bool rowMajor = true, bool keepInRow = true) const;
+
+        /*
         Calculate the summation of all the elements of this Matrix.
         @return the summatoin of the elements.
         */
@@ -336,6 +347,55 @@ namespace DataStructure
         @param the diagonal matrix.
         */
         static Matrix<T> Diagonal(const Vector<T>& values);
+
+        /*
+        Constructs a translation matrix.
+        @param deltas a translation vector.
+        @return the translation matrix.
+        */
+        static Matrix<T> Translation(const Vector<T>& deltas);
+
+        /*
+        Constructs a scaling matrix.
+        @param factors a vector having the factors on each axis.
+        @return the scaling matrix defined by factors.
+        */
+        static Matrix<T> Scaling(const Vector<T>& factors);
+
+        /*
+        Constructs a rotation matrix in 2D space.
+        @param radians the angle to rotate by.
+        @return the rotation matrix defined by radians.
+        */
+        static Matrix<T> Rotation2D(const T& radians);
+
+        /*
+        Constructs a rotation matrix in 3D space.
+        @param radians the angle to rotate by.
+        @param axis a 3D vector that represents the axis to rotate around.
+        @return the rotation matrix defined by radians.
+        */
+        static Matrix<T> Rotation3D(const Vector<T>& axis, const T& radians);
+
+        /*
+        Constructs a perspective projection matrix.
+        @param fov the field of view in radians.
+        @param aspect the aspect ratio (width / height of the viewport).
+        @param near the distance from the camera to the near plane.
+        @param far the distance from the camera to the far plane.
+        */
+        static Matrix<T> Perspective(T fov, T aspect, T near, T far);
+
+        /*
+        Constructs an othographic projection matrix.
+        @param left the horizontal coordinate of the left of the frustum.
+        @param right the horizontal coordinate of the right of the frustum.
+        @param bottom the vertical coordinate of the bottom of the frustum.
+        @param top the vertical coordinate of the top of the frustum.
+        @param near the distance from the camera to the near plane.
+        @param far the distance from the camera to the far plane.
+        */
+        static Matrix<T> Orthographic(T left, T right, T bottom, T top, T near, T far);
 
         template <class OtherType>
         friend class Matrix;

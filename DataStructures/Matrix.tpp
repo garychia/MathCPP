@@ -1,3 +1,5 @@
+#include "Math.hpp"
+
 namespace DataStructure
 {
 
@@ -648,6 +650,36 @@ namespace DataStructure
     }
 
     template <class T>
+    Matrix<T> Matrix<T>::Flattened(bool rowMajor, bool keepInRow) const
+    {
+        auto flattened = keepInRow ? Matrix<T>(1, nRows * nColumns) : Matrix<T>(nRows * nColumns, 1);
+        std::size_t i, j;
+        if (rowMajor)
+        {
+#pragma omp parallel for private(j) schedule(dynamic) collapse(2)
+            for (i = 0; i < nRows; i++)
+                for (j = 0; j < nColumns; j++)
+                {
+                    if (keepInRow)
+                        flattened[0][i * nColumns + j] = (*this)[i][j];
+                    else
+                        flattened[i * nColumns + j][0] = (*this)[i][j];
+                }
+            return flattened;
+        }
+#pragma omp parallel for private(j) schedule(dynamic) collapse(2)
+        for (i = 0; i < nColumns; i++)
+            for (j = 0; j < nRows; j++)
+            {
+                if (keepInRow)
+                    flattened[0][i * nRows + j] = (*this)[j][i];
+                else
+                    flattened[i * nRows + j][0] = (*this)[j][i];
+            }
+        return flattened;
+    }
+
+    template <class T>
     T Matrix<T>::Sum() const
     {
         T total = 0;
@@ -695,4 +727,104 @@ namespace DataStructure
             result[i][i] = values[i];
         return result;
     }
-} // namespace Math
+
+    template <class T>
+    Matrix<T> Matrix<T>::Translation(const Vector<T> &deltas)
+    {
+        const std::size_t n = deltas.Size() + 1;
+        auto translationM = Identity(n);
+#pragma omp parallel for schedule(dynamic)
+        for (std::size_t i = 0; i < n - 1; i++)
+            translationM[i][n - 1] = deltas[i];
+        return translationM;
+    }
+
+    template <class T>
+    Matrix<T> Matrix<T>::Scaling(const Vector<T> &factors)
+    {
+        const std::size_t n = factors.Size() + 1;
+        auto scalingM = Identity(n);
+#pragma omp parallel for schedule(dynamic)
+        for (std::size_t i = 0; i < n - 1; i++)
+            scalingM[i][i] *= factors[i];
+        return scalingM;
+    }
+
+    template <class T>
+    Matrix<T> Matrix<T>::Rotation2D(const T &radians)
+    {
+        const T sinValue = Math::Sine(radians);
+        const T cosValue = Math::Cosine(radians);
+        return Matrix<T>(
+            {{cosValue, -sinValue, 0},
+             {sinValue, cosValue, 0},
+             {0, 0, 1}});
+    }
+
+    template <class T>
+    Matrix<T> Matrix<T>::Rotation3D(const Vector<T> &axis, const T &radians)
+    {
+        if (axis.Dimension() != 3)
+        {
+            std::stringstream ss;
+            ss << "Matrix: Rotation3D requires an axis defined in 3D space "
+                  "but got an axis of dimension "
+               << axis.Dimension()
+               << ".";
+            throw Exceptions::InvalidArgument(ss.str());
+        }
+        const auto normalizedAxis = axis.Normalized();
+        const T &x = normalizedAxis[0];
+        const T &y = normalizedAxis[1];
+        const T &z = normalizedAxis[2];
+        const T sinValue = Math::Sine(radians);
+        const T cosValue = Math::Cosine(radians);
+        const T oneMinusCosValue = 1 - cosValue;
+        return Matrix<T>(
+            {{cosValue + x * x * oneMinusCosValue, x * y * oneMinusCosValue - z * sinValue, x * z * oneMinusCosValue + y * sinValue, 0},
+             {y * x * oneMinusCosValue + z * sinValue, cosValue + y * y * oneMinusCosValue, y * z * oneMinusCosValue - x * sinValue, 0},
+             {z * x * oneMinusCosValue - y * sinValue, z * y * oneMinusCosValue + x * sinValue, cosValue + z * z * oneMinusCosValue, 0},
+             {0, 0, 0, 1}});
+    }
+
+    template <class T>
+    Matrix<T> Matrix<T>::Perspective(T fov, T aspect, T near, T far)
+    {
+        if (fov <= 0)
+        {
+            std::stringstream ss;
+            ss << "Matrix::Perspective: Field of View must be positive but got " << fov;
+            throw Exceptions::InvalidArgument(ss.str());
+        }
+        if (aspect == 0)
+        {
+            std::stringstream ss;
+            ss << "Matrix::Perspective: Aspect Ratio must be non-zero but got " << aspect;
+            throw Exceptions::InvalidArgument(ss.str());
+        }
+        const T scale = 1 / Math::Tangent(fov * 0.5);
+        const T farNearDiff = far - near;
+        return Matrix<T>({{scale * aspect, 0, 0, 0},
+                          {0, scale, 0, 0},
+                          {0, 0, -(far + near) / farNearDiff, -2 * near * far / farNearDiff},
+                          {0, 0, -1, 0}});
+    }
+
+    template <class T>
+    Matrix<T> Matrix<T>::Orthographic(T left, T right, T bottom, T top, T near, T far)
+    {
+        if (left == right)
+            throw Exceptions::InvalidArgument("Matrix::Orthographic: 'left' and 'right' should not be the same value.");
+        if (bottom == top)
+            throw Exceptions::InvalidArgument("Matrix::Orthographic: 'top' and 'bottom' should not be the same value.");
+        if (near == far)
+            throw Exceptions::InvalidArgument("Matrix::Orthographic: 'near' and 'far' should not be the same value.");
+        const T rightLeftDiff = right - left;
+        const T topBottomDiff = top - bottom;
+        const T farNearDist = far - near;
+        return Matrix<T>({{2 / rightLeftDiff, 0, 0, -(right + left) / rightLeftDiff},
+                          {0, 2 / topBottomDiff, 0, -(top + bottom) / topBottomDiff},
+                          {0, 0, -2 / farNearDist, -(far + near) / farNearDist},
+                          {0, 0, 0, 1}});
+    }
+} // namespace DataStructure

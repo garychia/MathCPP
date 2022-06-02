@@ -391,7 +391,7 @@ namespace DataStructure
         if (this->size == 0)
             throw Exceptions::EmptyVector(
                 "Vector: Cannot perform normalization on an empty vector.");
-        const T length = Length();
+        const T length = Length<T>();
         if (length == 0)
             throw Exceptions::DividedByZero("Vector: Cannot normalize a zero vector.");
         return *this / length;
@@ -403,7 +403,7 @@ namespace DataStructure
         if (this->size == 0)
             throw Exceptions::EmptyVector(
                 "Vector: Cannot perform normalization on an empty vector.");
-        const T length = Length();
+        const T length = Length<T>();
         if (length == 0)
             throw Exceptions::DividedByZero("Vector: Cannot normalize a zero vector.");
         *this /= length;
@@ -429,6 +429,9 @@ namespace DataStructure
             result[i] = f(result[i]);
         return result;
     }
+
+    template <class T>
+    const T *Vector<T>::AsRawPointer() const { return this->data; }
 
     template <class T>
     Vector<T> Vector<T>::ZeroVector(const std::size_t &n)

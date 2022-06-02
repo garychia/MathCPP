@@ -311,6 +311,12 @@ namespace DataStructure
         Vector<OtherType> Map(const std::function<OtherType(T)> &f) const;
 
         /*
+        Returns the pointer that is an array representing this Vector.
+        @return a pointer pointing to the first element of this Vector.
+        */
+        const T *AsRawPointer() const;
+
+        /*
         Generates a vector filled with zeros.
         @param n the number of zeros.
         @return a Vector that is filled with n zeros.
