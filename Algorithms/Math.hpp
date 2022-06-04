@@ -23,6 +23,22 @@ namespace Math
     T Exponent(const T& x);
 
     /*
+    Calculates the value of exponential e raised to each element of a Vector.
+    @param x a Vector.
+    @return a Vector with the exponentials.
+    */
+    template <class T>
+    Vector<T> Exponent(const Vector<T>& x);
+
+    /*
+    Calculates the value of exponential e raised to each element of a Matrix.
+    @param x a Matrix.
+    @return a Matrix with the exponentials.
+    */
+    template <class T>
+    Matrix<T> Exponent(const Matrix<T>& x);
+
+    /*
     Computes the natural logarithm given an input.
     @param x a positive value as the input to the natural logarithm.
     @return the natural logarithm.
@@ -128,6 +144,14 @@ namespace Math
     */
     template <class T>
     T Sigmoid(const T &x);
+
+    /*
+     * Softmax Function.
+     * @param vector a Vector.
+     * @return a Vector with its values computed by the function.
+     */
+    template <class T>
+    Vector<T> Softmax(const Vector<T> &vector);
 } // namespace Math
 
 #include "Math.tpp"

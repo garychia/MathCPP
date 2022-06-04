@@ -30,6 +30,20 @@ namespace Math
     }
 
     template <class T>
+    Vector<T> Exponent(const Vector<T> &x)
+    {
+        return x.Map([](T e)
+                     { return Exponent(e); });
+    }
+
+    template <class T>
+    Matrix<T> Exponent(const Matrix<T> &x)
+    {
+        return x.Map([](T e)
+                     { return Exponent(e); });
+    }
+
+    template <class T>
     T NaturalLog(const T &x)
     {
         if (x <= 0)
@@ -171,5 +185,13 @@ namespace Math
     T Sigmoid(const T &x)
     {
         return 1 / (1 + Exponent(-x));
+    }
+
+    template <class T>
+    Vector<T> Softmax(const Vector<T> &vector)
+    {
+        const T denomerator = Exponent(vector).Sum();
+        const Vector<T> numerator = Exponent(vector);
+        return numerator / denomerator;
     }
 } // namespace Math

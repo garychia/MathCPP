@@ -420,10 +420,10 @@ namespace DataStructure
     }
 
     template <class T>
-    template <class OtherType>
-    Vector<OtherType> Vector<T>::Map(const std::function<OtherType(T)> &f) const
+    template <class MapFunction>
+    auto Vector<T>::Map(MapFunction &&f) const
     {
-        Vector<OtherType> result(*this);
+        Vector<decltype(f((*this)[0]))> result(*this);
 #pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < this->size; i++)
             result[i] = f(result[i]);

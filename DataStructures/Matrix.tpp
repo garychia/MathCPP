@@ -692,10 +692,10 @@ namespace DataStructure
     }
 
     template <class T>
-    template <class OtherType>
-    Matrix<OtherType> Matrix<T>::Map(const std::function<OtherType(T)> &f) const
+    template <class MapFunction>
+    auto Matrix<T>::Map(MapFunction &&f) const
     {
-        Matrix<OtherType> result(*this);
+        Matrix<decltype((*this)[0])> result(*this);
 #pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < nRows; i++)
             result[i] = result[i].Map(f);

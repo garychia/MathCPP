@@ -328,8 +328,8 @@ namespace DataStructure
         @param f a function that maps the value of an element to a new value.
         @return a new Matrix with the new values defined by f.
         */
-        template <class OtherType>
-        Matrix<OtherType> Map(const std::function<OtherType(T)>& f) const;
+        template <class MapFunction>
+        auto Map(MapFunction &&f) const;
 
         /*
         Constructs an identity matrix.

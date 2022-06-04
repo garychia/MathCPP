@@ -5,14 +5,8 @@ using namespace DataStructure;
 
 int main(void)
 {
-    float x = -1;
-    std::cout << "x = " << x << "\n";
-    std::cout << "sigmoid(x) = " << Math::Sigmoid(x) << "\n";
-    x = 0;
-    std::cout << "x = " << x << "\n";
-    std::cout << "sigmoid(x) = " << Math::Sigmoid(x) << "\n";
-    x = 1;
-    std::cout << "x = " << x << "\n";
-    std::cout << "sigmoid(x) = " << Math::Sigmoid(x) << "\n";
+    Vector<float> v({1, 4, 6, 3});
+    std::cout << "v = " << v << std::endl;
+    std::cout << "softmax(v) = " << Math::Softmax(v) << std::endl;
     return 0;
 }
