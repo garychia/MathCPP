@@ -16,14 +16,14 @@ namespace Math
     {
         const T input = x < 0 ? -x : x;
         T result = 1;
-        T numerator = 1;
+        T numerator = input;
         T denominator = 1;
-        std::size_t i = 1;
+        std::size_t i = 2;
         while (numerator / denominator > EPSILON)
         {
+            result += numerator / denominator;
             numerator *= input;
             denominator *= i;
-            result += numerator / denominator;
             i++;
         }
         return x < 0 ? 1 / result : result;
@@ -139,6 +139,29 @@ namespace Math
     T Tangent(const T &x)
     {
         return Sine(x) / Cosine(x);
+    }
+
+    template <class T>
+    T Sinh(const T &x)
+    {
+        const T exponential = Exponent(x);
+        return (exponential - 1 / exponential) * 0.5;
+    }
+
+    template <class T>
+    T Cosh(const T &x)
+    {
+        const T exponential = Exponent(x);
+        return (exponential + 1 / exponential) * 0.5;
+    }
+
+    template <class T>
+    T Tanh(const T &x)
+    {
+        if (2 * x > 14 || 2 * x < -14)
+            return x > 0 ? 1 : -1;
+        const T exponential = Exponent(2 * x);
+        return (exponential - 1) / (exponential + 1);
     }
 
     template <class T, class PowerType>

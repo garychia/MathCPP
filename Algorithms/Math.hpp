@@ -20,7 +20,7 @@ namespace Math
     @return the exponential.
     */
     template <class T>
-    T Exponent(const T& x);
+    T Exponent(const T &x);
 
     /*
     Calculates the value of exponential e raised to each element of a Vector.
@@ -28,7 +28,7 @@ namespace Math
     @return a Vector with the exponentials.
     */
     template <class T>
-    Vector<T> Exponent(const Vector<T>& x);
+    Vector<T> Exponent(const Vector<T> &x);
 
     /*
     Calculates the value of exponential e raised to each element of a Matrix.
@@ -36,7 +36,7 @@ namespace Math
     @return a Matrix with the exponentials.
     */
     template <class T>
-    Matrix<T> Exponent(const Matrix<T>& x);
+    Matrix<T> Exponent(const Matrix<T> &x);
 
     /*
     Computes the natural logarithm given an input.
@@ -44,7 +44,7 @@ namespace Math
     @return the natural logarithm.
     */
     template <class T>
-    T NaturalLog(const T& x);
+    T NaturalLog(const T &x);
 
     /*
     Computes the natural logarithm of each element of a Vector.
@@ -68,7 +68,7 @@ namespace Math
     @return the value of sine of x.
     */
     template <class T>
-    T Sine(const T& x);
+    T Sine(const T &x);
 
     /*
     Cosine Function
@@ -76,7 +76,7 @@ namespace Math
     @return the value of cosine of x.
     */
     template <class T>
-    T Cosine(const T& x);
+    T Cosine(const T &x);
 
     /*
     Tangent Function
@@ -84,7 +84,31 @@ namespace Math
     @return the value of tangent of x.
     */
     template <class T>
-    T Tangent(const T& x);
+    T Tangent(const T &x);
+
+    /*
+    Hyperbolic Sine Function
+    @param x the input to the function.
+    @return the value of sinh of x.
+    */
+    template <class T>
+    T Sinh(const T &x);
+
+    /*
+    Hyperbolic Cosine Function
+    @param x the input to the function.
+    @return the value of cosh of x.
+    */
+    template <class T>
+    T Cosh(const T &x);
+
+    /*
+    Hyperbolic Tangent Function
+    @param x the input to the function.
+    @return the value of tanh of x.
+    */
+    template <class T>
+    T Tanh(const T &x);
 
     /*
     Calculates the power of a scaler.
@@ -93,7 +117,7 @@ namespace Math
     @return the power of the scaler.
     */
     template <class T, class PowerType>
-    T Power(const T& scaler, PowerType n);
+    T Power(const T &scaler, PowerType n);
 
     /*
     Calculates the power of each element of a Vector.
@@ -102,7 +126,7 @@ namespace Math
     @return a Vector with the powers of its elements.
     */
     template <class T, class PowerType>
-    Vector<T> Power(const Vector<T>& v, PowerType n);
+    Vector<T> Power(const Vector<T> &v, PowerType n);
 
     /*
     Calculates the power of each element of a Matrix.
@@ -111,7 +135,7 @@ namespace Math
     @return a Matrix with the powers of its elements.
     */
     template <class T, class PowerType>
-    Matrix<T> Power(const Matrix<T>& m, PowerType n);
+    Matrix<T> Power(const Matrix<T> &m, PowerType n);
 
     /*
     Calculates the Euclidean norm of a Vector.
@@ -119,7 +143,7 @@ namespace Math
     @return the Euclidean norm of the given Vector.
     */
     template <class T>
-    T EuclideanNorm(const Vector<T>& v);
+    T EuclideanNorm(const Vector<T> &v);
 
     /*
     Calculates the Frobenius norm of a Matrix.
@@ -127,7 +151,7 @@ namespace Math
     @return the Frobenius norm of the given Matrix.
     */
     template <class T>
-    T FrobeniusNorm(const Matrix<T>& m);
+    T FrobeniusNorm(const Matrix<T> &m);
 
     /*
     Rectified Linear Unit Function.

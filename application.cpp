@@ -3,16 +3,20 @@
 
 using namespace DataStructure;
 
+#define PRINT_MATH_FUNCTION_RESULT(input, math_func) \
+    std::cout << #input " = " << input << std::endl; \
+    std::cout << #math_func "(" #input ") = " << math_func(input) << std::endl;
+
 int main(void)
 {
-    Matrix<float> m({
-        {1, 4, 6, 3},
-        {1, 3, 5, 0},
-        {1, 1, 1, 1},
-        {1, 2, 3, 4}
-        });
-    m.Transpose();
-    std::cout << "M = \n" << m << std::endl;
-    std::cout << "softmax(M) = \n" << Math::Softmax(m) << std::endl;
+    List<double> values({-8, -1, 0, 1, 8});
+    for (std::size_t i = 0; i < values.Size(); i++)
+    {
+        double x = values[i];
+        PRINT_MATH_FUNCTION_RESULT(x, Math::Sinh);
+        PRINT_MATH_FUNCTION_RESULT(x, Math::Cosh);
+        PRINT_MATH_FUNCTION_RESULT(x, Math::Tanh);
+        PRINT_MATH_FUNCTION_RESULT(x, Math::Exponent)
+    }
     return 0;
 }
