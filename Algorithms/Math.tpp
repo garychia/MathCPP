@@ -176,6 +176,23 @@ namespace Math
         return -Exponent(n * NaturalLog(scaler));
     }
 
+    template <class T>
+    T Power(const T &scaler, int n)
+    {
+        if (n < 0)
+            return 1 / Power(scaler, -n);
+        else if (n == 0)
+            return 1;
+        else if (n == 1)
+            return scaler;
+        else if (n % 2 == 0)
+        {
+            const T partial = Power(scaler, n / 2);
+            return partial * partial;
+        }
+        return scaler * Power(scaler, n - 1);
+    }
+
     template <class T, class PowerType>
     Vector<T> Power(const Vector<T> &v, PowerType n)
     {

@@ -116,7 +116,7 @@ namespace Math
     @param n the exponent.
     @return the power of the scaler.
     */
-    template <class T, class PowerType>
+    template <class T, class PowerType = float>
     T Power(const T &scaler, PowerType n);
 
     /*
