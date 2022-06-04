@@ -1,22 +1,26 @@
 #include <iostream>
+
 #include "Math.hpp"
 
 using namespace DataStructure;
 
-#define PRINT_MATH_FUNCTION_RESULT(input, math_func) \
-    std::cout << #input " = " << input << std::endl; \
-    std::cout << #math_func "(" #input ") = " << math_func(input) << std::endl;
-
 int main(void)
 {
-    List<double> values({-8, -1, 0, 1, 8});
-    for (std::size_t i = 0; i < values.Size(); i++)
-    {
-        double x = values[i];
-        PRINT_MATH_FUNCTION_RESULT(x, Math::Sinh);
-        PRINT_MATH_FUNCTION_RESULT(x, Math::Cosh);
-        PRINT_MATH_FUNCTION_RESULT(x, Math::Tanh);
-        PRINT_MATH_FUNCTION_RESULT(x, Math::Exponent)
-    }
+    Vector<float> values({1, 1, 2, 5, 6, 6, 6, 6, 5, 1, 0, 100});
+    const float mean = values.Sum() / values.Size();
+    const float sigma =
+        Math::Power(
+            values
+                .Map([&mean](float e)
+                     { return Math::Power(e - mean, 2); })
+                .Sum(),
+            0.5);
+    std::cout << "Sequence: " << values << std::endl;
+    std::cout << "Mean: " << mean << std::endl;
+    std::cout << "Standard Deviation: " << sigma << std::endl;
+    std::cout << "Likelyhood:" << std::endl;
+    for (int i = 0; i < values.Size(); i++)
+        std::cout << Math::Gauss(values[i], mean, sigma) << " at " << values[i] << std::endl;
+    std::cout << Math::Gauss(mean, mean, sigma) << " at " << mean << std::endl;
     return 0;
 }

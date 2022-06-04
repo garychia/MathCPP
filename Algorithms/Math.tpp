@@ -167,21 +167,27 @@ namespace Math
     template <class T, class PowerType>
     T Power(const T &scaler, PowerType n)
     {
-        return pow(scaler, n);
+        if (scaler > 0)
+            return Exponent(n * NaturalLog(scaler));
+        else if (scaler == 0)
+            return 0;
+        else if ((long)n % 2 == 0)
+            return Exponent(n * NaturalLog(-scaler));
+        return -Exponent(n * NaturalLog(scaler));
     }
 
     template <class T, class PowerType>
     Vector<T> Power(const Vector<T> &v, PowerType n)
     {
         return v.Map([&n](T e)
-                     { return pow(e, n); });
+                     { return Power(e, n); });
     }
 
     template <class T, class PowerType>
     Matrix<T> Power(const Matrix<T> &m, PowerType n)
     {
         return m.Map([&n](T e)
-                     { return pow(e, n); });
+                     { return Power(e, n); });
     }
 
     template <class T>
@@ -224,5 +230,12 @@ namespace Math
         const auto exponents = Exponent(matrix);
         const auto summation = exponents.Sum();
         return exponents / summation;
+    }
+
+    template <class T>
+    T Gauss(const T &x, const T &mu, const T &sigma)
+    {
+        const T normalization = (x - mu) / sigma;
+        return 1 / (sigma * Power(2 * PI, 0.5)) * Exponent(-0.5 * normalization * normalization);
     }
 } // namespace Math

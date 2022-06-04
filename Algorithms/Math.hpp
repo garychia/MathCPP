@@ -184,6 +184,15 @@ namespace Math
      */
     template <class T>
     Matrix<T> Softmax(const Matrix<T> &matrix);
+
+    /*
+     * Gaussian Probability Density Function
+     * @param x the input to the function.
+     * @param mu the mean (average).
+     * @param sigma the standard deviation.
+     */
+    template <class T>
+    T Gauss(const T &x, const T &mu, const T &sigma);
 } // namespace Math
 
 #include "Math.tpp"
