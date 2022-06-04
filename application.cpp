@@ -5,8 +5,14 @@ using namespace DataStructure;
 
 int main(void)
 {
-    Vector<float> v({1, 4, 6, 3});
-    std::cout << "v = " << v << std::endl;
-    std::cout << "softmax(v) = " << Math::Softmax(v) << std::endl;
+    Matrix<float> m({
+        {1, 4, 6, 3},
+        {1, 3, 5, 0},
+        {1, 1, 1, 1},
+        {1, 2, 3, 4}
+        });
+    m.Transpose();
+    std::cout << "M = \n" << m << std::endl;
+    std::cout << "softmax(M) = \n" << Math::Softmax(m) << std::endl;
     return 0;
 }

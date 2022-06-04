@@ -262,11 +262,22 @@ namespace DataStructure
         Performs matrix element-wise division.
         @param scaler a scaler.
         @return the result of the matrix element-wise division.
-        @throw InvalidArgument when the scaler is zero.
+        @throw DividedByZero when the scaler is zero.
         @throw EmptyMatrix when this matrix is empty.
         */
         template <class ScalerType>
         auto Divide(const ScalerType &scaler) const;
+
+        /*
+        Broadcasts elements of a smaller matrix and performs element-wise division.
+        @param matrix another matrix.
+        @return the result of the matrix division.
+        @throw DividedByZero when there is a zero denominator.
+        @throw EmptyMatrix when this matrix is empty.
+        @throw InvalidArgument when broadcasting cannot be performed.
+        */
+        template <class OtherType>
+        auto Divide(const Matrix<OtherType> &matrix) const;
 
         /*
         Performs matrix element-wise division. Reference: Matrix.Divide.
@@ -319,9 +330,18 @@ namespace DataStructure
 
         /*
         Calculate the summation of all the elements of this Matrix.
-        @return the summatoin of the elements.
+        @return the summation of the elements.
         */
-        T Sum() const;
+        T SumAll() const;
+
+        
+        /*
+        Calculate the summation of all the rows or columns of this Matrix.
+        @param sumRows true then the summation of rows will be returned.
+        Otherwise, the summation of columns will be returned instead.
+        @return the summation of the rows or columns.
+        */
+        Matrix<T> Sum(bool sumRows = true) const;
 
         /*
         Maps each element of this Matrix to a new value.

@@ -255,9 +255,23 @@ namespace DataStructure
         Divides this Vector by a scaler.
         @param scaler a scaler used to divide this Vector.
         @return a Vector that is the result of the division.
+        @throw EmptyVector when this vector is empty.
+        @throw DividedByZero when scaler is 0.
         */
         template <class OtherType>
         auto Divide(const OtherType &scaler) const;
+
+        /*
+        Performs element-wise division.
+        @param vector a Vector.
+        @return a Vector that is the result of the division.
+        @throw EmptyVector when this vector is empty.
+        @throw InvalidArgument when the dimension of denominator vector
+        is not a factor of that of nemerator vector.
+        @throw DividedByZero when there is a zero denominator.
+        */
+        template <class OtherType>
+        auto Divide(const Vector<OtherType> &vector) const;
 
         /*
         Divides this Vector by a scaler. Reference: Vector.Divide
@@ -268,12 +282,29 @@ namespace DataStructure
         auto operator/(const OtherType &scaler) const;
 
         /*
+        Performs element-wise this Vector by a Vector. Reference: Vector.Divide
+        @param vector a vector.
+        @return a Vector that is the result of the division.
+        */
+        template <class OtherType>
+        auto operator/(const Vector<OtherType> &vector) const;
+
+        /*
         Performs inplace division on this Vector3D to be divided by a scaler.
         @param scaler a scaler used to divide this Vector3D.
         @return a reference of this Vector3D.
         */
         template <class OtherType>
         Vector<T> &operator/=(const OtherType &scaler);
+
+        /*
+        Performs inplace element-wise division.
+        @param vector a Vector.
+        @return a reference of this Vector.
+        @throw DividedByZero if there is a zero denominator.
+        */
+        template <class OtherType>
+        Vector<T> &operator/=(const Vector<OtherType> &vector);
 
         /*
         Performs dot product on this Vector with another Vector.

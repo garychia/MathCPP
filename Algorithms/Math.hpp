@@ -152,6 +152,14 @@ namespace Math
      */
     template <class T>
     Vector<T> Softmax(const Vector<T> &vector);
+
+    /*
+     * Softmax Function.
+     * @param matrix a Matrix.
+     * @return a Matrix with its column vectors computed by the function.
+     */
+    template <class T>
+    Matrix<T> Softmax(const Matrix<T> &matrix);
 } // namespace Math
 
 #include "Math.tpp"

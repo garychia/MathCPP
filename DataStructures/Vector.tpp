@@ -321,12 +321,37 @@ namespace DataStructure
             throw Exceptions::EmptyVector(
                 "Vector: Cannot perform division on an empty vector.");
         else if (scaler == 0)
-            throw Exceptions::InvalidArgument(
+            throw Exceptions::DividedByZero(
                 "Vector: Cannot divide a vector by 0.");
         Vector<decltype(this->data[0] / scaler)> result(*this);
 #pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < Dimension(); i++)
             result[i] /= scaler;
+        return result;
+    }
+
+    template <class T>
+    template <class OtherType>
+    auto Vector<T>::Divide(const Vector<OtherType> &vector) const
+    {
+        if (this->size == 0)
+            throw Exceptions::EmptyVector(
+                "Vector: Cannot perform division on an empty vector.");
+        if (this->size % vector.Dimension() != 0)
+            throw Exceptions::InvalidArgument(
+                "Vector: Cannot perform division due to the size of the "
+                "denominator vector is not a factor of that of the numerator vector.");
+        Vector<decltype((*this)[0] / vector[0])> result(*this);
+        size_t j;
+#pragma omp parallel for schedule(dynamic) private(j)
+        for (std::size_t i = 0; i < Dimension(); i++)
+        {
+            j = i % vector.Dimension();
+            if (vector[j] == 0)
+                throw Exceptions::DividedByZero(
+                    "Vection: Division failed due to a zero denominator.");
+            result[i] /= vector[j];
+        }
         return result;
     }
 
@@ -346,6 +371,32 @@ namespace DataStructure
         {
             throw e;
         }
+        catch (Exceptions::DividedByZero &e)
+        {
+            throw e;
+        }
+    }
+
+    template <class T>
+    template <class OtherType>
+    auto Vector<T>::operator/(const Vector<OtherType> &vector) const
+    {
+        try
+        {
+            return this->Divide(vector);
+        }
+        catch (Exceptions::EmptyVector &e)
+        {
+            throw e;
+        }
+        catch (Exceptions::InvalidArgument &e)
+        {
+            throw e;
+        }
+        catch (Exceptions::DividedByZero &e)
+        {
+            throw e;
+        }
     }
 
     template <class T>
@@ -359,6 +410,25 @@ namespace DataStructure
         for (std::size_t i = 0; i < Dimension(); i++)
             this->data[i] /= scaler;
         return *this;
+    }
+
+    template <class T>
+    template <class OtherType>
+    Vector<T> &Vector<T>::operator/=(const Vector<OtherType> &vector)
+    {
+        try
+        {
+            (*this) = Divide(vector);
+            return *this;
+        }
+        catch (Exceptions::EmptyVector &e)
+        {
+            throw e;
+        }
+        catch (Exceptions::InvalidArgument &e)
+        {
+            throw e;
+        }
     }
 
     template <class T>

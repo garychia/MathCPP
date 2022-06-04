@@ -194,4 +194,12 @@ namespace Math
         const Vector<T> numerator = Exponent(vector);
         return numerator / denomerator;
     }
+
+    template <class T>
+    Matrix<T> Softmax(const Matrix<T> &matrix)
+    {
+        const auto exponents = Exponent(matrix);
+        const auto summation = exponents.Sum();
+        return exponents / summation;
+    }
 } // namespace Math

@@ -534,7 +534,7 @@ namespace DataStructure
     auto Matrix<T>::Divide(const ScalerType &scaler) const
     {
         if (scaler == 0)
-            throw Exceptions::InvalidArgument(
+            throw Exceptions::DividedByZero(
                 "Matrix: Cannot perform element-wise division with zero.");
         if (this->IsEmpty())
             throw Exceptions::EmptyMatrix(
@@ -544,6 +544,35 @@ namespace DataStructure
 #pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < nRows; i++)
             result[i] /= scaler;
+        return result;
+    }
+
+    template <class T>
+    template <class OtherType>
+    auto Matrix<T>::Divide(const Matrix<OtherType> &matrix) const
+    {
+        if (this->IsEmpty() || matrix.IsEmpty())
+            throw Exceptions::EmptyMatrix(
+                "Matrix: Cannot perform element-wise division on an empty matrix.");
+        if (nRows % matrix.nRows != 0 || nColumns % matrix.nColumns != 0)
+            throw Exceptions::InvalidArgument(
+                "Matrix: The shape of the denominator matrix must be a factor of that of the numerator matrix.");
+        Matrix<decltype((*this)[0][0] / matrix[0][0])> result(*this);
+        std::size_t j;
+#pragma omp parallel for schedule(dynamic) private(j)
+        for (std::size_t i = 0; i < nRows; i++)
+        {
+            j = i % matrix.nRows;
+            try
+            {
+                result[i] /= matrix[j];
+            }
+            catch (const Exceptions::DividedByZero &e)
+            {
+                throw Exceptions::DividedByZero(
+                    "Matrix: Zero denominator found when performing division.");
+            }
+        }
         return result;
     }
 
@@ -681,21 +710,42 @@ namespace DataStructure
     }
 
     template <class T>
-    T Matrix<T>::Sum() const
+    T Matrix<T>::SumAll() const
     {
         T total = 0;
-#pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(dynamic) reduction(+ \
+                                                     : total)
         for (std::size_t i = 0; i < nRows; i++)
-#pragma omp atomic
             total += (*this)[i].Sum();
         return total;
+    }
+
+    template <class T>
+    Matrix<T> Matrix<T>::Sum(bool sumRows) const
+    {
+        if (this->IsEmpty())
+            throw Exceptions::EmptyMatrix(
+                "Matrix: Cannot perform summmation on an empty matrix.");
+        if (sumRows)
+        {
+            Vector<T> summation = (*this)[0];
+            for (std::size_t i = 1; i < nRows; i++)
+                summation += (*this)[i];
+            return Matrix<T>({summation});
+        }
+
+        Matrix<T> summation(nRows, 1);
+#pragma omp parallel for schedule(dynamic)
+        for (std::size_t i = 0; i < nRows; i++)
+            summation[i][0] = (*this)[i].Sum();
+        return summation;
     }
 
     template <class T>
     template <class MapFunction>
     auto Matrix<T>::Map(MapFunction &&f) const
     {
-        Matrix<decltype((*this)[0])> result(*this);
+        Matrix<decltype(f((*this)[0][0]))> result(*this);
 #pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < nRows; i++)
             result[i] = result[i].Map(f);
