@@ -9,7 +9,6 @@
 #include "Vector.hpp"
 #include "List.hpp"
 #include "Tuple.hpp"
-#include "Exceptions.hpp"
 
 namespace DataStructure
 {
@@ -400,7 +399,7 @@ namespace DataStructure
         template <class OtherType>
         friend class Matrix;
     };
-} // namespace Math
+} // namespace DataStructure
 
 #include "Matrix.tpp"
 

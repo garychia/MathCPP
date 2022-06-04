@@ -1,3 +1,9 @@
+#include "Vector.hpp"
+#include "Matrix.hpp"
+#include "Exceptions.hpp"
+
+#include <sstream>
+
 #define EPSILON 0.00000001
 #define LN_2 0.69314718
 #define PI 3.14159265
@@ -6,24 +12,25 @@
 namespace Math
 {
     template <class T>
-    T Exponent(const T& x)
+    T Exponent(const T &x)
     {
+        const T input = x < 0 ? -x : x;
         T result = 1;
         T numerator = 1;
         T denominator = 1;
         std::size_t i = 1;
         while (numerator / denominator > EPSILON)
         {
-            numerator *= x;
+            numerator *= input;
             denominator *= i;
             result += numerator / denominator;
             i++;
         }
-        return result;
+        return x < 0 ? 1 / result : result;
     }
 
     template <class T>
-    T NaturalLog(const T& x)
+    T NaturalLog(const T &x)
     {
         if (x <= 0)
         {
@@ -55,7 +62,21 @@ namespace Math
     }
 
     template <class T>
-    T Sine(const T& x)
+    Vector<T> NaturalLog(const Vector<T> &v)
+    {
+        return v.Map([](T e)
+                     { return NaturalLog(e); });
+    }
+
+    template <class T>
+    Matrix<T> NaturalLog(const Matrix<T> &m)
+    {
+        return m.Map([](T e)
+                     { return NaturalLog(e); });
+    }
+
+    template <class T>
+    T Sine(const T &x)
     {
         T input = x < 0 ? -x : x;
         while (input >= PI_TIMES_2)
@@ -78,7 +99,7 @@ namespace Math
     }
 
     template <class T>
-    T Cosine(const T& x)
+    T Cosine(const T &x)
     {
         T input = x < 0 ? -x : x;
         while (input >= PI_TIMES_2)
@@ -101,55 +122,39 @@ namespace Math
     }
 
     template <class T>
-    T Tangent(const T& x)
+    T Tangent(const T &x)
     {
         return Sine(x) / Cosine(x);
     }
 
     template <class T, class PowerType>
-    T Power(const T& scaler, PowerType n)
+    T Power(const T &scaler, PowerType n)
     {
         return pow(scaler, n);
     }
 
     template <class T, class PowerType>
-    Vector<T> Power(const Vector<T>& v, PowerType n)
+    Vector<T> Power(const Vector<T> &v, PowerType n)
     {
-        return v.Map([&n](T e) { return pow(e, n); });
+        return v.Map([&n](T e)
+                     { return pow(e, n); });
     }
 
     template <class T, class PowerType>
-    Matrix<T> Power(const Matrix<T>& m, PowerType n)
+    Matrix<T> Power(const Matrix<T> &m, PowerType n)
     {
-        return m.Map([&n](T e) { return pow(e, n); });
+        return m.Map([&n](T e)
+                     { return pow(e, n); });
     }
 
     template <class T>
-    T Log(T scaler)
-    {
-        return std::log(scaler);
-    }
-
-    template <class T>
-    Vector<T> Log(const Vector<T> &v)
-    {
-        return v.Map([](T e) { return std::log(e); });
-    }
-
-    template <class T>
-    Matrix<T> Log(const Matrix<T> &m)
-    {
-        return m.Map([](T e) { return std::log(e); });
-    }
-
-    template <class T>
-    T EuclideanNorm(const Vector<T>& v)
+    T EuclideanNorm(const Vector<T> &v)
     {
         return sqrt(Power<T>(v, 2).Sum());
     }
 
     template <class T>
-    T FrobeniusNorm(const Matrix<T>& m)
+    T FrobeniusNorm(const Matrix<T> &m)
     {
         return sqrt(Power<T>(m, 2).Sum());
     }
@@ -160,5 +165,11 @@ namespace Math
         if (x < 0)
             return 0;
         return x;
+    }
+
+    template <class T>
+    T Sigmoid(const T &x)
+    {
+        return 1 / (1 + Exponent(-x));
     }
 } // namespace Math

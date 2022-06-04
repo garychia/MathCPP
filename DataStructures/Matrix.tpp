@@ -1,3 +1,4 @@
+#include "Exceptions.hpp"
 #include "Math.hpp"
 
 namespace DataStructure

@@ -1,18 +1,19 @@
 #ifndef MATH_HPP
 #define MATH_HPP
 
-#include "Vector.hpp"
-#include "Matrix.hpp"
-#include "Exceptions.hpp"
+namespace DataStructure
+{
+    template <class T>
+    class Vector;
 
-#include <sstream>
-#include <cmath>
+    template <class T>
+    class Matrix;
+}
 
 using namespace DataStructure;
 
 namespace Math
 {
-
     /*
     Calculates the value of exponential e raised to a given number.
     @param x the power.
@@ -28,6 +29,22 @@ namespace Math
     */
     template <class T>
     T NaturalLog(const T& x);
+
+    /*
+    Computes the natural logarithm of each element of a Vector.
+    @param v a Vector.
+    @return a Vector with the natural logarithms of its elements.
+    */
+    template <class T>
+    Vector<T> NaturalLog(const Vector<T> &v);
+
+    /*
+    Computes the natural logarithm of each element of a Matrix.
+    @param m a Matrix.
+    @return a Matrix with the natural logarithms of its elements.
+    */
+    template <class T>
+    Matrix<T> NaturalLog(const Matrix<T> &m);
 
     /*
     Sine Function
@@ -81,30 +98,6 @@ namespace Math
     Matrix<T> Power(const Matrix<T>& m, PowerType n);
 
     /*
-    Computes the natural logarithm.
-    @param scaler a scaler.
-    @return the natural logarithm of the given scaler.
-    */
-    template <class T>
-    T Log(T scaler);
-
-    /*
-    Computes the natural logarithm of each element of a Vector.
-    @param v a Vector.
-    @return a Vector with the natural logarithms of its elements.
-    */
-    template <class T>
-    Vector<T> Log(const Vector<T> &v);
-
-    /*
-    Computes the natural logarithm of each element of a Matrix.
-    @param m a Matrix.
-    @return a Matrix with the natural logarithms of its elements.
-    */
-    template <class T>
-    Matrix<T> Log(const Matrix<T> &m);
-
-    /*
     Calculates the Euclidean norm of a Vector.
     @param v a Vector.
     @return the Euclidean norm of the given Vector.
@@ -127,6 +120,14 @@ namespace Math
     */
     template <class T>
     T ReLU(const T &x);
+
+    /*
+    Sigmoid Function.
+    @param x the input to the function.
+    @return the output of the function.
+    */
+    template <class T>
+    T Sigmoid(const T &x);
 } // namespace Math
 
 #include "Math.tpp"
