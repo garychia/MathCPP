@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "Math.hpp"
+#include "MLAlgs.hpp"
 
 /*
 class NeuralLayer
@@ -43,7 +43,13 @@ using namespace DataStructure;
 
 int main(void)
 {
-    for (int i = 0; i < 10; i++)
-        std::cout << Math::Power(2, i) << std::endl;
+    Matrix<float> input({1, 2, 3});
+    auto prediction = -1.f;
+    auto label = 1.f;
+    std::cout << "Input =\n" << input << std::endl;
+    std::cout << "Prediction = " << prediction << std::endl;
+    std::cout << "Label = " << label << std::endl;
+    std::cout << "Hinge Loss:\n" << MLAlgs::HingeLoss(prediction, label) << std::endl;
+    std::cout << "Hinge Loss Gradient:\n" << MLAlgs::HingeLossGradient(input, prediction, label) << std::endl;
     return 0;
 }

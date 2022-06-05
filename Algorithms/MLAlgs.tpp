@@ -1,3 +1,5 @@
+#define MAX(a, b) (a) > (b) ? (a) : (b)
+
 namespace MLAlgs
 {
     template <class T>
@@ -11,6 +13,18 @@ namespace MLAlgs
         Vector<int> encoding(k, 0);
         encoding[value - 1] = 1;
         return encoding;
+    }
+
+    template <class T>
+    T HingeLoss(const T &prediction, const T &label)
+    {
+        return MAX(0, 1 - prediction * label);
+    }
+
+    template <class InputType, class LabelType>
+    InputType HingeLossGradient(const InputType &input, const LabelType &prediction, const LabelType &label)
+    {
+        return prediction * label < 1 ? - prediction * input : InputType({0});
     }
 
     template <class DataType, class LabelType>

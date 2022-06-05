@@ -71,6 +71,39 @@ namespace DataStructure
     }
 
     template <class T>
+    Matrix<T>::Matrix(std::initializer_list<T> l, bool column)
+    {
+        if (l.size() > 0)
+        {
+            if (!column)
+            {
+                this->size = 1;
+                this->data = new Vector<T>[1];
+                this->data[0] = Vector<T>(l);
+                nRows = 1;
+                nColumns = l.size();
+            }
+            else
+            {
+                this->size = l.size();
+                this->data = new Vector<T>[l.size()];
+                nRows = l.size();
+                nColumns = 1;
+                std::size_t index = 0;
+                for (auto itr = l.begin(); itr != l.end(); itr++)
+                    this->data[index++] = Vector<T>({*itr});
+            }
+        }
+        else
+        {
+            this->size = 0;
+            this->data = nullptr;
+            nRows = 0;
+            nColumns = 0;
+        }
+    }
+
+    template <class T>
     template <std::size_t N>
     Matrix<T>::Matrix(const std::array<Vector<T>, N> &arr)
     {

@@ -47,6 +47,15 @@ namespace DataStructure
         Matrix(std::initializer_list<Vector<T>> l);
 
         /*
+        Constructor with an initializer_list of scalers. The resulting matrix
+        will be a row or column vector matrix.
+        @param l an initializer_list that contains the elements of the matrix.
+        @param column true if the resulting matrix wiil be a column vector.
+        Otherwise, a row vector will be constructed.
+        */
+        Matrix(std::initializer_list<T> l, bool column = true);
+
+        /*
         Constructor with arrary as Input.
         @param arr an array that contains the row vectors this Matrix will store.
         */
@@ -334,7 +343,6 @@ namespace DataStructure
         */
         T SumAll() const;
 
-        
         /*
         Calculate the summation of all the rows or columns of this Matrix.
         @param sumRows true then the summation of rows will be returned.
@@ -365,28 +373,28 @@ namespace DataStructure
         of the output Matrix.
         @param the diagonal matrix.
         */
-        static Matrix<T> Diagonal(const Vector<T>& values);
+        static Matrix<T> Diagonal(const Vector<T> &values);
 
         /*
         Constructs a translation matrix.
         @param deltas a translation vector.
         @return the translation matrix.
         */
-        static Matrix<T> Translation(const Vector<T>& deltas);
+        static Matrix<T> Translation(const Vector<T> &deltas);
 
         /*
         Constructs a scaling matrix.
         @param factors a vector having the factors on each axis.
         @return the scaling matrix defined by factors.
         */
-        static Matrix<T> Scaling(const Vector<T>& factors);
+        static Matrix<T> Scaling(const Vector<T> &factors);
 
         /*
         Constructs a rotation matrix in 2D space.
         @param radians the angle to rotate by.
         @return the rotation matrix defined by radians.
         */
-        static Matrix<T> Rotation2D(const T& radians);
+        static Matrix<T> Rotation2D(const T &radians);
 
         /*
         Constructs a rotation matrix in 3D space.
@@ -394,7 +402,7 @@ namespace DataStructure
         @param axis a 3D vector that represents the axis to rotate around.
         @return the rotation matrix defined by radians.
         */
-        static Matrix<T> Rotation3D(const Vector<T>& axis, const T& radians);
+        static Matrix<T> Rotation3D(const Vector<T> &axis, const T &radians);
 
         /*
         Constructs a perspective projection matrix.
@@ -415,6 +423,31 @@ namespace DataStructure
         @param far the distance from the camera to the far plane.
         */
         static Matrix<T> Orthographic(T left, T right, T bottom, T top, T near, T far);
+
+        /**
+         * Operator * with a scaler and a Matrix.
+         * @param scaler a scaler.
+         * @param matrix a Matrix.
+         * @return a Matrix with the elements of 'matrix' multiplied by the scaler.
+         **/
+        template <class ScalerType>
+        friend auto operator*(ScalerType scaler, Matrix<T> matrix)
+        {
+            return matrix.Scale(scaler);
+        }
+
+        /**
+         * Operator / with a scaler and a Matrix.
+         * @param scaler a scaler.
+         * @param matrix a Matrix.
+         * @return a Matrix with the scaler divided by each element of 'matrix'.
+         **/
+        template <class ScalerType>
+        friend auto operator/(ScalerType scaler, Matrix<T> matrix)
+        {
+            return matrix.Map([&scaler](T e)
+                              { return scaler / e; });
+        }
 
         template <class OtherType>
         friend class Matrix;

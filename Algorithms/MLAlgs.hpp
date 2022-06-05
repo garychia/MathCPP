@@ -27,6 +27,25 @@ namespace MLAlgs
     */
     Vector<int> OneHot(std::size_t value, std::size_t k);
 
+    /**
+     * Computes the Hinge Loss
+     * @param prediction the prediction.
+     * @param label the expected outcome.
+     * @return the hinge loss given the prediction and label. 
+     **/
+    template <class T>
+    T HingeLoss(const T &prediction, const T &label);
+
+    /**
+     * Computes the gradient of Hinge Loss with respect to model weights.
+     * @param input the input to the model.
+     * @param prediction the prediction the model has made.
+     * @param label the expected output.
+     * @return the gradient of Hinge Loss with resect to model weights.
+     **/
+    template <class InputType, class LabelType>
+    InputType HingeLossGradient(const InputType &input, const LabelType &prediction, const LabelType &label);
+
     /*
     The Perceptron Algorithm.
     @param data a Matrix with n rows and d columns where n is the number of data points
