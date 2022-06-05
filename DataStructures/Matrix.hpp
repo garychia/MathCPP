@@ -430,10 +430,10 @@ namespace DataStructure
          * @param matrix a Matrix.
          * @return a Matrix with the elements of 'matrix' multiplied by the scaler.
          **/
-        template <class ScalerType>
-        friend auto operator*(ScalerType scaler, Matrix<T> matrix)
+        friend auto operator*(const double &scaler, const Matrix<T> &matrix)
         {
-            return matrix.Scale(scaler);
+            return matrix.Map([&scaler](T e)
+                              { return scaler * e; });
         }
 
         /**
@@ -442,8 +442,7 @@ namespace DataStructure
          * @param matrix a Matrix.
          * @return a Matrix with the scaler divided by each element of 'matrix'.
          **/
-        template <class ScalerType>
-        friend auto operator/(ScalerType scaler, Matrix<T> matrix)
+        friend auto operator/(const double &scaler, const Matrix<T> &matrix)
         {
             return matrix.Map([&scaler](T e)
                               { return scaler / e; });

@@ -262,8 +262,7 @@ namespace DataStructure
             std::stringstream errorMessageStream;
             errorMessageStream
                 << "Expected the numbers of rows and columns of the second matrix"
-                   " to be factors of these of the first matrix."
-                << std::endl;
+                   " to be factors of these of the first matrix.";
             throw Exceptions::MatrixShapeMismatch(
                 thisShape,
                 otherShape,
@@ -433,8 +432,7 @@ namespace DataStructure
             errorMessageStream
                 << "Expected number of rows of the target matrix to be "
                 << thisShape[1]
-                << "."
-                << std::endl;
+                << ".";
             throw Exceptions::MatrixShapeMismatch(
                 thisShape,
                 otherShape,

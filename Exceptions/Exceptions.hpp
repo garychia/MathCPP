@@ -121,7 +121,7 @@ namespace Exceptions
         EmptyMatrix(const std::string &message = "") : Exception(message) {}
     };
 
-    class MatrixShapeMismatch : Exception
+    class MatrixShapeMismatch : public Exception
     {
     public:
         template <class T>
@@ -135,7 +135,7 @@ namespace Exceptions
                 << "Matrix Shape: " << matrixShape << std::endl
                 << "Target Shape: " << targetShape << std::endl;
             if (message.length() > 0)
-                errorMessageStream << message << std::endl;
+                errorMessageStream << message;
             this->errorMessage = errorMessageStream.str();
         }
 
