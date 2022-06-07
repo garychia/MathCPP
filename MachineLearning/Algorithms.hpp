@@ -7,9 +7,9 @@
 #include "Matrix.hpp"
 #include "List.hpp"
 
-using namespace DataStructure;
+using namespace DataStructures;
 
-namespace MLAlgs
+namespace MachineLearning
 {
     /*
     Sign function.
@@ -97,8 +97,8 @@ namespace MLAlgs
         List<InputType> *xHistory = nullptr,
         List<OutputType> *outputHistory = nullptr);
 
-} // namespace MLAlgs
+} // namespace MachineLearning
 
-#include "MLAlgs.tpp"
+#include "Algorthms.tpp"
 
 #endif

@@ -14,7 +14,7 @@
 #include "Exceptions.hpp"
 #include "Math.hpp"
 
-namespace DataStructure
+namespace DataStructures
 {
     enum class GraphOperation
     {

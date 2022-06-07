@@ -1,4 +1,4 @@
-namespace DataStructure
+namespace DataStructures
 {
     template <class T>
     Vector<T>::Vector() : Tuple<T>() {}

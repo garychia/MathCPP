@@ -19,7 +19,7 @@ namespace Algorithms
     }
 
     template <class IndexType, class ArrayLike, class TargetType, std::size_t ArraySize>
-    DataStructure::Tuple<IndexType> SearchRange(const ArrayLike &arr, const TargetType &target, IndexType start, IndexType end)
+    DataStructures::Tuple<IndexType> SearchRange(const ArrayLike &arr, const TargetType &target, IndexType start, IndexType end)
     {
         IndexType startIndex = -1;
         IndexType endIndex = -1;
@@ -36,7 +36,7 @@ namespace Algorithms
                 start = middle + 1;
         }
         if (start >= ArraySize || arr[start] != target)
-            return DataStructure::Tuple<IndexType>(2, -1);
+            return DataStructures::Tuple<IndexType>(2, -1);
 
         startIndex = start;
         end = ArraySize;
@@ -52,7 +52,7 @@ namespace Algorithms
         }
         endIndex = start;
         if (endIndex >= ArraySize || arr[endIndex] != target)
-            return DataStructure::Tuple<IndexType>(2, -1);
-        return DataStructure::Tuple<IndexType>({startIndex, endIndex});
+            return DataStructures::Tuple<IndexType>(2, -1);
+        return DataStructures::Tuple<IndexType>({startIndex, endIndex});
     }
 }

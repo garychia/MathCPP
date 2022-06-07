@@ -2,7 +2,7 @@
 
 #include "Vector3D.hpp"
 
-using namespace DataStructure;
+using namespace DataStructures;
 
 #define TEST_VECTOR_INT(v, a, b, c) \
     EXPECT_EQ((v).X(), a);            \

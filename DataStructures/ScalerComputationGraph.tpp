@@ -1,4 +1,4 @@
-namespace DataStructure
+namespace DataStructures
 {
     template <class T>
     ScalerComputationGraph<T>::ScalerComputationGraph() : ComputationGraph<T>(), funcNodes() {}

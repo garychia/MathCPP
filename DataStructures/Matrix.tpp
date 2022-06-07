@@ -1,7 +1,7 @@
 #include "Exceptions.hpp"
 #include "Math.hpp"
 
-namespace DataStructure
+namespace DataStructures
 {
 
     template <class T>

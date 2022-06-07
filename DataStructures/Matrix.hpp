@@ -10,7 +10,7 @@
 #include "List.hpp"
 #include "Tuple.hpp"
 
-namespace DataStructure
+namespace DataStructures
 {
     /*
     Matrix class contains a collection of Vectors.

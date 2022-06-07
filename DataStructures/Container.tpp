@@ -1,4 +1,4 @@
-namespace DataStructure
+namespace DataStructures
 {
     template <class T>
     Container<T>::Container() : size(0), data(nullptr) {}

@@ -8,7 +8,7 @@
 #include <vector>
 #include <iostream>
 
-namespace DataStructure
+namespace DataStructures
 {
     /*
     Container is an abstract class that is capable of storing data.
@@ -130,7 +130,7 @@ namespace DataStructure
 
         friend std::ostream;
     };
-} // namespace DataStructure
+} // namespace DataStructures
 
 #include "Container.tpp"
 

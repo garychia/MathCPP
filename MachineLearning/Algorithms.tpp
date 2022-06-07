@@ -1,6 +1,6 @@
 #define MAX(a, b) (a) > (b) ? (a) : (b)
 
-namespace MLAlgs
+namespace MachineLearning
 {
     template <class T>
     T Sign(T value)

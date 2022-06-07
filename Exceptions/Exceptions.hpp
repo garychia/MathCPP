@@ -4,7 +4,7 @@
 #include <exception>
 #include <sstream>
 
-namespace DataStructure
+namespace DataStructures
 {
     template <class T>
     class Tuple;
@@ -126,8 +126,8 @@ namespace Exceptions
     public:
         template <class T>
         MatrixShapeMismatch(
-            const DataStructure::Tuple<T> &matrixShape,
-            const DataStructure::Tuple<T> &targetShape,
+            const DataStructures::Tuple<T> &matrixShape,
+            const DataStructures::Tuple<T> &targetShape,
             const std::string &message = "")
         {
             std::stringstream errorMessageStream;
@@ -141,7 +141,7 @@ namespace Exceptions
 
         template <class T>
         MatrixShapeMismatch(
-            const DataStructure::Tuple<T> &expectedShape = DataStructure::Tuple<T>(),
+            const DataStructures::Tuple<T> &expectedShape = DataStructures::Tuple<T>(),
             const std::string &message = "")
         {
             std::stringstream ss;

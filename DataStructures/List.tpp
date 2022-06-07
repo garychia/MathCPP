@@ -1,4 +1,4 @@
-namespace DataStructure
+namespace DataStructures
 {
     template <class T>
     void List<T>::resize()
@@ -208,4 +208,4 @@ namespace DataStructure
         nElements = 0;
         shrink();
     }
-} // namespace DataStructure
+} // namespace DataStructures

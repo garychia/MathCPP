@@ -23,7 +23,7 @@ namespace Algorithms
     @param end the last index within the search range (inclusive). (optional)
     */
     template <class IndexType, class ArrayLike, class TargetType, std::size_t ArraySize>
-    DataStructure::Tuple<IndexType> SearchRange(const ArrayLike &arr, const TargetType &target, IndexType start = 0, IndexType end = -1);
+    DataStructures::Tuple<IndexType> SearchRange(const ArrayLike &arr, const TargetType &target, IndexType start = 0, IndexType end = -1);
 } // namespace Algorithms
 
 #include "BinarySearch.tpp"

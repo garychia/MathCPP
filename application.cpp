@@ -1,18 +1,24 @@
 #include <iostream>
 
-#include "MLAlgs.hpp"
+#include "MachineLearning/NeuralNetwork.hpp"
 
-using namespace DataStructure;
+using namespace DataStructures;
 
 int main(void)
 {
-    Matrix<float> input({1, 2, 3});
-    auto prediction = 0.5f;
-    auto label = 1.f;
-    std::cout << "Input =\n" << input << std::endl;
-    std::cout << "Prediction = " << prediction << std::endl;
-    std::cout << "Label = " << label << std::endl;
-    std::cout << "Hinge Loss:\n" << MLAlgs::HingeLoss(prediction, label) << std::endl;
-    std::cout << "Hinge Loss Gradient:\n" << MLAlgs::HingeLossGradient(input, prediction, label) << std::endl;
+    Matrix<double> input({1, 2, 3});
+    MachineLearning::NeuralNetwork network;
+    network.AddLayer(MachineLearning::NeuralLayer(3, 1));
+    std::cout << "Input =\n"
+              << input << std::endl;
+    try
+    {
+        std::cout << "Prediction =\n"
+              << network.Predict(input) << std::endl;
+    }
+    catch (const Exceptions::MatrixShapeMismatch &e)
+    {
+        std::cout << e.what() << std::endl;
+    }
     return 0;
 }

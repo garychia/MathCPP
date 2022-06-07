@@ -14,7 +14,7 @@
 #include "Tuple.hpp"
 #include "Exceptions.hpp"
 
-namespace DataStructure
+namespace DataStructures
 {
     /*
     Vector is a Container that is capable of storing multiple elements

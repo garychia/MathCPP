@@ -1,7 +1,7 @@
 #include "clib_macros.h"
 #include "list.hpp"
 
-using namespace DataStructure;
+using namespace DataStructures;
 
 extern "C"
 {

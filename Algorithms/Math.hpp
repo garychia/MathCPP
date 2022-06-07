@@ -1,7 +1,7 @@
 #ifndef MATH_HPP
 #define MATH_HPP
 
-namespace DataStructure
+namespace DataStructures
 {
     template <class T>
     class Vector;
@@ -10,7 +10,7 @@ namespace DataStructure
     class Matrix;
 }
 
-using namespace DataStructure;
+using namespace DataStructures;
 
 namespace Math
 {

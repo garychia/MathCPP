@@ -1,4 +1,4 @@
-namespace DataStructure
+namespace DataStructures
 {
     template <class T>
     T &Vector3D<T>::X() { return this->data[X_INDEX]; }

@@ -7,7 +7,7 @@
 #include "Container.hpp"
 #include "Exceptions.hpp"
 
-namespace DataStructure
+namespace DataStructures
 {
     template <class T>
     class Tuple : public Container<T>

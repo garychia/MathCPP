@@ -6,7 +6,7 @@
 #include "Container.hpp"
 #include "Exceptions.hpp"
 
-namespace DataStructure
+namespace DataStructures
 {
     /*
     List is an ordered collection of elements.
@@ -148,7 +148,7 @@ namespace DataStructure
         template <class OtherType>
         friend class List;
     };
-} // namespace DataStructure
+} // namespace DataStructures
 
 #include "List.tpp"
 

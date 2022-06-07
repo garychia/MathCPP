@@ -3,7 +3,7 @@
 
 #include "ComputationGraph.hpp"
 
-namespace DataStructure
+namespace DataStructures
 {
     template <class T>
     class ScalerComputationGraph : public ComputationGraph<T>

@@ -13,7 +13,7 @@
 #define Y_INDEX 1
 #define Z_INDEX 2
 
-namespace DataStructure
+namespace DataStructures
 {
     /*
     Vector3D is a class that represents a vector in a 3D space.
