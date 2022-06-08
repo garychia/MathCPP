@@ -6,6 +6,8 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_CXX_FLAGS "-Wall")
 
+add_subdirectory(MachineLearning)
+
 add_executable(MathCPP application.cpp)
 
 target_include_directories(MathCPP PUBLIC
@@ -14,6 +16,8 @@ target_include_directories(MathCPP PUBLIC
                           "${PROJECT_SOURCE_DIR}/Exceptions"
                           "${PROJECT_SOURCE_DIR}/MachineLearning"
                           )
+
+target_link_libraries(MathCPP PUBLIC MathCPPML)
 
 find_package(OpenMP)
 if(OpenMP_CXX_FOUND)
