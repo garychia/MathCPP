@@ -14,11 +14,9 @@ namespace MachineLearning
      **/
     class NeuralLayer
     {
-    private:
-        // Matrix whose columns represent a unit.
-        Matrix<double> weights;
-        // Column vector whose elements are the biases of the units.
-        Matrix<double> biases;
+    protected:
+        // Input to this layer.
+        Matrix<double> input;
         // Output of this layer.
         Matrix<double> output;
 
@@ -26,24 +24,23 @@ namespace MachineLearning
         // NeuralLayer Contructor.
         NeuralLayer();
         /**
-         * NeuralLayer Contructor
-         * @param inputSize the dimension of the input.
-         * @param outputSize the dimension of the output of this layer.
-         **/
-        NeuralLayer(std::size_t inputSize, std::size_t outputSize);
-        // NeuralLayer Destructor.
-        virtual ~NeuralLayer();
-        /**
          * Generate an output based on the weights and biases.
          * @param input the input to this layer.
          * @return the output of this layer.
          **/
-        Matrix<double> Forward(const Matrix<double> &input);
+        virtual Matrix<double> Forward(const Matrix<double> &input) = 0;
         /**
          * Generate a string description of this layer.
          * @return a string that describes this layer.
          **/
-        std::string ToString() const;
+        virtual std::string ToString() const = 0;
+
+        /**
+         * Retrieve the lastest input to this layer.
+         * @return the lastest input to this layer. If this layer has
+         * not received any input yet, an empty matrix is returned.
+         **/
+        Matrix<double> GetLastInput() const;
 
         /**
          * Retrieve the lastest output of this layer.

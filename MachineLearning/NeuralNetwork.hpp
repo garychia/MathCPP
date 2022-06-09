@@ -13,21 +13,21 @@ namespace MachineLearning
     {
     private:
         // Layers
-        List<NeuralLayer> layers;
+        List<NeuralLayer *> layers;
 
     public:
         /**
          * NeuralNetwork Constructor
          * @param layers the layers this neural network will have.
          **/
-        NeuralNetwork(const List<NeuralLayer> &layers = List<NeuralLayer>());
+        NeuralNetwork(const List<NeuralLayer *> &layers = List<NeuralLayer *>());
         // NeuralNetwork Destructor
         ~NeuralNetwork() = default;
         /**
          * Add a neural network layer to this network.
          * @param layer a neural network layer.
          **/
-        void AddLayer(const NeuralLayer &layer);
+        void AddLayer(NeuralLayer *layer);
         /**
          * Make a prediction based on the input and the layers.
          * @param input the input to this network.
