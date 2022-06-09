@@ -6,16 +6,12 @@ namespace MachineLearning
     {
     }
 
-    NeuralNetwork::~NeuralNetwork()
-    {
-    }
-
     void NeuralNetwork::AddLayer(const NeuralLayer &layer)
     {
         layers.Append(layer);
     }
 
-    Matrix<double> NeuralNetwork::Predict(const Matrix<double> &input) const
+    Matrix<double> NeuralNetwork::Predict(const Matrix<double> &input)
     {
         Matrix<double> output = input;
         for (std::size_t i = 0; i < layers.Size(); i++)
