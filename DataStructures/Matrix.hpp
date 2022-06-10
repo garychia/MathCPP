@@ -352,6 +352,14 @@ namespace DataStructures
         Matrix<T> Sum(bool sumRows = true) const;
 
         /*
+        Calculates the Frobenius norm of a Matrix.
+        @param m a Matrix.
+        @return the Frobenius norm of the given Matrix.
+        */
+        template <class ReturnType>
+        ReturnType FrobeniusNorm() const;
+
+        /*
         Maps each element of this Matrix to a new value.
         @param f a function that maps the value of an element to a new value.
         @return a new Matrix with the new values defined by f.

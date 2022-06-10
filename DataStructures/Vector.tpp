@@ -74,6 +74,13 @@ namespace DataStructures
 
     template <class T>
     template <class ReturnType>
+    ReturnType Vector<T>::EuclideanNorm() const
+    {
+        return Length();
+    }
+
+    template <class T>
+    template <class ReturnType>
     ReturnType Vector<T>::LpNorm(ReturnType p) const
     {
         ReturnType squaredTotal = 0;

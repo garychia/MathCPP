@@ -30,20 +30,6 @@ namespace Math
     }
 
     template <class T>
-    Vector<T> Exponent(const Vector<T> &x)
-    {
-        return x.Map([](T e)
-                     { return Exponent(e); });
-    }
-
-    template <class T>
-    Matrix<T> Exponent(const Matrix<T> &x)
-    {
-        return x.Map([](T e)
-                     { return Exponent(e); });
-    }
-
-    template <class T>
     T NaturalLog(const T &x)
     {
         if (x <= 0)
@@ -73,20 +59,6 @@ namespace Math
             denominator++;
         }
         return result + exponent * LN_2;
-    }
-
-    template <class T>
-    Vector<T> NaturalLog(const Vector<T> &v)
-    {
-        return v.Map([](T e)
-                     { return NaturalLog(e); });
-    }
-
-    template <class T>
-    Matrix<T> NaturalLog(const Matrix<T> &m)
-    {
-        return m.Map([](T e)
-                     { return NaturalLog(e); });
     }
 
     template <class T>
@@ -191,32 +163,6 @@ namespace Math
             return partial * partial;
         }
         return scaler * Power(scaler, n - 1);
-    }
-
-    template <class T, class PowerType>
-    Vector<T> Power(const Vector<T> &v, PowerType n)
-    {
-        return v.Map([&n](T e)
-                     { return Power(e, n); });
-    }
-
-    template <class T, class PowerType>
-    Matrix<T> Power(const Matrix<T> &m, PowerType n)
-    {
-        return m.Map([&n](T e)
-                     { return Power(e, n); });
-    }
-
-    template <class T>
-    T EuclideanNorm(const Vector<T> &v)
-    {
-        return sqrt(Power<T>(v, 2).Sum());
-    }
-
-    template <class T>
-    T FrobeniusNorm(const Matrix<T> &m)
-    {
-        return sqrt(Power<T>(m, 2).Sum());
     }
 
     template <class T>

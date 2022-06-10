@@ -118,6 +118,13 @@ namespace DataStructures
         ReturnType Length() const;
 
         /*
+        Returns the Euclidean norm of this Vector.
+        @return the Euclidean norm of this Vector.
+        */
+        template <class ReturnType>
+        ReturnType EuclideanNorm() const;
+
+        /*
         Returns the Lp Norm of this Vector.
         @return the Lp norm of this Vector.
         */

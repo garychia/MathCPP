@@ -773,6 +773,13 @@ namespace DataStructures
     }
 
     template <class T>
+    template <class ReturnType>
+    ReturnType Matrix<T>::FrobeniusNorm() const
+    {
+        return Math::Power<T, double>(Map([](const T &e) { return e * e; }).SumAll(), 0.5);
+    }
+
+    template <class T>
     template <class MapFunction>
     auto Matrix<T>::Map(MapFunction &&f) const
     {
