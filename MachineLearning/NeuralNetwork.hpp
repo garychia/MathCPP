@@ -16,18 +16,24 @@ namespace MachineLearning
         List<NeuralLayer *> layers;
 
     public:
+        enum class LayerType
+        {
+            Linear,
+            ReLU,
+            SoftMax,
+            Tanh
+        };
+        
+        /* NeuralNetwork Constructor */
+        NeuralNetwork();
         /**
          * NeuralNetwork Constructor
-         * @param layers the layers this neural network will have.
+         * @param layerTypes a list of LayerType to specify the type of each layer.
+         * @param shapes a list of Tuple to specify the input and output size of each layer.
          **/
-        NeuralNetwork(const List<NeuralLayer *> &layers = List<NeuralLayer *>());
+        NeuralNetwork(const List<LayerType> &layerTypes, const List<Tuple<unsigned int>> &shapes);
         // NeuralNetwork Destructor
-        ~NeuralNetwork() = default;
-        /**
-         * Add a neural network layer to this network.
-         * @param layer a neural network layer.
-         **/
-        void AddLayer(NeuralLayer *layer);
+        ~NeuralNetwork();
         /**
          * Make a prediction based on the input and the layers.
          * @param input the input to this network.
@@ -35,6 +41,8 @@ namespace MachineLearning
          **/
         Matrix<double> Predict(const Matrix<double> &input);
     };
+
+    std::ostream &operator<<(std::ostream &stream, const NeuralNetwork::LayerType &layerType);
 } // namespace MachineLearning
 
 #endif // NEURALNETWORK_HPP
