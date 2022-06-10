@@ -17,6 +17,10 @@ namespace MachineLearning
         Matrix<double> weights;
         // Column vector whose elements are the biases of the units.
         Matrix<double> biases;
+        // Derivative with respect to the weights.
+        Matrix<double> dWeights;
+        // Derivative with respect to the biases.
+        Matrix<double> dBiases;
 
     public:
         // LinearLayer Contructor.
@@ -35,6 +39,17 @@ namespace MachineLearning
          * @return the output of this layer.
          **/
         Matrix<double> Forward(const Matrix<double> &input) override;
+        /**
+         * Backpropogate the loss and compute the derivative of the weights.
+         * @param derivative the derivative of the next layer.
+         * @return the derivative with respect to the output of the previous layer.
+         **/
+        virtual Matrix<double> Backward(const Matrix<double> &derivative) override;
+        /**
+         * Update the weights of this layer using gradient descent.
+         * @param learningRate the learning rate of gradient descent.
+         **/
+        virtual void UpdateWeights(const double &learningRate) override;
         /**
          * Generate a string description of this layer.
          * @return a string that describes this layer.

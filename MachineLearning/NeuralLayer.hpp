@@ -30,6 +30,17 @@ namespace MachineLearning
          **/
         virtual Matrix<double> Forward(const Matrix<double> &input) = 0;
         /**
+         * Backpropogate the loss and compute the derivative of the weights.
+         * @param derivative the derivative of the next layer.
+         * @return the derivative with respect to the output of the previous layer.
+         **/
+        virtual Matrix<double> Backward(const Matrix<double> &derivative) = 0;
+        /**
+         * Update the weights of this layer using gradient descent.
+         * @param learningRate the learning rate of gradient descent.
+         **/
+        virtual void UpdateWeights(const double &learningRate) = 0;
+        /**
          * Generate a string description of this layer.
          * @return a string that describes this layer.
          **/
