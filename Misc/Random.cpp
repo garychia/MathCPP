@@ -12,31 +12,29 @@ int Random::seed = 0;
 
 void Random::UpdateSeed()
 {
-    seed = (seed << 3) % 17 + 19;
+    seed = seed % 903 + (seed << 3) + 17;
+}
+
+int Random::Generate()
+{
+#pragma omp critical
+    {
+        srand(seed + time(NULL));
+        UpdateSeed();
+        return rand();
+    }
 }
 
 int Random::IntRange(int low, int high)
 {
-    int randomValue;
-#pragma omp critical
-{
-    srand(time(NULL) + seed);
-    UpdateSeed();
-    randomValue = rand();
-}
-    return randomValue % (high - low) + low;
+    return Generate() % (high - low) + low;
 }
 
 unsigned int Random::Choose(unsigned int nElements, const DataStructures::List<double> &prob)
 {
     if (prob.IsEmpty())
         return IntRange(0, nElements);
-    int randomValue;
-#pragma omp critical
-{
-    randomValue = rand();
-}
-    const double randomProb = (double)(randomValue % 1000001) / 1000000.0;
+    const double randomProb = (double)(Generate() % 10001) / 10000;
     double currentProbability = 0.0;
     for (std::size_t i = 0; i < prob.Size(); i++)
     {
@@ -47,13 +45,18 @@ unsigned int Random::Choose(unsigned int nElements, const DataStructures::List<d
     return prob.Size() - 1;
 }
 
-double Random::NormalDistribution(double mean, double standard)
+double Random::NormalDistribution(double mean, double standard, unsigned int nSamples)
 {
     const auto rangeMin = mean - 3 * standard;
     const auto rangeMax = mean + 3 * standard;
-    const double stepSize = 0.01;
+    const auto rangeSize = rangeMax - rangeMin;
+    const auto stepSize = rangeSize / nSamples;
     DataStructures::List<double> distribution;
+    DataStructures::List<double> values;
     for (auto i = rangeMin; i <= rangeMax; i += stepSize)
-        distribution.Append(Math::Gauss(i, mean, standard));
-    return distribution[Choose(distribution.Size(), distribution)];
+    {
+        distribution.Append(Math::Gauss(i, mean, standard) * stepSize);
+        values.Append(i);
+    }
+    return values[Choose(distribution.Size(), distribution)];
 }

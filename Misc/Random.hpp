@@ -9,6 +9,8 @@ private:
     static int seed;
 
     static void UpdateSeed();
+
+    static int Generate();
 public:
     /**
      * Generate a random integer.
@@ -30,9 +32,10 @@ public:
      * Generate a random number sampled from a normal distribution.
      * @param mean the mean of the normal distribution.
      * @param standard the standard deviation of the distribution.
+     * @param nSamples the total number of samples from the distribution to choose from.
      * @return a random number sampled from a normal distribution.
      **/
-    static double NormalDistribution(double mean, double standard);
+    static double NormalDistribution(double mean, double standard, unsigned int nSamples = 1000);
 };
 
 #endif // RANDOM_HPP
