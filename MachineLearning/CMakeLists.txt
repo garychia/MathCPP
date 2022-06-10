@@ -23,4 +23,5 @@ target_include_directories(MathCPPML PUBLIC
     "${PROJECT_SOURCE_DIR}/Algorithms"
     "${PROJECT_SOURCE_DIR}/DataStructures"
     "${PROJECT_SOURCE_DIR}/Exceptions"
-    "${PROJECT_SOURCE_DIR}/MachineLearning")
+    "${PROJECT_SOURCE_DIR}/MachineLearning"
+    "${PROJECT_SOURCE_DIR}/Misc")

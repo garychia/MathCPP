@@ -23,6 +23,7 @@ namespace MachineLearning
     public:
         // NeuralLayer Contructor.
         NeuralLayer();
+        virtual ~NeuralLayer() = default;
         /**
          * Generate an output based on the weights and biases.
          * @param input the input to this layer.

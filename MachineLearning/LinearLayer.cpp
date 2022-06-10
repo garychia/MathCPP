@@ -1,4 +1,6 @@
 #include "LinearLayer.hpp"
+#include "Math.hpp"
+#include "Random.hpp"
 
 #include <sstream>
 
@@ -10,6 +12,10 @@ namespace MachineLearning
 
     LinearLayer::LinearLayer(std::size_t inputSize, std::size_t outputSize) : NeuralLayer(), weights(inputSize, outputSize), biases(outputSize, 1), dWeights(), dBiases()
     {
+        const auto sigma = Math::Power<double, double>(inputSize, -0.5);
+        weights = weights.Map(
+            [&sigma](const double &)
+            { return Random::NormalDistribution(0, sigma); });
     }
 
     Matrix<double> LinearLayer::Forward(const Matrix<double> &input)
