@@ -2,6 +2,7 @@
 #define NEURALNETWORK_HPP
 
 #include "NeuralLayer.hpp"
+#include "LossLayer.hpp"
 
 #include <string>
 #include <sstream>
@@ -14,6 +15,8 @@ namespace MachineLearning
     private:
         // Layers
         List<NeuralLayer *> layers;
+        // Loss function
+        LossLayer *lossLayer;
 
     public:
         enum class LayerType
@@ -23,6 +26,11 @@ namespace MachineLearning
             SoftMax,
             Tanh
         };
+
+        enum class LossType
+        {
+            NLL // Negative Log-Likelihood
+        };
         
         /* NeuralNetwork Constructor */
         NeuralNetwork();
@@ -30,8 +38,9 @@ namespace MachineLearning
          * NeuralNetwork Constructor
          * @param layerTypes a list of LayerType to specify the type of each layer.
          * @param shapes a list of Tuple to specify the input and output size of each layer.
+         * @param lossType the loss function to be used to evaluate loss.
          **/
-        NeuralNetwork(const List<LayerType> &layerTypes, const List<Tuple<unsigned int>> &shapes);
+        NeuralNetwork(const List<LayerType> &layerTypes, const List<Tuple<unsigned int>> &shapes, LossType lossType);
         // NeuralNetwork Destructor
         ~NeuralNetwork();
         /**
@@ -51,6 +60,7 @@ namespace MachineLearning
     };
 
     std::ostream &operator<<(std::ostream &stream, const NeuralNetwork::LayerType &layerType);
+    std::ostream &operator<<(std::ostream &stream, const NeuralNetwork::LossType &lossType);
 } // namespace MachineLearning
 
 #endif // NEURALNETWORK_HPP

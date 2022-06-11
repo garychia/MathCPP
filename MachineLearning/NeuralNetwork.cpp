@@ -5,6 +5,7 @@
 #include "ReLULayer.hpp"
 #include "SoftMaxLayer.hpp"
 #include "TanhLayer.hpp"
+#include "NLLLayer.hpp"
 
 #include <ostream>
 
@@ -14,7 +15,7 @@ namespace MachineLearning
     {
     }
 
-    NeuralNetwork::NeuralNetwork(const List<LayerType> &layerTypes, const List<Tuple<unsigned int>> &shapes)
+    NeuralNetwork::NeuralNetwork(const List<LayerType> &layerTypes, const List<Tuple<unsigned int>> &shapes, LossType lossType) : layers()
     {
         if (layerTypes.Size() != shapes.Size())
             throw Exceptions::InvalidArgument(
@@ -56,6 +57,19 @@ namespace MachineLearning
             }
             }
         }
+
+        switch (lossType)
+        {
+        case LossType::NLL:
+            lossLayer = new NLLLayer();
+            break;
+        default:
+        {
+            std::stringstream ss;
+            ss << "NeuralNetwork: Unexpected LossType: " << lossType << ".";
+            throw Exceptions::InvalidArgument(ss.str());
+        }
+        }
     }
 
     NeuralNetwork::~NeuralNetwork()
@@ -63,6 +77,7 @@ namespace MachineLearning
         for (std::size_t i = 0; i < layers.Size(); i++)
             delete layers[i];
         layers.Clear();
+        delete lossLayer;
     }
 
     Matrix<double> NeuralNetwork::Predict(const Matrix<double> &input)
@@ -77,19 +92,31 @@ namespace MachineLearning
     {
         std::stringstream ss;
         const auto nLayers = layers.Size();
-        ss << "NeuralNetwork:\n";
-        ss << "Number of Layers: " << nLayers;
+        ss << "NeuralNetwork {\n";
+        ss << "  Number of Layers: " << nLayers << ",";
         if (nLayers > 0)
         {
-            ss << std::endl << "Layers:\n";
+            ss << std::endl
+               << "  Layers: {\n";
             for (std::size_t i = 0; i < nLayers; i++)
             {
-                ss << layers[i]->ToString() << std::endl;
-                ss << "------------------------------------------";
+                ss << "    Layer " << i + 1 << ": {\n";
+                ss << "      ";
+                for (const auto &c : layers[i]->ToString())
+                {
+                    ss << c;
+                    if (c == '\n')
+                        ss << "      ";
+                }
+                ss << "\n    }";
                 if (i < nLayers - 1)
-                    ss << std::endl;
+                    ss << ",";
+                ss << "\n";
             }
+            ss << "  },\n";
         }
+        ss << "  Loss Layer: " << lossLayer->ToString() << std::endl;
+        ss << "}";
         return ss.str();
     }
 
@@ -102,6 +129,12 @@ namespace MachineLearning
     std::ostream &operator<<(std::ostream &stream, const NeuralNetwork::LayerType &layerType)
     {
         stream << static_cast<int>(layerType);
+        return stream;
+    }
+
+    std::ostream &operator<<(std::ostream &stream, const NeuralNetwork::LossType &lossType)
+    {
+        stream << static_cast<int>(lossType);
         return stream;
     }
 } // namespace MachineLearning
