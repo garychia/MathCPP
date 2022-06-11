@@ -6,6 +6,8 @@ set(ML_SOURCES
     ${CMAKE_SOURCE_DIR}/MachineLearning/TanhLayer.cpp
     ${CMAKE_SOURCE_DIR}/MachineLearning/ReLULayer.cpp
     ${CMAKE_SOURCE_DIR}/MachineLearning/SoftMaxLayer.cpp
+    ${CMAKE_SOURCE_DIR}/MachineLearning/LossLayer.cpp
+    ${CMAKE_SOURCE_DIR}/MachineLearning/NLLLayer.cpp
     ${CMAKE_SOURCE_DIR}/MachineLearning/NeuralNetwork.cpp)
 
 set(ML_HEADERS
@@ -16,6 +18,8 @@ set(ML_HEADERS
     ${CMAKE_SOURCE_DIR}/MachineLearning/TanhLayer.hpp
     ${CMAKE_SOURCE_DIR}/MachineLearning/ReLULayer.hpp
     ${CMAKE_SOURCE_DIR}/MachineLearning/SoftMaxLayer.hpp
+    ${CMAKE_SOURCE_DIR}/MachineLearning/LossLayer.hpp
+    ${CMAKE_SOURCE_DIR}/MachineLearning/NLLLayer.hpp
     ${CMAKE_SOURCE_DIR}/MachineLearning/NeuralNetwork.hpp)
 
 add_library(MathCPPML ${ML_SOURCES} ${ML_HEADERS})
