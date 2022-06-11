@@ -40,11 +40,26 @@ namespace MachineLearning
     std::string LinearLayer::ToString() const
     {
         std::stringstream ss;
-        ss << "LinearLayer:" << std::endl;
-        ss << "Weights:\n"
-           << weights << std::endl;
-        ss << "Biases:\n"
-           << biases;
+        ss << "LinearLayer: {" << std::endl;
+        ss << "  Weights: {\n";
+        ss << "    ";
+        for (const auto &c : weights.ToString())
+        {
+            ss << c;
+            if (c == '\n')
+                ss << "    ";
+        }
+        ss << "\n  },\n";
+        ss << "  Biases: {\n";
+        ss << "    ";
+        for (const auto &c : biases.ToString())
+        {
+            ss << c;
+            if (c == '\n')
+                ss << "    ";
+        }
+        ss << "\n  }\n";
+        ss << "}";
         return ss.str();
     }
 } // namespace MachineLearning
