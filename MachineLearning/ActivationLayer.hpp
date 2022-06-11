@@ -9,7 +9,7 @@ namespace MachineLearning
     {
     public:
         ActivationLayer();
-        ~ActivationLayer() = default;
+        virtual ~ActivationLayer() = default;
         virtual void UpdateWeights(const double &learningRate) override;
     };
 } // namespace MachineLearning
