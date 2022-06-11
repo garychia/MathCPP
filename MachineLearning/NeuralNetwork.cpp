@@ -73,6 +73,32 @@ namespace MachineLearning
         return output;
     }
 
+    std::string NeuralNetwork::ToString() const
+    {
+        std::stringstream ss;
+        const auto nLayers = layers.Size();
+        ss << "NeuralNetwork:\n";
+        ss << "Number of Layers: " << nLayers;
+        if (nLayers > 0)
+        {
+            ss << std::endl << "Layers:\n";
+            for (std::size_t i = 0; i < nLayers; i++)
+            {
+                ss << layers[i]->ToString() << std::endl;
+                ss << "------------------------------------------";
+                if (i < nLayers - 1)
+                    ss << std::endl;
+            }
+        }
+        return ss.str();
+    }
+
+    std::ostream &operator<<(std::ostream &stream, const NeuralNetwork &network)
+    {
+        stream << network.ToString();
+        return stream;
+    }
+
     std::ostream &operator<<(std::ostream &stream, const NeuralNetwork::LayerType &layerType)
     {
         stream << static_cast<int>(layerType);

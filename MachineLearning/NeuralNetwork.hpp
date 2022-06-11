@@ -40,6 +40,14 @@ namespace MachineLearning
          * @return a Matrix as the output.
          **/
         Matrix<double> Predict(const Matrix<double> &input);
+
+        /**
+         * Generate a string that describes this NeuralNetwork.
+         * @return a string that describes this NeuralNetwork.
+         **/
+        std::string ToString() const;
+
+        friend std::ostream &operator<<(std::ostream &stream, const NeuralNetwork &network);
     };
 
     std::ostream &operator<<(std::ostream &stream, const NeuralNetwork::LayerType &layerType);
