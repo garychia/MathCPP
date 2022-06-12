@@ -8,6 +8,7 @@
 #define LN_2 0.69314718
 #define PI 3.14159265
 #define PI_TIMES_2 6.28318531
+#define ABS(x) (x) >= 0 ? (x) : -(x)
 
 namespace Math
 {
@@ -51,12 +52,14 @@ namespace Math
         T factor = 1;
         T numerator = input - 1;
         std::size_t denominator = 1;
-        while (numerator / denominator > EPSILON)
+        T ratio = numerator / denominator;
+        while (ABS(ratio) > EPSILON)
         {
             result += factor * numerator / denominator;
             factor = -factor;
             numerator *= input - 1;
             denominator++;
+            ratio = numerator / denominator;
         }
         return result + exponent * LN_2;
     }
