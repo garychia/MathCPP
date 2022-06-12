@@ -505,9 +505,8 @@ namespace DataStructures
         {
             std::stringstream errorMessageStream;
             errorMessageStream
-                << "Expected two matrices have the same shape when performing"
-                   "element-wise scaling."
-                << std::endl;
+                << "Expected two matrices have the same shape when performing "
+                   "element-wise scaling.";
             throw Exceptions::MatrixShapeMismatch(
                 thisShape,
                 otherShape,

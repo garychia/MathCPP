@@ -4,7 +4,7 @@
 
 #include <sstream>
 
-#define EPSILON 0.00000001
+#define EPSILON 0.0000000001
 #define LN_2 0.69314718
 #define PI 3.14159265
 #define PI_TIMES_2 6.28318531

@@ -34,7 +34,7 @@ namespace MachineLearning
     void LinearLayer::UpdateWeights(const double &learningRate)
     {
         weights -= learningRate * dWeights;
-        dBiases -= learningRate * dBiases;
+        biases -= learningRate * dBiases;
     }
 
     std::string LinearLayer::ToString() const

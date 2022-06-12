@@ -7,6 +7,8 @@
 #include "TanhLayer.hpp"
 #include "NLLLayer.hpp"
 
+#include "Random.hpp"
+
 #include <ostream>
 
 namespace MachineLearning
@@ -88,11 +90,36 @@ namespace MachineLearning
         return output;
     }
 
+    void NeuralNetwork::Learn(const Matrix<double> &derivative, const double &learningRate)
+    {
+        Matrix<double> currentDerivative = derivative;
+        std::size_t i = layers.Size() - 1;
+        while (i != 0)
+        {
+            currentDerivative = layers[i]->Backward(currentDerivative);
+            layers[i]->UpdateWeights(learningRate);
+            i--;
+        }
+    }
+
+    List<double> NeuralNetwork::Train(const Matrix<double> &trainingData, const Matrix<double> &labels, unsigned int epochs, double learningRate)
+    {
+        List<double> lossHistory;
+        for (std::size_t i = 0; i < epochs; i++)
+        {
+            const auto pred = Predict(trainingData);
+            lossHistory.Append(lossLayer->ComputeLoss(pred, labels));
+            const auto derivative = lossLayer->Backward(pred, labels);
+            Learn(derivative, learningRate);
+        }
+        return lossHistory;
+    }
+
     std::string NeuralNetwork::ToString() const
     {
         std::stringstream ss;
         const auto nLayers = layers.Size();
-        ss << "NeuralNetwork {\n";
+        ss << "NeuralNetwork: {\n";
         ss << "  Number of Layers: " << nLayers << ",";
         if (nLayers > 0)
         {
