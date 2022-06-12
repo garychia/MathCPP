@@ -14,7 +14,7 @@ namespace MachineLearning
         this->input = input;
         const auto exponential = input.Map([](const double &e)
                                            { return Math::Exponent(e); });
-        return this->output = exponential / exponential.SumAll();
+        return this->output = exponential / exponential.Sum();
     }
 
     Matrix<double> SoftMaxLayer::Backward(const Matrix<double> &derivative)
