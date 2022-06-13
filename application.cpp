@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "MachineLearning/NeuralNetwork.hpp"
+#include "NeuralNetwork.hpp"
 
 #include <stdlib.h>
 
