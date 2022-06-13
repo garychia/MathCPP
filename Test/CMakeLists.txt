@@ -1,9 +1,3 @@
-set(
-    TEST_FILES
-    vector_test.hpp
-    vector3d_test.hpp
-)
-
 enable_testing()
 add_executable(MathCPPTest test_main.cpp)
 target_include_directories(
