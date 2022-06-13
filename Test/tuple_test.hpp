@@ -208,3 +208,63 @@ TEST(Tuple, TupleElementAccess)
         },
         Exceptions::IndexOutOfBound);
 }
+
+TEST(Tuple, TupleEqualOperator)
+{
+    const auto TupleIntContent1 = {1, 2, 3, 4};
+    const auto TupleIntContent2 = {1, 2, 3, 0};
+    const auto TupleIntContent3 = {1, 2, 3, 4, 5};
+    Tuple<int> t1(TupleIntContent1);
+    Tuple<int> t2(TupleIntContent1);
+    Tuple<int> t3(TupleIntContent2);
+    Tuple<int> t4(TupleIntContent3);
+    EXPECT_TRUE(t1 == t1);
+    EXPECT_TRUE(t1 == t2);
+    EXPECT_FALSE(t1 == t3);
+    EXPECT_FALSE(t1 == t3);
+}
+
+TEST(Tuple, TupleNotEqualOperator)
+{
+    const auto TupleFloatContent1 = {3.12f, 2.3f, 3.75f, 4.43f};
+    const auto TupleFloatContent2 = {3.12f, 2.3f, 3.75f, 0.4f};
+    const auto TupleFloatContent3 = {3.12f, 2.3f, 3.75f, 4.43f, 5.45f};
+    Tuple<float> t1(TupleFloatContent1);
+    Tuple<float> t2(TupleFloatContent1);
+    Tuple<float> t3(TupleFloatContent2);
+    Tuple<float> t4(TupleFloatContent3);
+    EXPECT_FALSE(t1 != t1);
+    EXPECT_FALSE(t1 != t2);
+    EXPECT_TRUE(t1 != t3);
+    EXPECT_TRUE(t1 != t3);
+}
+
+TEST(Tuple, TupleToString)
+{
+    Tuple<int> empty;
+    EXPECT_TRUE(empty.ToString() == "()");
+    const auto TupleFloatContent = {3.12f, 2.3f, 3.75f, 4.43f};
+    const auto TupleDoubleContent = {7.34, 82.3, 8.57, 7.43, 43.4, 3.14};
+    Tuple<float> floatTuple(TupleFloatContent);
+    Tuple<double> doubleTuple(TupleDoubleContent);
+    std::stringstream ss;
+    ss << "(";
+    for (int i = 0; i < floatTuple.Size(); i++)
+    {
+        ss << floatTuple[i];
+        if (i < floatTuple.Size() - 1)
+            ss << ", ";
+    }
+    ss << ")";
+    EXPECT_TRUE(floatTuple.ToString() == ss.str());
+    ss.str(std::string());
+    ss << "(";
+    for (int i = 0; i < doubleTuple.Size(); i++)
+    {
+        ss << doubleTuple[i];
+        if (i < doubleTuple.Size() - 1)
+            ss << ", ";
+    }
+    ss << ")";
+    EXPECT_TRUE(doubleTuple.ToString() == ss.str());
+}
