@@ -48,7 +48,7 @@ namespace DataStructures
         if (index > this->size - 1)
             throw Exceptions::IndexOutOfBound(
                 index,
-                "Vector: Index must be less than the dimention.");
+                "Vector: Index must be less than the dimension.");
         return this->data[index];
     }
 
@@ -58,7 +58,7 @@ namespace DataStructures
         if (index > this->size - 1)
             throw Exceptions::IndexOutOfBound(
                 index,
-                "Vector: Index must be less than the dimention.");
+                "Vector: Index must be less than the dimension.");
         return this->data[index];
     }
 
@@ -513,13 +513,7 @@ namespace DataStructures
     template <class T>
     Vector<T> Vector<T>::ZeroVector(const std::size_t &n)
     {
-        Vector<T> v;
-        v.size = n;
-        v.data = new T[n];
-#pragma omp parallel for schedule(dynamic)
-        for (std::size_t i = 0; i < n; i++)
-            v.data[i] = 0;
-        return v;
+        return Vector<T>(n, 0);
     }
 
     template <class T>
