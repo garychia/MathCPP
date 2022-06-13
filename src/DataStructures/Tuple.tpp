@@ -79,7 +79,7 @@ namespace DataStructures
     std::string Tuple<T>::ToString() const
     {
         if (this->size == 0)
-            return "(EMPTY)";
+            return "()";
         std::stringstream ss;
         ss << "(";
         for (std::size_t i = 0; i < this->size; i++)
