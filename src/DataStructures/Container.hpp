@@ -76,13 +76,6 @@ namespace DataStructures
         Container(Container<T> &&other);
 
         /*
-        Move Constructor
-        @param other a Container to be moved.
-        */
-        template <class OtherType>
-        Container(Container<OtherType> &&other);
-
-        /*
         Destructor
         */
         virtual ~Container();
@@ -129,6 +122,9 @@ namespace DataStructures
         virtual std::string ToString() const = 0;
 
         friend std::ostream;
+
+        template <class OtherType>
+        friend class Container;
     };
 } // namespace DataStructures
 

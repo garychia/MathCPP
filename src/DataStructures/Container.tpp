@@ -103,16 +103,6 @@ namespace DataStructures
     }
 
     template <class T>
-    template <class OtherType>
-    Container<T>::Container(Container<OtherType> &&other)
-    {
-        size = move(other.size);
-        data = move(other.data);
-        other.size = 0;
-        other.data = nullptr;
-    }
-
-    template <class T>
     Container<T>::~Container()
     {
         if (data)
@@ -143,19 +133,16 @@ namespace DataStructures
     template <class OtherType>
     Container<T> &Container<T>::operator=(const Container<OtherType> &other)
     {
-        if (this != &other)
+        size = other.Size();
+        if (data)
+            delete[] data;
+        data = nullptr;
+        if (size > 0)
         {
-            size = other.size;
-            if (data)
-                delete[] data;
-            data = nullptr;
-            if (size > 0)
-            {
-                data = new T[size];
+            data = new T[size];
 #pragma omp parallel for schedule(dynamic)
-                for (std::size_t i = 0; i < size; i++)
-                    data[i] = (T)other.data[i];
-            }
+            for (std::size_t i = 0; i < size; i++)
+                data[i] = T(other[i]);
         }
         return *this;
     }
