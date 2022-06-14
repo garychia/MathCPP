@@ -8,7 +8,7 @@
 
 namespace DataStructures
 {
-    /* A mutable Container that supports numerical operations. */
+    /* A mutable Container of a fixed size that supports numerical operations. */
     template <class T>
     class Vector : public Tuple<T>
     {
