@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+#include <cmath>
 
 #include "Vector.hpp"
 
@@ -6,14 +7,14 @@
 
 using namespace DataStructures;
 
-TEST(Vector, VectorEmptyConstructor)
+TEST(Vector, EmptyConstructor)
 {
     Vector<int> empty;
     EXPECT_EQ(empty.Size(), ZERO);
     EXPECT_EQ(empty.Dimension(), ZERO);
 }
 
-TEST(Vector, VectorFillConstructor)
+TEST(Vector, FillConstructor)
 {
     const int VECTOR_LENGHTS[] = {0, 2, 4, 8, 16, 32, 64, 128, 256};
     for (int i = 0; i < sizeof(VECTOR_LENGHTS) / sizeof(VECTOR_LENGHTS[ZERO]); i++)
@@ -27,7 +28,7 @@ TEST(Vector, VectorFillConstructor)
     }
 }
 
-TEST(Vector, VectorInitializerListConstructor)
+TEST(Vector, InitializerListConstructor)
 {
     const auto INT_VECTOR_CONTENT = {43, -13, 90, -39, 0, 23, -75};
     const auto FLOAT_VECTOR_CONTENT = {-2.124f, 23.2f - 82.32f, 2343.3f, 1.04f, 0.f, 321.3f, -9.f};
@@ -52,7 +53,7 @@ TEST(Vector, VectorInitializerListConstructor)
         EXPECT_DOUBLE_EQ(initVectorDouble[i++], content);
 }
 
-TEST(Vector, VectorArrayConstructor)
+TEST(Vector, ArrayConstructor)
 {
     const std::array<int, 7> INT_VECTOR_CONTENT = {43, -13, 90, -39, 0, 23, -75};
     const std::array<float, 8> FLOAT_VECTOR_CONTENT = {-2.124f, 23.2f - 82.32f, 2343.3f, 1.04f, 0.f, 321.3f, -9.f};
@@ -77,7 +78,7 @@ TEST(Vector, VectorArrayConstructor)
         EXPECT_DOUBLE_EQ(initVectorDouble[i++], content);
 }
 
-TEST(Vector, VectorStdVectorConstructor)
+TEST(Vector, StdVectorConstructor)
 {
     const std::vector<int> INT_VECTOR_CONTENT({43, -13, 90, -39, 0, 23, -75});
     const std::vector<float> FLOAT_VECTOR_CONTENT({-2.124f, 23.2f, -82.32f, 84.3f, 1.04f, 0.f, 32.3f, -9.f, 23.f});
@@ -102,7 +103,7 @@ TEST(Vector, VectorStdVectorConstructor)
         EXPECT_DOUBLE_EQ(initVectorDouble[i++], content);
 }
 
-TEST(Vector, VectorCopyConstructor)
+TEST(Vector, CopyConstructor)
 {
     const std::vector<int> INT_VECTOR_CONTENT({43, -13, 90, -39, 0, 23, -75});
     const std::vector<float> FLOAT_VECTOR_CONTENT({-2.124f, 23.2f, -82.32f, 84.3f, 1.04f, 0.f, 32.3f, -9.f, 23.f});
@@ -138,7 +139,7 @@ TEST(Vector, VectorCopyConstructor)
         EXPECT_DOUBLE_EQ(initVectorFloatToDoubleCopy[i], initVectorFloat[i]);
 }
 
-TEST(Vector, VectorMoveConstructor)
+TEST(Vector, MoveConstructor)
 {
     const std::vector<int> INT_VECTOR_CONTENT({43, -13, 90, -39, 0, 23, -75, 23, 35, -93, 75, 46});
     const std::vector<float> FLOAT_VECTOR_CONTENT({-2.124f, 23.2f, -82.32f, 84.3f, 1.04f, 0.f, 32.3f, -9.f, 23.f});
@@ -169,7 +170,7 @@ TEST(Vector, VectorMoveConstructor)
         EXPECT_DOUBLE_EQ(initVectorDouble[i], initVectorDoubleCopy[i]);
 }
 
-TEST(Vector, VectorCopyAssignment)
+TEST(Vector, CopyAssignment)
 {
     const std::vector<int> INT_VECTOR_CONTENT({43, -13, 90, -39, 0, 23, -75});
     const std::vector<float> FLOAT_VECTOR_CONTENT({-2.124f, 23.2f, -82.32f, 84.3f, 1.04f, 0.f, 32.3f, -9.f, 23.f});
@@ -205,7 +206,7 @@ TEST(Vector, VectorCopyAssignment)
         EXPECT_DOUBLE_EQ(initVectorDoubleCopy[i], initVectorFloat[i]);
 }
 
-TEST(Vector, VectorElementAccess)
+TEST(Vector, ElementAccess)
 {
     std::vector<int> elements;
     for (int i = -100; i < 101; i++)
@@ -231,7 +232,7 @@ TEST(Vector, VectorElementAccess)
         Exceptions::IndexOutOfBound);
 }
 
-TEST(Vector, VectorDimension)
+TEST(Vector, Dimension)
 {
     Vector<int> t1;
     Vector<float> t2({1.f, 2.f, 3.f, 4.f});
@@ -241,12 +242,91 @@ TEST(Vector, VectorDimension)
     EXPECT_EQ(t3.Dimension(), 3);
 }
 
-TEST(Vector, VectorLength)
+TEST(Vector, Length)
 {
     Vector<int> t1 = Vector<int>::ZeroVector(10);
     EXPECT_FLOAT_EQ(t1.Length<float>(), 0.f);
-    Vector<float> t2({ 3.f, 4.f});
+    Vector<float> t2({3.f, 4.f});
     EXPECT_FLOAT_EQ(t2.Length<float>(), 5.f);
+    Vector<float> t3({-3.f, 4.f});
+    EXPECT_FLOAT_EQ(t3.Length<float>(), 5.f);
+    Vector<float> t4({3.f, -4.f});
+    EXPECT_FLOAT_EQ(t4.Length<float>(), 5.f);
+    Vector<float> t5({-3.f, -4.f});
+    EXPECT_FLOAT_EQ(t5.Length<float>(), 5.f);
+
+    Vector<int> t0;
+    EXPECT_THROW(
+        try {
+            t0.Length<float>();
+        } catch (const Exceptions::EmptyVector &e) {
+            std::stringstream ss;
+            ss << "Vector: Length of an empty vector is undefined.";
+            EXPECT_TRUE(e.what() == ss.str());
+            throw e;
+        },
+        Exceptions::EmptyVector);
+}
+
+TEST(Vector, EuclideanNorm)
+{
+    Vector<int> t1 = Vector<int>::ZeroVector(10);
+    EXPECT_FLOAT_EQ(t1.EuclideanNorm<float>(), 0.f);
+    Vector<float> t2({3.f, 4.f});
+    EXPECT_FLOAT_EQ(t2.EuclideanNorm<float>(), 5.f);
+    Vector<float> t3({-3.f, 4.f});
+    EXPECT_FLOAT_EQ(t3.EuclideanNorm<float>(), 5.f);
+    Vector<float> t4({3.f, -4.f});
+    EXPECT_FLOAT_EQ(t4.EuclideanNorm<float>(), 5.f);
+    Vector<float> t5({-3.f, -4.f});
+    EXPECT_FLOAT_EQ(t5.EuclideanNorm<float>(), 5.f);
+
+    Vector<int> t0;
+    EXPECT_THROW(
+        try {
+            t0.EuclideanNorm<float>();
+        } catch (const Exceptions::EmptyVector &e) {
+            std::stringstream ss;
+            ss << "Vector: Euclidean norm of an empty vector is undefined.";
+            EXPECT_TRUE(e.what() == ss.str());
+            throw e;
+        },
+        Exceptions::EmptyVector);
+}
+
+template <class T>
+void CheckVectorLpNorm(const Vector<T> &v, int p)
+{
+    if (v.Size() == 0)
+    {
+        EXPECT_THROW(
+            try {
+                v.template LpNorm<double>(p);
+            } catch (const Exceptions::EmptyVector &e) {
+                std::stringstream ss;
+                ss << "Vector: Lp norm of an empty vector is undefined.";
+                EXPECT_TRUE(e.what() == ss.str());
+                throw e;
+            },
+            Exceptions::EmptyVector);
+        return;
+    }
+    double sum = 0;
+    for (std::size_t i = 0; i < v.Size(); i++)
+        sum += pow(v[i], p);
+    EXPECT_NEAR(v.template LpNorm<double>(p), pow(sum, (double)1 / p), 0.0001);
+}
+
+TEST(Vector, LpNorm)
+{
+    Vector<float> t1({3.f, 4.f});
+    CheckVectorLpNorm(t1, 2);
+    Vector<int> t2({4, 5, 64, 2, 67, 32, 54});
+    CheckVectorLpNorm(t2, 5);
+    Vector<double> t3({23.345, 4.43, 5.345, 64.23, 32.56, 6.4537, 32.536, 54.4535, 2684.567});
+    CheckVectorLpNorm(t3, 8);
+    Vector<int> t0;
+    CheckVectorLpNorm(t0, 32);
 }
 
 TEST(Vector, ZeroVector)
