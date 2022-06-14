@@ -1,3 +1,7 @@
+#include <sstream>
+
+#include "Exceptions.hpp"
+
 namespace DataStructures
 {
     template <class T>
@@ -25,10 +29,6 @@ namespace DataStructures
 
     template <class T>
     Tuple<T>::Tuple(Container<T> &&other) : Container<T>(other) {}
-
-    template <class T>
-    template <class OtherType>
-    Tuple<T>::Tuple(Container<OtherType> &&other) : Container<T>(other) {}
 
     template <class T>
     const T &Tuple<T>::operator[](const std::size_t &index) const
@@ -60,8 +60,13 @@ namespace DataStructures
     template <class OtherType>
     bool Tuple<T>::operator==(const Tuple<OtherType> &other) const
     {
+        // Check if the same Tuple is being compared.
+        if (this == &other)
+            return true;
+        // Both must have the same size.
         if (this->Size() != other.Size())
             return false;
+        // Check if each pair of elements have identical values.
         for (std::size_t i = 0; i < this->Size(); i++)
             if ((*this)[i] != other[i])
                 return false;
@@ -78,8 +83,10 @@ namespace DataStructures
     template <class T>
     std::string Tuple<T>::ToString() const
     {
+        // Empty Tuple.
         if (this->size == 0)
             return "()";
+        // Retrieve all the elements.
         std::stringstream ss;
         ss << "(";
         for (std::size_t i = 0; i < this->size; i++)
@@ -91,5 +98,4 @@ namespace DataStructures
         ss << ")";
         return ss.str();
     }
-
 }
