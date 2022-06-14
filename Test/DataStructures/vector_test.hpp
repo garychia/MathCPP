@@ -88,6 +88,9 @@ TEST(Vector, VectorStdVectorConstructor)
     EXPECT_EQ(initVectorInt.Size(), INT_VECTOR_CONTENT.size());
     EXPECT_EQ(initVectorFloat.Size(), FLOAT_VECTOR_CONTENT.size());
     EXPECT_EQ(initVectorDouble.Size(), DOUBLE_VECTOR_CONTENT.size());
+    EXPECT_EQ(initVectorInt.Dimension(), INT_VECTOR_CONTENT.size());
+    EXPECT_EQ(initVectorFloat.Dimension(), FLOAT_VECTOR_CONTENT.size());
+    EXPECT_EQ(initVectorDouble.Dimension(), DOUBLE_VECTOR_CONTENT.size());
     int i = 0;
     for (const auto &content : INT_VECTOR_CONTENT)
         EXPECT_EQ(initVectorInt[i++], content);
@@ -113,6 +116,9 @@ TEST(Vector, VectorCopyConstructor)
     EXPECT_EQ(initVectorInt.Size(), initVectorIntCopy.Size());
     EXPECT_EQ(initVectorFloat.Size(), initVectorFloatCopy.Size());
     EXPECT_EQ(initVectorDouble.Size(), initVectorDoubleCopy.Size());
+    EXPECT_EQ(initVectorInt.Dimension(), initVectorIntCopy.Size());
+    EXPECT_EQ(initVectorFloat.Dimension(), initVectorFloatCopy.Size());
+    EXPECT_EQ(initVectorDouble.Dimension(), initVectorDoubleCopy.Size());
     for (int i = 0; i < initVectorInt.Size(); i++)
         EXPECT_EQ(initVectorInt[i], initVectorIntCopy[i]);
     for (int i = 0; i < initVectorFloat.Size(); i++)
@@ -146,9 +152,15 @@ TEST(Vector, VectorMoveConstructor)
     EXPECT_EQ(initVectorInt.Size(), ZERO);
     EXPECT_EQ(initVectorFloat.Size(), ZERO);
     EXPECT_EQ(initVectorDouble.Size(), ZERO);
+    EXPECT_EQ(initVectorInt.Dimension(), ZERO);
+    EXPECT_EQ(initVectorFloat.Dimension(), ZERO);
+    EXPECT_EQ(initVectorDouble.Dimension(), ZERO);
     EXPECT_EQ(initVectorIntCopy.Size(), INT_VECTOR_CONTENT.size());
     EXPECT_EQ(initVectorFloatCopy.Size(), FLOAT_VECTOR_CONTENT.size());
     EXPECT_EQ(initVectorDoubleCopy.Size(), DOUBLE_VECTOR_CONTENT.size());
+    EXPECT_EQ(initVectorIntCopy.Dimension(), INT_VECTOR_CONTENT.size());
+    EXPECT_EQ(initVectorFloatCopy.Dimension(), FLOAT_VECTOR_CONTENT.size());
+    EXPECT_EQ(initVectorDoubleCopy.Dimension(), DOUBLE_VECTOR_CONTENT.size());
     for (int i = 0; i < initVectorInt.Size(); i++)
         EXPECT_EQ(initVectorInt[i], initVectorIntCopy[i]);
     for (int i = 0; i < initVectorFloat.Size(); i++)
@@ -171,6 +183,9 @@ TEST(Vector, VectorCopyAssignment)
     EXPECT_EQ(initVectorInt.Size(), initVectorIntCopy.Size());
     EXPECT_EQ(initVectorFloat.Size(), initVectorFloatCopy.Size());
     EXPECT_EQ(initVectorDouble.Size(), initVectorDoubleCopy.Size());
+    EXPECT_EQ(initVectorInt.Dimension(), initVectorIntCopy.Size());
+    EXPECT_EQ(initVectorFloat.Dimension(), initVectorFloatCopy.Size());
+    EXPECT_EQ(initVectorDouble.Dimension(), initVectorDoubleCopy.Size());
     for (int i = 0; i < initVectorInt.Size(); i++)
         EXPECT_EQ(initVectorInt[i], initVectorIntCopy[i]);
     for (int i = 0; i < initVectorFloat.Size(); i++)
@@ -214,6 +229,24 @@ TEST(Vector, VectorElementAccess)
             }
         },
         Exceptions::IndexOutOfBound);
+}
+
+TEST(Vector, VectorDimension)
+{
+    Vector<int> t1;
+    Vector<float> t2({1.f, 2.f, 3.f, 4.f});
+    Vector<double> t3({32.3, 42.42, 53.75});
+    EXPECT_EQ(t1.Dimension(), 0);
+    EXPECT_EQ(t2.Dimension(), 4);
+    EXPECT_EQ(t3.Dimension(), 3);
+}
+
+TEST(Vector, VectorLength)
+{
+    Vector<int> t1 = Vector<int>::ZeroVector(10);
+    EXPECT_FLOAT_EQ(t1.Length<float>(), 0.f);
+    Vector<float> t2({ 3.f, 4.f});
+    EXPECT_FLOAT_EQ(t2.Length<float>(), 5.f);
 }
 
 TEST(Vector, ZeroVector)
