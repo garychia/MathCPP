@@ -76,7 +76,7 @@ namespace DataStructures
     template <class ReturnType>
     ReturnType Vector<T>::Length() const
     {
-        return LpNorm((ReturnType)2);
+        return LpNorm<ReturnType>(2);
     }
 
     template <class T>
@@ -88,14 +88,13 @@ namespace DataStructures
 
     template <class T>
     template <class ReturnType>
-    ReturnType Vector<T>::LpNorm(ReturnType p) const
+    ReturnType Vector<T>::LpNorm(int p) const
     {
         ReturnType squaredTotal = 0;
-#pragma omp parallel for schedule(dynamic) reduction(+ \
-                                                     : squaredTotal)
+#pragma omp parallel for schedule(dynamic) reduction(+ : squaredTotal)
         for (std::size_t i = 0; i < this->size; i++)
-            squaredTotal += Math::Power(this->data[i], p);
-        return Math::Power<ReturnType>(squaredTotal, 1 / p);
+            squaredTotal += Math::Power<ReturnType, int>(this->data[i], p);
+        return Math::Power<ReturnType, double>(squaredTotal, (double)1 / p);
     }
 
     template <class T>

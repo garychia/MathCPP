@@ -117,8 +117,8 @@ namespace DataStructures
          * Returns the Lp Norm of the Vector.
          * @return the Lp norm.
          **/
-        template <class ReturnType>
-        ReturnType LpNorm(ReturnType p) const;
+        template<class ReturnType>
+        ReturnType LpNorm(int p) const;
 
         /**
          * Perform addition with two Vectors.
