@@ -22,6 +22,9 @@ namespace DataStructures
     Vector<T>::Vector(const std::array<T, N> &arr) : Tuple<T>(arr) {}
 
     template <class T>
+    Vector<T>::Vector(const std::vector<T> &v) : Tuple<T>(v) {}
+
+    template <class T>
     Vector<T>::Vector(const Container<T> &other) : Tuple<T>(other) {}
 
     template <class T>

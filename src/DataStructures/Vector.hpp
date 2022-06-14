@@ -3,6 +3,7 @@
 
 #include <initializer_list>
 #include <array>
+#include <vector>
 
 #include "Tuple.hpp"
 
@@ -35,6 +36,12 @@ namespace DataStructures
          **/
         template <std::size_t N>
         Vector(const std::array<T, N> &arr);
+
+        /**
+         * Constructor with a std::vector as Input.
+         * @param v a std::vector that contains the elements the Vector will store.
+         **/
+        Vector(const std::vector<T> &v);
 
         /**
          * Copy Constructor.
