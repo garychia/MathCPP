@@ -14,6 +14,10 @@ target_link_libraries(
     MathCPPTest
     gtest_main
 )
+target_include_directories(
+    MathCPPTest PUBLIC
+    ${PROJECT_SOURCE_DIR}/test/DataStructures
+)
 
 include(GoogleTest)
 gtest_discover_tests(MathCPPTest)
