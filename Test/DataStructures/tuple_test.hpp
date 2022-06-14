@@ -150,7 +150,7 @@ TEST(Tuple, TupleMoveConstructor)
         EXPECT_DOUBLE_EQ(initTupleDouble[i], initTupleDoubleCopy[i]);
 }
 
-TEST(Tuple, TupleCopyAssignmentConstructor)
+TEST(Tuple, TupleCopyAssignment)
 {
     const std::vector<int> INT_TUPLE_CONTENT({43, -13, 90, -39, 0, 23, -75});
     const std::vector<float> FLOAT_TUPLE_CONTENT({-2.124f, 23.2f, -82.32f, 84.3f, 1.04f, 0.f, 32.3f, -9.f, 23.f});

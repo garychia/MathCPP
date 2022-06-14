@@ -157,7 +157,7 @@ TEST(Vector, VectorMoveConstructor)
         EXPECT_DOUBLE_EQ(initVectorDouble[i], initVectorDoubleCopy[i]);
 }
 
-TEST(Vector, VectorCopyAssignmentConstructor)
+TEST(Vector, VectorCopyAssignment)
 {
     const std::vector<int> INT_VECTOR_CONTENT({43, -13, 90, -39, 0, 23, -75});
     const std::vector<float> FLOAT_VECTOR_CONTENT({-2.124f, 23.2f, -82.32f, 84.3f, 1.04f, 0.f, 32.3f, -9.f, 23.f});
