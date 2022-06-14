@@ -3,422 +3,401 @@
 
 #include <initializer_list>
 #include <array>
-#include <sstream>
-#include <cmath>
-#include <functional>
-
-#ifdef _OPENMP
-#include <omp.h>
-#endif
 
 #include "Tuple.hpp"
-#include "Exceptions.hpp"
 
 namespace DataStructures
 {
-    /*
-    Vector is a Container that is capable of storing multiple elements
-    such as numbers.
-    */
+    /* A mutable Container that supports numerical operations. */
     template <class T>
     class Vector : public Tuple<T>
     {
     public:
-        /*
-        Constructor that Generates an Empty Vector.
-        */
+        /* Constructor that Constructs an Empty Vector. */
         Vector();
 
-        /*
-        Constructor with Initial Size and a Value.
-        @param s the initial size of the Vector to be generated.
-        @param value the value the Vector will be filled with.
-        */
+        /**
+         * Constructor with Initial Size and a Value.
+         * @param s the initial size of the Vector to be generated.
+         * @param value the value the Vector will be filled with.
+         **/
         Vector(std::size_t s, const T &value);
 
-        /*
-        Constructor with Initializer List as Input.
-        @param l an initializer_list that contains the elements this Vector will store.
-        */
+        /**
+         * Constructor with a std::initializer_list as Input.
+         * @param l a std::initializer_list that contains the elements the Vector will store.
+         **/
         Vector(const std::initializer_list<T> &l);
 
-        /*
-        Constructor with arrary as Input.
-        @param arr an array that contains the elements this Vector will store.
-        */
+        /**
+         * Constructor with a std::arrary as Input.
+         * @param arr a std::array that contains the elements the Vector will store.
+         **/
         template <std::size_t N>
         Vector(const std::array<T, N> &arr);
 
-        /*
-        Copy Constructor
-        @param other a Container to be copied.
-        */
+        /**
+         * Copy Constructor.
+         * @param other a Container whose elements will be copied into the Vector.
+         **/
         Vector(const Container<T> &other);
 
-        /*
-        Copy Constructor
-        @param other a Container to be copied.
-        */
+        /**
+         * Copy Constructor.
+         * @param other a Container to be copied.
+         **/
         template <class OtherType>
         Vector(const Container<OtherType> &other);
 
-        /*
-        Move Constructor
-        @param other a Container to be moved.
-        */
+        /**
+         * Move Constructor.
+         * @param other a Container whose elements will be 'moved' into the Vector.
+         **/
         Vector(Container<T> &&other);
 
-        /*
-        Move Constructor
-        @param other a Container to be moved.
-        */
-        template <class OtherType>
-        Vector(Container<OtherType> &&other);
-
-        /*
-        Copy Assignment
-        @param other a Vector.
-        @return a reference to this Vector.
-        */
+        /**
+         * Copy Assignment.
+         * @param other a Container whose elements will be copied into this Vector.
+         * @return a reference to this Vector.
+         **/
         virtual Vector<T> &operator=(const Container<T> &other) override;
 
-        /*
-        Copy Assignment
-        @param other a Vector that contains values of a different type.
-        @return a reference to this Vector.
-        */
+        /**
+         * Copy Assignment.
+         * @param other a Container that contains values of a different type.
+         * @return a reference to this Vector.
+         **/
         template <class OtherType>
         Vector<T> &operator=(const Container<OtherType> &other);
 
-        /*
-        Operator []
-        @param index the index of the element to be accessed.
-        @return the element
-        */
+        /**
+         * Access the element at a given index.
+         * @param index the index at which the element will be accessed.
+         * @return a reference to the accessed element.
+         * @throw IndexOutOfBound when the index exceeds the largest possible index.
+         **/
         virtual T &operator[](const std::size_t &index);
 
-        /*
-        Operator []
-        @param index the index of the element to be accessed.
-        @return the element
-        */
+        /**
+         * Access the element at a given index.
+         * @param index the index at which the element will be accessed.
+         * @return a reference to the accessed element.
+         * @throw IndexOutOfBound when the index exceeds the largest possible index.
+         **/
         virtual const T &operator[](const std::size_t &index) const override;
 
-        /*
-        Returns the dimention of this Vector.
-        @return the dimention of this Vector.
-        */
+        /**
+         * Return the dimention (number of values) of the Vector.
+         * @return the dimention.
+         **/
         std::size_t Dimension() const;
 
-        /*
-        Returns the Euclidean norm of this Vector.
-        @return the Euclidean norm of this Vector.
-        */
+        /**
+         * Return the Euclidean norm of the Vector.
+         * @return the Euclidean norm.
+         **/
         template <class ReturnType>
         ReturnType Length() const;
 
-        /*
-        Returns the Euclidean norm of this Vector.
-        @return the Euclidean norm of this Vector.
-        */
+        /**
+         * Return the Euclidean norm of the Vector. (Same as Vector::Length)
+         * @return the Euclidean norm.
+         **/
         template <class ReturnType>
         ReturnType EuclideanNorm() const;
 
-        /*
-        Returns the Lp Norm of this Vector.
-        @return the Lp norm of this Vector.
-        */
+        /**
+         * Returns the Lp Norm of the Vector.
+         * @return the Lp norm.
+         **/
         template <class ReturnType>
         ReturnType LpNorm(ReturnType p) const;
 
-        /*
-        Performs addition with another Vector.
-        @param other a Vector to be added.
-        @return a Vector that is the result of the addition.
-        @throw EmptyVector when this Vector is empty.
-        @throw InvalidArgument when the given Vector is empty.
-        @throw InvalidArgument when the dimensions of the two vectors mismatch.
-        */
+        /**
+         * Perform addition with two Vectors.
+         * @param other a Vector as the second operand.
+         * @return a new Vector that is the sum of the Vectors.
+         * @throw EmptyVector if this Vector is empty.
+         * @throw InvalidArgument if the second operand is empty or the number of elements of
+         * the second operand is not a factor of that of this Vector.
+         **/
         template <class OtherType>
         auto Add(const Vector<OtherType> &other) const;
 
-        /*
-        Performs addition with a scaler.
-        @param scaler a scaler.
-        @return a Vector that is the result of the addition.
-        */
+        /**
+         * Perform element-wise addition with a Vector and a scaler.
+         * @param scaler a scaler to be added to each element of the Vector.
+         * @return a new Vector as the addition result.
+         * @throw EmptyVector if the Vector is empty.
+         **/
         template <class ScalerType>
         auto Add(const ScalerType &scaler) const;
 
-        /*
-        Performs addition with another Vector. Reference: Vector.Add.
-        @param other a Vector to be added.
-        @return a Vector that is the result of the addition.
-        */
+        /**
+         * Perform addition with two Vectors. (See Vector::Add)
+         * @param other a Vector to be added to this Vector.
+         * @return a new Vector as the addition result.
+         * @throw EmptyVector if this Vector is empty.
+         * @throw InvalidArgument if the second operand is empty or the number of elements of
+         * the second operand is not a factor of that of this Vector.
+         **/
         template <class OtherType>
         auto operator+(const Vector<OtherType> &other) const;
 
-        /*
-        Performs addition with a scaler. Reference: Vector.Add.
-        @param scaler a scaler to be added.
-        @return a Vector that is the result of the addition.
-        */
+        /**
+         * Perform element-wise addition with a Vector and a scaler. (See Vector::Add)
+         * @param scaler a scaler to be added to each element of the Vector.
+         * @return a new Vector as the addition result.
+         * @throw EmptyVector if the Vector is empty.
+         **/
         template <class ScalerType>
         auto operator+(const ScalerType &scaler) const;
 
-        /*
-        Performs inplace addition with another Vector.
-        @param other a Vector to be added.
-        @return the reference of this Vector.
-        */
+        /**
+         * Perform inplace addition with another Vector.
+         * @param other a Vector to be added to this Vector.
+         * @return the reference to this Vector.
+         * @throw EmptyVector if this Vector is empty.
+         * @throw InvalidArgument if the second operand is empty or the number of elements of
+         * the second operand is not a factor of that of this Vector.
+         **/
         template <class OtherType>
         Vector<T> &operator+=(const Vector<OtherType> &other);
 
-        /*
-        Performs subtraction with another Vector.
-        @param other a Vector to be subtracted.
-        @return a Vector that is the result of the subtraction.
-        */
+        /**
+         * Perform subtraction with two Vectors.
+         * @param other a Vector as the second operand.
+         * @return a new Vector as the subtraction result.
+         * @throw EmptyVector if this Vector is empty.
+         * @throw InvalidArgument if the second operand is empty or the number of elements of
+         * the second operand is not a factor of that of this Vector.
+         **/
         template <class OtherType>
         auto Minus(const Vector<OtherType> &other) const;
 
-        /*
-        Performs subtraction with a scaler.
-        @param scaler a scaler to be subtracted.
-        @return a Vector that is the result of the subtraction.
-        */
+        /**
+         * Perform element-wise subtraction with a scaler.
+         * @param scaler a scaler to be subtracted from each element of the Vector.
+         * @return a Vector as the subtraction result.
+         * @throw EmptyVector if the Vector is empty.
+         **/
         template <class ScalerType>
         auto Minus(const ScalerType &scaler) const;
 
-        /*
-        Performs subtraction with another Vector. Reference: Vector.Minus.
-        @param other a Vector to be subtracted.
-        @return a Vector that is the result of the subtraction.
-        */
+        /**
+         * Perform subtraction with two Vectors. (See Vector::Minus)
+         * @param other a Vector as the second operand.
+         * @return a new Vector as the subtraction result.
+         * @throw EmptyVector if this Vector is empty.
+         * @throw InvalidArgument if the second operand is empty or the number of elements of
+         * the second operand is not a factor of that of this Vector.
+         **/
         template <class OtherType>
         auto operator-(const Vector<OtherType> &other) const;
 
-        /*
-        Performs subtraction with a scaler. Reference: Vector.Minus.
-        @param scaler a scaler to be subtracted.
-        @return a Vector that is the result of the subtraction.
-        */
+        /**
+         * Perform subtraction with a Vector and a scaler. (See Vector.Minus)
+         * @param scaler a scaler to be subtracted from each element of the Vector.
+         * @return a new Vector that is the subtraction result.
+         * @throw EmptyVector if this Vector is empty.
+         **/
         template <class ScalerType>
         auto operator-(const ScalerType &scaler) const;
 
-        /*
-        Performs inplace subtraction with another Vector.
-        @param other a Vector to be subtracted.
-        @return the reference of this Vector.
-        */
+        /**
+         * Perform inplace subtraction with another Vector.
+         * @param other a Vector to be subtracted.
+         * @return the reference to this Vector.
+         * @throw EmptyVector if this Vector is empty.
+         * @throw InvalidArgument if the second operand is empty or the number of elements of
+         * the second operand is not a factor of that of this Vector.
+         **/
         template <class OtherType>
         Vector<T> &operator-=(const Vector<OtherType> &other);
 
-        /*
-        Performs vector scaling.
-        @param scaler a scaler used to scale this Vector.
-        @return a Vector that is the result of the scaling.
-        */
+        /**
+         * Perform element-wise multiplication with a Vector and a scaler.
+         * @param scaler a scaler to be multiplied with each element of the Vector.
+         * @return a new Vector as the multiplication result.
+         * @throw EmptyVector if this Vector is empty.
+         **/
         template <class OtherType>
         auto Scale(const OtherType &scaler) const;
 
-        /*
-        Performs vector scaling. Reference: Vector.Scale.
-        @param scaler a scaler used to scale this Vector.
-        @return a Vector that is the result of the scaling.
-        */
+        /**
+         * Perform element-wise multiplication with a Vector and a scaler. (See Vector::Scale)
+         * @param scaler a scaler used to scale this Vector.
+         * @return a new Vector as the multiplication result.
+         * @throw EmptyVector if the Vector is empty.
+         **/
         template <class OtherType>
         auto operator*(const OtherType &scaler) const;
 
-        /*
-        Performs vector element-wise multiplication.
-        @param other a Vector.
-        @return a Vector that is the result of the multiplication.
-        @throw EmptyVector when this vector is empty.
-        @throw InvalidArgument when the two vectors have different
-        dimensions.
-        */
+        /**
+         * Perform element-wise multiplication with two Vectors.
+         * @param other a Vector.
+         * @return a Vector that is the result of the multiplication.
+         * @throw EmptyVector when this vector is empty.
+         * @throw InvalidArgument if the second operand is empty or the dimension of the second operand
+         * is not a factor of that of the first operand.
+         **/
         template <class OtherType>
         auto operator*(const Vector<OtherType> &other) const;
 
-        /*
-        Performs inplace vector scaling.
-        @param scaler a scaler used to scale this Vector.
-        @return the reference of this Vector.
-        */
+        /**
+         * Scale a Vector inplace.
+         * @param scaler a scaler to be multiplied by each element of the Vector.
+         * @return the reference to the Vector.
+         * @throw EmptyVector when this vector is empty.
+         **/
         Vector<T> &operator*=(const T &scaler);
 
-        /*
-        Performs inplace element-wise vector multiplication.
-        @param other a vector.
-        @return the reference of this Vector.
-        @throw EmptyVector when this vector is empty.
-        @throw InvalidArgument when the dimensions of the vectors
-        are different.
-        */
+        /**
+         * Perform inplace element-wise Vector multiplication.
+         * @param other a Vector as the second operand.
+         * @return the reference to this Vector.
+         * @throw EmptyVector if this vector is empty.
+         * @throw InvalidArgument if the dimensions of the Vectors are different.
+         **/
         Vector<T> &operator*=(const Vector<T> &other);
 
-        /*
-        Divides this Vector by a scaler.
-        @param scaler a scaler used to divide this Vector.
-        @return a Vector that is the result of the division.
-        @throw EmptyVector when this vector is empty.
-        @throw DividedByZero when scaler is 0.
-        */
+        /**
+         * Divide each element of the Vector by a scaler.
+         * @param scaler a scaler to divide each element of the Vector.
+         * @return a new Vector as the division result.
+         * @throw EmptyVector if the Vector is empty.
+         * @throw DividedByZero if the scaler is 0.
+         **/
         template <class OtherType>
         auto Divide(const OtherType &scaler) const;
 
-        /*
-        Performs element-wise division.
-        @param vector a Vector.
-        @return a Vector that is the result of the division.
-        @throw EmptyVector when this vector is empty.
-        @throw InvalidArgument when the dimension of denominator vector
-        is not a factor of that of nemerator vector.
-        @throw DividedByZero when there is a zero denominator.
-        */
+        /**
+         * Perform element-wise division with two Vectors.
+         * @param vector a Vector as the second operand.
+         * @return a new Vector as the division result.
+         * @throw EmptyVector if this Vector is empty.
+         * @throw InvalidArgument if the second operand is empty of the dimension of the first
+         * operand is not a factor of that of the second operand.
+         * @throw DividedByZero if one of the elements of the second operand is 0.
+         **/
         template <class OtherType>
         auto Divide(const Vector<OtherType> &vector) const;
 
-        /*
-        Divides this Vector by a scaler. Reference: Vector.Divide
-        @param scaler a scaler used to divide this Vector.
-        @return a Vector that is the result of the division.
-        */
+        /**
+         * Divide each element of a Vector by a scaler. (See Vector::Divide)
+         * @param scaler a scaler used to divide each element of the Vector.
+         * @return a new Vector as the division result.
+         * @throw EmptyVector if the Vector is empty.
+         * @throw DividedByZero if the scaler is 0.
+         **/
         template <class OtherType>
         auto operator/(const OtherType &scaler) const;
 
-        /*
-        Performs element-wise this Vector by a Vector. Reference: Vector.Divide
-        @param vector a vector.
-        @return a Vector that is the result of the division.
-        */
+        /**
+         * Perform element-wise division with two Vectors. (See Vector::Divide)
+         * @param vector a Vector as the second operand.
+         * @return a new Vector as the division result.
+         * @throw EmptyVector if this Vector is empty.
+         * @throw InvalidArgument if the second operand is empty of the dimension of the first
+         * operand is not a factor of that of the second operand.
+         * @throw DividedByZero if one of the elements of the second operand is 0.
+         **/
         template <class OtherType>
         auto operator/(const Vector<OtherType> &vector) const;
 
-        /*
-        Performs inplace division on this Vector3D to be divided by a scaler.
-        @param scaler a scaler used to divide this Vector3D.
-        @return a reference of this Vector3D.
-        */
+        /**
+         * Perform inplace element-wise division with a Vector and a scaler.
+         * @param scaler a scaler to divide each element of the Vector.
+         * @return a reference to this Vector.
+         * @throw EmptyVector if this Vector is empty.
+         * @throw DividedByZero if the scaler is 0.
+         **/
         template <class OtherType>
         Vector<T> &operator/=(const OtherType &scaler);
 
-        /*
-        Performs inplace element-wise division.
-        @param vector a Vector.
-        @return a reference of this Vector.
-        @throw DividedByZero if there is a zero denominator.
-        */
+        /**
+         * Perform inplace element-wise division.
+         * @param vector a Vector as the second operand.
+         * @return a reference to this Vector.
+         * @throw EmptyVector if this Vector is empty.
+         * @throw InvalidArgument if the second operand is empty of the dimension of the first
+         * operand is not a factor of that of the second operand.
+         * @throw DividedByZero if one of the elements of the second operand is 0.
+         **/
         template <class OtherType>
         Vector<T> &operator/=(const Vector<OtherType> &vector);
 
-        /*
-        Performs dot product on this Vector with another Vector.
-        @param other a Vector.
-        @return a scaler that is the dot product.
-        */
+        /**
+         * Perform dot product with two Vectors.
+         * @param other a Vector as the second operand.
+         * @return a scaler as the dot product result.
+         * @throw EmptyVector if this Vector is empty.
+         * @throw InvalidArgument if the second operand is empty or the Vectors have different
+         * dimensions.
+         **/
         template <class OtherType>
         auto Dot(const Vector<OtherType> &other) const;
 
-        /*
-        Generates a new vector with normalized values of this Vector.
-        @return a normalized vector.
-        @thow DividedByZero when this Vector is a zero vector.
-        */
+        /**
+         * Return the normalized Vector.
+         * @return a new Vector with the normalized values.
+         * @throw EmptyVector if the Vector is empty.
+         * @throw DividedByZero if this Vector is a zero vector.
+         **/
         Vector<T> Normalized() const;
 
-        /*
-        Normalizes this Vector.
-        @throw DividedByZero thown when this vector is a zero vector.
-        */
+        /**
+         * Normalize the Vector inplace.
+         * @throw EmptyVector if the Vector is empty.
+         * @throw DividedByZero if this Vector is a zero Vector.
+         **/
         void Normalize();
 
-        /*
-        Calculate the summation of all the elements of this Vector.
-        @return the summatoin of the elements.
-        */
+        /**
+         * Calculate the sum of all the elements of the Vector.
+         * @return the sum of the elements.
+         **/
         T Sum() const;
 
-        /*
-        Maps each element of this vector to a new value.
-        @param f a function that maps the value of an element to a new value.
-        @return a new Vector with the new values defined by f.
-        */
+        /**
+         * Map each element of the Vector to a new value.
+         * @param f a function that maps the value of an element to a new value.
+         * @return a new Vector with the new values produced by f.
+         **/
         template <class MapFunction>
         auto Map(MapFunction &&f) const;
 
-        /*
-        Returns the pointer that is an array representing this Vector.
-        @return a pointer pointing to the first element of this Vector.
-        */
+        /**
+         * Return a pointer that points to the first element of the Vector.
+         * @return a pointer pointing to the first element of the Vector.
+         **/
         const T *AsRawPointer() const;
 
-        /*
-        Generates a vector filled with zeros.
-        @param n the number of zeros.
-        @return a Vector that is filled with n zeros.
-        */
+        /**
+         * Generate a Vector filled with zeros.
+         * @param n the number of zeros.
+         * @return a Vector that is filled with n zeros.
+         **/
         static Vector<T> ZeroVector(const std::size_t &n);
 
-        /*
-        Generates a new Vector with elements from multiple Vectors combined.
-        @param vectors a std::initializer_list of Vectors to be combined.
-        @return a Vector with the combined elements.
-        */
+        /**
+         * Stack all the elements of multiple Vectors in a new Vector.
+         * @param vectors a std::initializer_list of Vectors to be stacked.
+         * @return a Vector with the stacked elements.
+         **/
         static Vector<T> Combine(const std::initializer_list<Vector<T>> &vectors);
 
         template <class ScalerType>
-        friend auto operator+(const ScalerType &scaler, const Vector<T> &v)
-        {
-            Vector<decltype(scaler + v[0])> result(v);
-#pragma omp parallel for
-            for (std::size_t i = 0; i < result.Dimension(); i++)
-                result[i] += scaler;
-            return result;
-        }
+        friend auto operator+(const ScalerType &scaler, const Vector<T> &v);
 
         template <class ScalerType>
-        friend auto operator+(const Vector<T> &v, const ScalerType &scaler)
-        {
-            return scaler + v;
-        }
+        friend auto operator-(const ScalerType &scaler, const Vector<T> &v);
 
         template <class ScalerType>
-        friend auto operator-(const ScalerType &scaler, const Vector<T> &v)
-        {
-            Vector<decltype(scaler - v[0])> result(v);
-#pragma omp parallel for
-            for (std::size_t i = 0; i < result.Dimension(); i++)
-                result[i] = scaler - result[i];
-            return result;
-        }
+        friend auto operator*(const ScalerType &scaler, const Vector<T> &v);
 
         template <class ScalerType>
-        friend auto operator-(const Vector<T> &v, const ScalerType &scaler)
-        {
-            return v + (-scaler);
-        }
-
-        template <class ScalerType>
-        friend auto operator*(const ScalerType &scaler, const Vector<T> &v)
-        {
-            Vector<decltype(scaler * v[0])> result(v);
-#pragma omp parallel for
-            for (std::size_t i = 0; i < result.Dimension(); i++)
-                result[i] *= scaler;
-            return result;
-        }
-
-        template <class ScalerType>
-        friend auto operator/(const ScalerType &scaler, const Vector<T> &v)
-        {
-            Vector<decltype(scaler / v[0])> result(v);
-#pragma omp parallel for
-            for (std::size_t i = 0; i < result.Dimension(); i++)
-                result[i] = scaler / result[i];
-            return result;
-        }
+        friend auto operator/(const ScalerType &scaler, const Vector<T> &v);
 
         template <class OtherType>
         friend class Vector;

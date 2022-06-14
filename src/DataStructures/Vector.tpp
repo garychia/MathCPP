@@ -1,3 +1,11 @@
+#include <sstream>
+#ifdef _OPENMP
+#include <omp.h>
+#endif
+
+#include "Exceptions.hpp"
+#include "Math.hpp"
+
 namespace DataStructures
 {
     template <class T>
@@ -22,10 +30,6 @@ namespace DataStructures
 
     template <class T>
     Vector<T>::Vector(Container<T> &&other) : Tuple<T>(other) {}
-
-    template <class T>
-    template <class OtherType>
-    Vector<T>::Vector(Container<OtherType> &&other) : Tuple<T>(other) {}
 
     template <class T>
     Vector<T> &Vector<T>::operator=(const Container<T> &other)
@@ -84,14 +88,11 @@ namespace DataStructures
     ReturnType Vector<T>::LpNorm(ReturnType p) const
     {
         ReturnType squaredTotal = 0;
-#pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(dynamic) reduction(+ \
+                                                     : squaredTotal)
         for (std::size_t i = 0; i < this->size; i++)
-        {
-            ReturnType squaredElement = std::pow(this->data[i], p);
-#pragma omp atomic
-            squaredTotal += squaredElement;
-        }
-        return std::pow(squaredTotal, 1 / p);
+            squaredTotal += Math::Power(this->data[i], p);
+        return Math::Power<ReturnType>(squaredTotal, 1 / p);
     }
 
     template <class T>
@@ -118,6 +119,9 @@ namespace DataStructures
     template <class ScalerType>
     auto Vector<T>::Add(const ScalerType &scaler) const
     {
+        if (this->size == 0)
+            throw Exceptions::EmptyVector(
+                "Vector: Cannot perform addition on an empty vector.");
         Vector<decltype(this->data[0] + scaler)> result(*this);
 #pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < Dimension(); i++)
@@ -133,11 +137,11 @@ namespace DataStructures
         {
             return this->Add(other);
         }
-        catch (Exceptions::EmptyVector &e)
+        catch (const Exceptions::EmptyVector &e)
         {
             throw e;
         }
-        catch (Exceptions::InvalidArgument &e)
+        catch (const Exceptions::InvalidArgument &e)
         {
             throw e;
         }
@@ -147,7 +151,14 @@ namespace DataStructures
     template <class ScalerType>
     auto Vector<T>::operator+(const ScalerType &scaler) const
     {
-        return this->Add(scaler);
+        try
+        {
+            return this->Add(scaler);
+        }
+        catch (const Exceptions::EmptyVector &e)
+        {
+            throw e;
+        }
     }
 
     template <class T>
@@ -181,8 +192,7 @@ namespace DataStructures
                 "Vector: Cannot perform subtraction on the given empty vector.");
         else if (Dimension() % other.Dimension() != 0)
             throw Exceptions::InvalidArgument(
-                "Vector: Expected the dimension of the second vector to be a factor of that of the first.");
-
+                "Vector: Expected the dimension of the second operand to be a factor of that of the first operand.");
         Vector<decltype(this->data[0] - other[0])> result(*this);
 #pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < Dimension(); i++)
@@ -194,6 +204,9 @@ namespace DataStructures
     template <class ScalerType>
     auto Vector<T>::Minus(const ScalerType &scaler) const
     {
+        if (this->size == 0)
+            throw Exceptions::EmptyVector(
+                "Vector: Cannot perform subtraction on an empty vector.");
         Vector<decltype(this->data[0] - scaler)> result(*this);
 #pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < Dimension(); i++)
@@ -209,11 +222,11 @@ namespace DataStructures
         {
             return this->Minus(other);
         }
-        catch (Exceptions::EmptyVector &e)
+        catch (const Exceptions::EmptyVector &e)
         {
             throw e;
         }
-        catch (Exceptions::InvalidArgument &e)
+        catch (const Exceptions::InvalidArgument &e)
         {
             throw e;
         }
@@ -223,7 +236,14 @@ namespace DataStructures
     template <class ScalerType>
     auto Vector<T>::operator-(const ScalerType &scaler) const
     {
-        return this->Minus(scaler);
+        try
+        {
+            return this->Minus(scaler);
+        }
+        catch (const Exceptions::EmptyVector &e)
+        {
+            throw e;
+        }
     }
 
     template <class T>
@@ -239,7 +259,6 @@ namespace DataStructures
         else if (Dimension() % other.Dimension() != 0)
             throw Exceptions::InvalidArgument(
                 "Vector: Expected the dimension of the second vector to be a factor of that of the first.");
-
 #pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < Dimension(); i++)
             this->data[i] -= other[i % other.Dimension()];
@@ -268,7 +287,7 @@ namespace DataStructures
         {
             return this->Scale(scaler);
         }
-        catch (Exceptions::EmptyVector &e)
+        catch (const Exceptions::EmptyVector &e)
         {
             throw e;
         }
@@ -280,21 +299,24 @@ namespace DataStructures
     {
         if (this->size == 0)
             throw Exceptions::EmptyVector(
-                "Vector: Cannot perform scaling on an empty vector.");
-        if (this->Dimension() != other.Dimension())
+                "Vector: Cannot perform element-wise multiplication on an empty vector.");
+        if (other.Dimension() == 0)
             throw Exceptions::InvalidArgument(
-                "Vector: Cannot perform elmenet-wise multiplication on vectors with different dimensions.");
+                "Vector: Cannot perform element-wise multiplication when the second operand is empty.");
+        if (this->Dimension() % other.Dimension() != 0)
+            throw Exceptions::InvalidArgument(
+                "Vector: Expect the dimension of the second operand is a factor of that "
+                "of the first operand when performing element-wise multiplication.");
         Vector<decltype((*this)[0] * other[0])> result(*this);
 #pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < this->size; i++)
-            result[i] *= other[i];
+            result[i] *= other[i % other.Dimension()];
         return result;
     }
 
     template <class T>
     Vector<T> &Vector<T>::operator*=(const T &scaler)
     {
-        static_assert(!std::is_base_of<Vector, T>::value, "OtherType must be a scaler.");
         if (this->size == 0)
             throw Exceptions::EmptyVector(
                 "Vector: Cannot perform scaling on an empty vector.");
@@ -344,12 +366,15 @@ namespace DataStructures
         if (this->size == 0)
             throw Exceptions::EmptyVector(
                 "Vector: Cannot perform division on an empty vector.");
+        if (vector.Dimension() == 0)
+            throw Exceptions::InvalidArgument(
+                "Vector: Cannot perform element-wise division when the second operand is empty.");
         if (this->size % vector.Dimension() != 0)
             throw Exceptions::InvalidArgument(
-                "Vector: Cannot perform division due to the size of the "
-                "denominator vector is not a factor of that of the numerator vector.");
+                "Vector: Cannot perform element-wise division due to the dimension of the "
+                "second vector is not a factor of that of the first operand.");
         Vector<decltype((*this)[0] / vector[0])> result(*this);
-        size_t j;
+        std::size_t j;
 #pragma omp parallel for schedule(dynamic) private(j)
         for (std::size_t i = 0; i < Dimension(); i++)
         {
@@ -370,15 +395,11 @@ namespace DataStructures
         {
             return this->Divide(scaler);
         }
-        catch (Exceptions::EmptyVector &e)
+        catch (const Exceptions::EmptyVector &e)
         {
             throw e;
         }
-        catch (Exceptions::InvalidArgument &e)
-        {
-            throw e;
-        }
-        catch (Exceptions::DividedByZero &e)
+        catch (const Exceptions::DividedByZero &e)
         {
             throw e;
         }
@@ -392,15 +413,15 @@ namespace DataStructures
         {
             return this->Divide(vector);
         }
-        catch (Exceptions::EmptyVector &e)
+        catch (const Exceptions::EmptyVector &e)
         {
             throw e;
         }
-        catch (Exceptions::InvalidArgument &e)
+        catch (const Exceptions::InvalidArgument &e)
         {
             throw e;
         }
-        catch (Exceptions::DividedByZero &e)
+        catch (const Exceptions::DividedByZero &e)
         {
             throw e;
         }
@@ -412,7 +433,7 @@ namespace DataStructures
     {
         if (this->size == 0)
             throw Exceptions::EmptyVector(
-                "Vector: Cannot perform division on an empty vector.");
+                "Vector: Cannot perform element-wise division on an empty vector.");
 #pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < Dimension(); i++)
             this->data[i] /= scaler;
@@ -428,11 +449,11 @@ namespace DataStructures
             (*this) = Divide(vector);
             return *this;
         }
-        catch (Exceptions::EmptyVector &e)
+        catch (const Exceptions::EmptyVector &e)
         {
             throw e;
         }
-        catch (Exceptions::InvalidArgument &e)
+        catch (const Exceptions::InvalidArgument &e)
         {
             throw e;
         }
@@ -444,21 +465,18 @@ namespace DataStructures
     {
         if (this->size == 0)
             throw Exceptions::EmptyVector(
-                "Vector: Cannot perform subtraction on an empty vector.");
+                "Vector: Cannot perform dot product on an empty vector.");
         else if (other.size == 0)
             throw Exceptions::InvalidArgument(
-                "Vector: Cannot perform subtraction on the given empty vector.");
+                "Vector: Cannot perform dot product when the second operand is empty.");
         else if (Dimension() != other.Dimension())
             throw Exceptions::InvalidArgument(
-                "Vector: Cannot perform subtraction on vectors with different dimensions.");
+                "Vector: Cannot perform dot product on vectors with different dimensions.");
         decltype(this->data[0] * other[0]) result = 0;
-#pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(dynamic) reduction(+ \
+                                                     : result)
         for (std::size_t i = 0; i < Dimension(); i++)
-        {
-            decltype(result) mult = this->data[i] * other[i];
-#pragma omp atomic
-            result += mult;
-        }
+            result += this->data[i] * other[i];
         return result;
     }
 
@@ -530,5 +548,45 @@ namespace DataStructures
             for (std::size_t j = 0; j < vector.Size(); j++)
                 combined[currentIndex++] = vector[j];
         return combined;
+    }
+
+    template <class T, class ScalerType>
+    auto operator+(const ScalerType &scaler, const Vector<T> &v)
+    {
+        Vector<decltype(scaler + v[0])> result(v);
+#pragma omp parallel for
+        for (std::size_t i = 0; i < result.Dimension(); i++)
+            result[i] += scaler;
+        return result;
+    }
+
+    template <class T, class ScalerType>
+    auto operator-(const ScalerType &scaler, const Vector<T> &v)
+    {
+        Vector<decltype(scaler - v[0])> result(v);
+#pragma omp parallel for
+        for (std::size_t i = 0; i < result.Dimension(); i++)
+            result[i] = scaler - result[i];
+        return result;
+    }
+
+    template <class T, class ScalerType>
+    auto operator*(const ScalerType &scaler, const Vector<T> &v)
+    {
+        Vector<decltype(scaler * v[0])> result(v);
+#pragma omp parallel for
+        for (std::size_t i = 0; i < result.Dimension(); i++)
+            result[i] *= scaler;
+        return result;
+    }
+
+    template <class T, class ScalerType>
+    auto operator/(const ScalerType &scaler, const Vector<T> &v)
+    {
+        Vector<decltype(scaler / v[0])> result(v);
+#pragma omp parallel for
+        for (std::size_t i = 0; i < result.Dimension(); i++)
+            result[i] = scaler / result[i];
+        return result;
     }
 }
