@@ -76,6 +76,9 @@ namespace DataStructures
     template <class ReturnType>
     ReturnType Vector<T>::Length() const
     {
+        if (this->size == 0)
+            throw Exceptions::EmptyVector(
+                "Vector: Length of an empty vector is undefined.");
         return LpNorm<ReturnType>(2);
     }
 
@@ -83,15 +86,22 @@ namespace DataStructures
     template <class ReturnType>
     ReturnType Vector<T>::EuclideanNorm() const
     {
-        return Length();
+        if (this->size == 0)
+            throw Exceptions::EmptyVector(
+                "Vector: Euclidean norm of an empty vector is undefined.");
+        return Length<ReturnType>();
     }
 
     template <class T>
     template <class ReturnType>
     ReturnType Vector<T>::LpNorm(int p) const
     {
+        if (this->size == 0)
+            throw Exceptions::EmptyVector(
+                "Vector: Lp norm of an empty vector is undefined.");
         ReturnType squaredTotal = 0;
-#pragma omp parallel for schedule(dynamic) reduction(+ : squaredTotal)
+#pragma omp parallel for schedule(dynamic) reduction(+ \
+                                                     : squaredTotal)
         for (std::size_t i = 0; i < this->size; i++)
             squaredTotal += Math::Power<ReturnType, int>(this->data[i], p);
         return Math::Power<ReturnType, double>(squaredTotal, (double)1 / p);

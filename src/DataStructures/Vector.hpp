@@ -102,6 +102,7 @@ namespace DataStructures
         /**
          * Return the Euclidean norm of the Vector.
          * @return the Euclidean norm.
+         * @throw EmptyVector if the Vector is empty.
          **/
         template <class ReturnType>
         ReturnType Length() const;
@@ -109,6 +110,7 @@ namespace DataStructures
         /**
          * Return the Euclidean norm of the Vector. (Same as Vector::Length)
          * @return the Euclidean norm.
+         * @throw EmptyVector if the Vector is empty.
          **/
         template <class ReturnType>
         ReturnType EuclideanNorm() const;
@@ -116,6 +118,7 @@ namespace DataStructures
         /**
          * Returns the Lp Norm of the Vector.
          * @return the Lp norm.
+         * @throw EmptyVector if the Vector is empty.
          **/
         template<class ReturnType>
         ReturnType LpNorm(int p) const;
