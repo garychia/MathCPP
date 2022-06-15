@@ -1,5 +1,11 @@
 enable_testing()
-add_executable(MathCPPTest test_main.cpp)
+
+set(MATHCPPTEST_SOURCES
+    ${PROJECT_SOURCE_DIR}/test/DataStructures/tuple_test.hpp
+    ${PROJECT_SOURCE_DIR}/test/DataStructures/vector_test.hpp
+    ${PROJECT_SOURCE_DIR}/test/DataStructures/vector3d_test.hpp)
+
+add_executable(MathCPPTest test_main.cpp ${MATHCPPTEST_SOURCES})
 target_include_directories(
     MathCPPTest PUBLIC
     ${PROJECT_SOURCE_DIR}/src/Algorithms
