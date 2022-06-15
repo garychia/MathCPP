@@ -16,6 +16,10 @@ target_include_directories(
     ${PROJECT_SOURCE_DIR}/test
 )
 
+if (MSVC)
+    target_compile_options(MathCPPTest PUBLIC "/openmp:llvm")
+endif (MSVC)
+
 target_link_libraries(
     MathCPPTest
     gtest_main
