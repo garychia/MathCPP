@@ -234,22 +234,22 @@ TEST(Vector, ElementAccess)
 
 TEST(Vector, Dimension)
 {
-    Vector<int> t1;
-    Vector<float> t2({1.f, 2.f, 3.f, 4.f});
-    Vector<double> t3({32.3, 42.42, 53.75});
-    EXPECT_EQ(t1.Dimension(), 0);
-    EXPECT_EQ(t2.Dimension(), 4);
-    EXPECT_EQ(t3.Dimension(), 3);
+    Vector<int> v1;
+    Vector<float> v2({1.f, 2.f, 3.f, 4.f});
+    Vector<double> v3({32.3, 42.42, 53.75});
+    EXPECT_EQ(v1.Dimension(), 0);
+    EXPECT_EQ(v2.Dimension(), 4);
+    EXPECT_EQ(v3.Dimension(), 3);
 }
 
 TEST(Vector, Length)
 {
-    Vector<int> t1 = Vector<int>::ZeroVector(10);
-    EXPECT_FLOAT_EQ(t1.Length<float>(), 0.f);
-    Vector<float> t2({3.f, 4.f});
-    EXPECT_FLOAT_EQ(t2.Length<float>(), 5.f);
-    Vector<float> t3({-3.f, 4.f});
-    EXPECT_FLOAT_EQ(t3.Length<float>(), 5.f);
+    Vector<int> v1 = Vector<int>::ZeroVector(10);
+    EXPECT_FLOAT_EQ(v1.Length<float>(), 0.f);
+    Vector<float> v2({3.f, 4.f});
+    EXPECT_FLOAT_EQ(v2.Length<float>(), 5.f);
+    Vector<float> v3({-3.f, 4.f});
+    EXPECT_FLOAT_EQ(v3.Length<float>(), 5.f);
     Vector<float> t4({3.f, -4.f});
     EXPECT_FLOAT_EQ(t4.Length<float>(), 5.f);
     Vector<float> t5({-3.f, -4.f});
@@ -270,12 +270,12 @@ TEST(Vector, Length)
 
 TEST(Vector, EuclideanNorm)
 {
-    Vector<int> t1 = Vector<int>::ZeroVector(10);
-    EXPECT_FLOAT_EQ(t1.EuclideanNorm<float>(), 0.f);
-    Vector<float> t2({3.f, 4.f});
-    EXPECT_FLOAT_EQ(t2.EuclideanNorm<float>(), 5.f);
-    Vector<float> t3({-3.f, 4.f});
-    EXPECT_FLOAT_EQ(t3.EuclideanNorm<float>(), 5.f);
+    Vector<int> v1 = Vector<int>::ZeroVector(10);
+    EXPECT_FLOAT_EQ(v1.EuclideanNorm<float>(), 0.f);
+    Vector<float> v2({3.f, 4.f});
+    EXPECT_FLOAT_EQ(v2.EuclideanNorm<float>(), 5.f);
+    Vector<float> v3({-3.f, 4.f});
+    EXPECT_FLOAT_EQ(v3.EuclideanNorm<float>(), 5.f);
     Vector<float> t4({3.f, -4.f});
     EXPECT_FLOAT_EQ(t4.EuclideanNorm<float>(), 5.f);
     Vector<float> t5({-3.f, -4.f});
@@ -319,12 +319,12 @@ void CheckVectorLpNorm(const Vector<T> &v, int p)
 
 TEST(Vector, LpNorm)
 {
-    Vector<float> t1({3.f, 4.f});
-    CheckVectorLpNorm(t1, 2);
-    Vector<int> t2({4, 5, 64, 2, 67, 32, 54});
-    CheckVectorLpNorm(t2, 5);
-    Vector<double> t3({23.345, 4.43, 5.345, 64.23, 32.56, 6.4537, 32.536, 54.4535, 2684.567});
-    CheckVectorLpNorm(t3, 8);
+    Vector<float> v1({3.f, 4.f});
+    CheckVectorLpNorm(v1, 2);
+    Vector<int> v2({4, 5, 64, 2, 67, 32, 54});
+    CheckVectorLpNorm(v2, 5);
+    Vector<double> v3({23.345, 4.43, 5.345, 64.23, 32.56, 6.4537, 32.536, 54.4535, 2684.567});
+    CheckVectorLpNorm(v3, 8);
     Vector<int> t0;
     CheckVectorLpNorm(t0, 32);
 }
@@ -376,7 +376,7 @@ void CheckVectorAddition(const Vector<T>& v1, const Vector<U>& v2)
             catch (const Exceptions::InvalidArgument& e)
             {
                 std::stringstream ss;
-                ss << "Vector: Expected the dimension of the second vector to be a factor of that of the first.";
+                ss << "Vector: Expected the dimension of the second operand to be a factor of that of the first operand.";
                 EXPECT_TRUE(e.what() == ss.str());
                 throw e;
             },
@@ -394,12 +394,15 @@ TEST(Vector, AddVectors)
     Vector<int> v2({ 96, -4, 99, 83, 48, -263, 34, 89 });
     Vector<float> v3({ -2.124f, 23.2f, -82.32f, 84.3f, 1.04f, 0.f, 32.3f, -9.f, 23.f });
     Vector<double> v4({ 3.14, -1.24, -0.5576, -94.3, 0.0, 23.0, -7.5, 0.85, 1.23, 2.3423 });
+    Vector<int> v0;
     CheckVectorAddition(v1, v2);
     CheckVectorAddition(v2, v1);
     CheckVectorAddition(v1, v3);
     CheckVectorAddition(v3, v1);
     CheckVectorAddition(v1, v4);
     CheckVectorAddition(v4, v1);
+    CheckVectorAddition(v0, v4);
+    CheckVectorAddition(v4, v0);
 }
 
 template <class T, class Scaler>
@@ -433,6 +436,7 @@ TEST(Vector, AddScaler)
     Vector<int> v2({ 96, -4, 99, 83, 48, -263, 34, 89 });
     Vector<float> v3({ -2.124f, 23.2f, -82.32f, 84.3f, 1.04f, 0.f, 32.3f, -9.f, 23.f });
     Vector<double> v4({ 3.14, -1.24, -0.5576, -94.3, 0.0, 23.0, -7.5, 0.85, 1.23, 2.3423 });
+    Vector<int> v0;
     const int s1 = 32;
     const float s2 = 3.1415f;
     const double s3 = 56635.45245;
@@ -448,6 +452,7 @@ TEST(Vector, AddScaler)
     CheckScalerAddition(v4, s1);
     CheckScalerAddition(v4, s2);
     CheckScalerAddition(v4, s3);
+    CheckScalerAddition(v0, s3);
 }
 
 template <class T, class U>
@@ -497,7 +502,7 @@ void CheckOperatorPlusVector(const Vector<T>& v1, const Vector<U>& v2)
             catch (const Exceptions::InvalidArgument& e)
             {
                 std::stringstream ss;
-                ss << "Vector: Expected the dimension of the second vector to be a factor of that of the first.";
+                ss << "Vector: Expected the dimension of the second operand to be a factor of that of the first operand.";
                 EXPECT_TRUE(e.what() == ss.str());
                 throw e;
             },
@@ -515,12 +520,15 @@ TEST(Vector, OperatorPlusVector)
     Vector<int> v2({ 96, -4, 99, 83, 48, -263, 34, 89 });
     Vector<float> v3({ -2.124f, 23.2f, -82.32f, 84.3f, 1.04f, 0.f, 32.3f, -9.f, 23.f });
     Vector<double> v4({ 3.14, -1.24, -0.5576, -94.3, 0.0, 23.0, -7.5, 0.85, 1.23, 2.3423 });
+    Vector<int> v0;
     CheckOperatorPlusVector(v1, v2);
     CheckOperatorPlusVector(v2, v1);
     CheckOperatorPlusVector(v1, v3);
     CheckOperatorPlusVector(v3, v1);
     CheckOperatorPlusVector(v1, v4);
     CheckOperatorPlusVector(v4, v1);
+    CheckOperatorPlusVector(v0, v1);
+    CheckOperatorPlusVector(v1, v0);
 }
 
 template <class T, class Scaler>
@@ -554,6 +562,7 @@ TEST(Vector, OperatorPlusScaler)
     Vector<int> v2({ 96, -4, 99, 83, 48, -263, 34, 89 });
     Vector<float> v3({ -2.124f, 23.2f, -82.32f, 84.3f, 1.04f, 0.f, 32.3f, -9.f, 23.f });
     Vector<double> v4({ 3.14, -1.24, -0.5576, -94.3, 0.0, 23.0, -7.5, 0.85, 1.23, 2.3423 });
+    Vector<int> v0;
     const int s1 = 32;
     const float s2 = 3.1415f;
     const double s3 = 56635.45245;
@@ -569,6 +578,7 @@ TEST(Vector, OperatorPlusScaler)
     CheckOperatorPlusScaler(v4, s1);
     CheckOperatorPlusScaler(v4, s2);
     CheckOperatorPlusScaler(v4, s3);
+    CheckOperatorPlusScaler(v0, s3);
 }
 
 template <class T, class U>
@@ -618,7 +628,7 @@ void CheckOperatorPlusAssignmentVector(Vector<T>& v1, const Vector<U>& v2)
             catch (const Exceptions::InvalidArgument& e)
             {
                 std::stringstream ss;
-                ss << "Vector: Expected the dimension of the second vector to be a factor of that of the first.";
+                ss << "Vector: Expected the dimension of the second operand to be a factor of that of the first operand.";
                 EXPECT_TRUE(e.what() == ss.str());
                 throw e;
             },
@@ -637,12 +647,15 @@ TEST(Vector, OperatorPlusAssignmentVector)
     Vector<int> v2({ 96, -4, 99, 83, 48, -263, 34, 89 });
     Vector<float> v3({ -2.124f, 23.2f, -82.32f, 84.3f, 1.04f, 0.f, 32.3f, -9.f, 23.f });
     Vector<double> v4({ 3.14, -1.24, -0.5576, -94.3, 0.0, 23.0, -7.5, 0.85, 1.23, 2.3423 });
+    Vector<int> v0;
     CheckOperatorPlusAssignmentVector(v1, v2);
     CheckOperatorPlusAssignmentVector(v2, v1);
     CheckOperatorPlusAssignmentVector(v1, v3);
     CheckOperatorPlusAssignmentVector(v3, v1);
     CheckOperatorPlusAssignmentVector(v1, v4);
     CheckOperatorPlusAssignmentVector(v4, v1);
+    CheckOperatorPlusAssignmentVector(v0, v2);
+    CheckOperatorPlusAssignmentVector(v2, v0);
 }
 
 template <class T, class Scaler>
@@ -677,6 +690,7 @@ TEST(Vector, OperatorPlusAssignmentScaler)
     Vector<int> v2({ 96, -4, 99, 83, 48, -263, 34, 89 });
     Vector<float> v3({ -2.124f, 23.2f, -82.32f, 84.3f, 1.04f, 0.f, 32.3f, -9.f, 23.f });
     Vector<double> v4({ 3.14, -1.24, -0.5576, -94.3, 0.0, 23.0, -7.5, 0.85, 1.23, 2.3423 });
+    Vector<int> v0;
     const int s1 = 32;
     const float s2 = 3.1415f;
     const double s3 = 56635.45245;
@@ -692,6 +706,390 @@ TEST(Vector, OperatorPlusAssignmentScaler)
     CheckOperatorPlusAssignmentScaler(v4, s1);
     CheckOperatorPlusAssignmentScaler(v4, s2);
     CheckOperatorPlusAssignmentScaler(v4, s3);
+    CheckOperatorPlusAssignmentScaler(v0, s3);
+}
+
+template <class T, class U>
+void CheckVectorSubtraction(const Vector<T>& v1, const Vector<U>& v2)
+{
+    if (v1.Size() == 0)
+    {
+        EXPECT_THROW(
+            try
+            {
+                v1.Minus(v2);
+            }
+            catch (const Exceptions::EmptyVector& e)
+            {
+                std::stringstream ss;
+                ss << "Vector: Cannot perform subtraction on an empty vector.";
+                EXPECT_TRUE(e.what() == ss.str());
+                throw e;
+            },
+            Exceptions::EmptyVector);
+        return;
+    }
+    else if (v2.Size() == 0)
+    {
+        EXPECT_THROW(
+            try
+            {
+                v1.Minus(v2);
+            }
+            catch (const Exceptions::InvalidArgument& e)
+            {
+                std::stringstream ss;
+                ss << "Vector: Cannot perform subtraction on the given empty vector.";
+                EXPECT_TRUE(e.what() == ss.str());
+                throw e;
+            },
+            Exceptions::InvalidArgument);
+        return;
+    }
+    else if (v1.Size() % v2.Size() != 0)
+    {
+        EXPECT_THROW(
+            try
+            {
+                v1.Minus(v2);
+            }
+            catch (const Exceptions::InvalidArgument& e)
+            {
+                std::stringstream ss;
+                ss << "Vector: Expected the dimension of the second operand to be a factor of that of the first operand.";
+                EXPECT_TRUE(e.what() == ss.str());
+                throw e;
+            },
+            Exceptions::InvalidArgument);
+        return;
+    }
+    const auto result = v1.Minus(v2);
+    for (std::size_t i = 0; i < v1.Size(); i++)
+        EXPECT_DOUBLE_EQ(v1[i] - v2[i % v2.Size()], result[i]);
+}
+
+TEST(Vector, Minus)
+{
+    Vector<int> v1({ 64, -13 });
+    Vector<int> v2({ 96, -4, 234, 83, 64, -23, 34, 89 });
+    Vector<float> v3({ -2.124f, 23.2f, -82.32f, 84.3f, 1.04f, 0.f, 32.3f, -49.f, 23.43f });
+    Vector<double> v4({ 3.14, -1.24, -0.5576, -94.3, 0.0, 23.0, -7.5, 64.56, 1.23, 2.3423 });
+    Vector<int> v0;
+    CheckVectorSubtraction(v1, v2);
+    CheckVectorSubtraction(v2, v1);
+    CheckVectorSubtraction(v1, v3);
+    CheckVectorSubtraction(v3, v1);
+    CheckVectorSubtraction(v1, v4);
+    CheckVectorSubtraction(v4, v1);
+    CheckVectorSubtraction(v0, v1);
+    CheckVectorSubtraction(v1, v0);
+    CheckVectorSubtraction(v0, v0);
+}
+
+template <class T, class Scaler>
+void CheckScalerSubtraction(const Vector<T>& v1, const Scaler& s)
+{
+    if (v1.Size() == 0)
+    {
+        EXPECT_THROW(
+            try
+            {
+                v1.Minus(s);
+            }
+            catch (const Exceptions::EmptyVector& e)
+            {
+                std::stringstream ss;
+                ss << "Vector: Cannot perform subtraction on an empty vector.";
+                EXPECT_TRUE(e.what() == ss.str());
+                throw e;
+            },
+            Exceptions::EmptyVector);
+        return;
+    }
+    const auto result = v1.Minus(s);
+    for (std::size_t i = 0; i < v1.Size(); i++)
+        EXPECT_DOUBLE_EQ(v1[i] - s, result[i]);
+}
+
+TEST(Vector, MinusScaler)
+{
+    Vector<int> v1({ 55, -19 });
+    Vector<int> v2({ 96, -4, 34, 83, 48, -286, 34, 325 });
+    Vector<float> v3({ -2.1454f, 243.2f, -582.32f, 874.3f, 165.04f, 10.f, 332.3f, 0.f, 23.f });
+    Vector<double> v4({ 23.435, -1.24454, -0.55676, -964.3, 0.0, 23.0, -7.45455, 0.4485, 1.2323, 2.3423 });
+    Vector<int> v0;
+    const int s1 = 322342;
+    const float s2 = 25873.1415f;
+    const double s3 = 543.5644345;
+    CheckScalerSubtraction(v1, s1);
+    CheckScalerSubtraction(v1, s2);
+    CheckScalerSubtraction(v1, s3);
+    CheckScalerSubtraction(v2, s1);
+    CheckScalerSubtraction(v2, s2);
+    CheckScalerSubtraction(v2, s3);
+    CheckScalerSubtraction(v3, s1);
+    CheckScalerSubtraction(v3, s2);
+    CheckScalerSubtraction(v3, s3);
+    CheckScalerSubtraction(v4, s1);
+    CheckScalerSubtraction(v4, s2);
+    CheckScalerSubtraction(v4, s3);
+    CheckScalerSubtraction(v0, s1);
+}
+
+template <class T, class U>
+void CheckOperatorMinusVector(const Vector<T>& v1, const Vector<U>& v2)
+{
+    if (v1.Size() == 0)
+    {
+        EXPECT_THROW(
+            try
+            {
+                v1 - v2;
+            }
+            catch (const Exceptions::EmptyVector& e)
+            {
+                std::stringstream ss;
+                ss << "Vector: Cannot perform subtraction on an empty vector.";
+                EXPECT_TRUE(e.what() == ss.str());
+                throw e;
+            },
+            Exceptions::EmptyVector);
+        return;
+    }
+    else if (v2.Size() == 0)
+    {
+        EXPECT_THROW(
+            try
+            {
+                v1 - v2;
+            }
+            catch (const Exceptions::InvalidArgument& e)
+            {
+                std::stringstream ss;
+                ss << "Vector: Cannot perform subtraction on the given empty vector.";
+                EXPECT_TRUE(e.what() == ss.str());
+                throw e;
+            },
+            Exceptions::InvalidArgument);
+        return;
+    }
+    else if (v1.Size() % v2.Size() != 0)
+    {
+        EXPECT_THROW(
+            try
+            {
+                v1 - v2;
+            }
+            catch (const Exceptions::InvalidArgument& e)
+            {
+                std::stringstream ss;
+                ss << "Vector: Expected the dimension of the second operand to be a factor of that of the first operand.";
+                EXPECT_TRUE(e.what() == ss.str());
+                throw e;
+            },
+            Exceptions::InvalidArgument);
+        return;
+    }
+    const auto result = v1 - v2;
+    for (std::size_t i = 0; i < v1.Size(); i++)
+        EXPECT_DOUBLE_EQ(v1[i] - v2[i % v2.Size()], result[i]);
+}
+
+TEST(Vector, OperatorMinusVector)
+{
+    Vector<int> v1({ 64, -13 });
+    Vector<int> v2({ 96, -4, 234, 83, 64, -23, 34, 89 });
+    Vector<float> v3({ -2.124f, 23.2f, -82.32f, 84.3f, 1.04f, 0.f, 32.3f, -49.f, 23.43f });
+    Vector<double> v4({ 3.14, -1.24, -0.5576, -94.3, 0.0, 23.0, -7.5, 64.56, 1.23, 2.3423 });
+    Vector<int> v0;
+    CheckOperatorMinusVector(v1, v2);
+    CheckOperatorMinusVector(v2, v1);
+    CheckOperatorMinusVector(v1, v3);
+    CheckOperatorMinusVector(v3, v1);
+    CheckOperatorMinusVector(v1, v4);
+    CheckOperatorMinusVector(v4, v1);
+    CheckOperatorMinusVector(v0, v1);
+    CheckOperatorMinusVector(v1, v0);
+    CheckOperatorMinusVector(v0, v0);
+}
+
+template <class T, class Scaler>
+void CheckOperatorMinusScaler(const Vector<T>& v1, const Scaler& s)
+{
+    if (v1.Size() == 0)
+    {
+        EXPECT_THROW(
+            try
+            {
+                v1 - s;
+            }
+            catch (const Exceptions::EmptyVector& e)
+            {
+                std::stringstream ss;
+                ss << "Vector: Cannot perform subtraction on an empty vector.";
+                EXPECT_TRUE(e.what() == ss.str());
+                throw e;
+            },
+            Exceptions::EmptyVector);
+        return;
+    }
+    const auto result = v1 - s;
+    for (std::size_t i = 0; i < v1.Size(); i++)
+        EXPECT_DOUBLE_EQ(v1[i] - s, result[i]);
+}
+
+TEST(Vector, OperatorMinusScaler)
+{
+    Vector<int> v1({ -4542, 34856 });
+    Vector<int> v2({ 96, -234, 34534, 89063, 24189, -2856, 9056534, 805325 });
+    Vector<float> v3({ -5636.1454f, 243.2f, -582.32f, 874.3f, 23.234f, 1540.f, 332.3f, 6800450.f, 23.34532f });
+    Vector<double> v4({ 23.435, -1.24454, -923.55676, -964.3, 0.0, 23.0324, -7.45455, 0.4485, 1.2323, 2.3423 });
+    Vector<int> v0;
+    const int s1 = 322342;
+    const float s2 = 25873.631415f;
+    const double s3 = 543.885644345;
+    CheckOperatorMinusScaler(v1, s1);
+    CheckOperatorMinusScaler(v1, s2);
+    CheckOperatorMinusScaler(v1, s3);
+    CheckOperatorMinusScaler(v2, s1);
+    CheckOperatorMinusScaler(v2, s2);
+    CheckOperatorMinusScaler(v2, s3);
+    CheckOperatorMinusScaler(v3, s1);
+    CheckOperatorMinusScaler(v3, s2);
+    CheckOperatorMinusScaler(v3, s3);
+    CheckOperatorMinusScaler(v4, s1);
+    CheckOperatorMinusScaler(v4, s2);
+    CheckOperatorMinusScaler(v4, s3);
+    CheckOperatorMinusScaler(v0, s3);
+}
+
+template <class T, class U>
+void CheckOperatorMinusAssignmentVector(Vector<T>& v1, const Vector<U>& v2)
+{
+    if (v1.Size() == 0)
+    {
+        EXPECT_THROW(
+            try
+            {
+                v1 -= v2;
+            }
+            catch (const Exceptions::EmptyVector& e)
+            {
+                std::stringstream ss;
+                ss << "Vector: Cannot perform subtraction on an empty vector.";
+                EXPECT_TRUE(e.what() == ss.str());
+                throw e;
+            },
+            Exceptions::EmptyVector);
+        return;
+    }
+    else if (v2.Size() == 0)
+    {
+        EXPECT_THROW(
+            try
+            {
+                v1 -= v2;
+            }
+            catch (const Exceptions::InvalidArgument& e)
+            {
+                std::stringstream ss;
+                ss << "Vector: Cannot perform subtraction on the given empty vector.";
+                EXPECT_TRUE(e.what() == ss.str());
+                throw e;
+            },
+            Exceptions::InvalidArgument);
+        return;
+    }
+    else if (v1.Size() % v2.Size() != 0)
+    {
+        EXPECT_THROW(
+            try
+            {
+                v1 -= v2;
+            }
+            catch (const Exceptions::InvalidArgument& e)
+            {
+                std::stringstream ss;
+                ss << "Vector: Expected the dimension of the second operand to be a factor of that of the first operand.";
+                EXPECT_TRUE(e.what() == ss.str());
+                throw e;
+            },
+            Exceptions::InvalidArgument);
+        return;
+    }
+    const auto result = v1 - v2;
+    v1 -= v2;
+    for (std::size_t i = 0; i < result.Size(); i++)
+        EXPECT_DOUBLE_EQ(v1[i], result[i]);
+}
+
+TEST(Vector, OperatorMinusAssignmentVector)
+{
+    Vector<int> v1({ 64, -13 });
+    Vector<int> v2({ 96, -4, 234, 83, 64, -23, 34, 89 });
+    Vector<float> v3({ -2.124f, 23.2f, -82.32f, 84.3f, 1.04f, 0.f, 32.3f, -49.f, 23.43f });
+    Vector<double> v4({ 3.14, -1.24, -0.5576, -94.3, 0.0, 23.0, -7.5, 64.56, 1.23, 2.3423 });
+    Vector<int> v0;
+    CheckOperatorMinusAssignmentVector(v1, v2);
+    CheckOperatorMinusAssignmentVector(v2, v1);
+    CheckOperatorMinusAssignmentVector(v1, v3);
+    CheckOperatorMinusAssignmentVector(v3, v1);
+    CheckOperatorMinusAssignmentVector(v1, v4);
+    CheckOperatorMinusAssignmentVector(v4, v1);
+    CheckOperatorMinusAssignmentVector(v0, v1);
+    CheckOperatorMinusAssignmentVector(v1, v0);
+    CheckOperatorMinusAssignmentVector(v0, v0);
+}
+
+template <class T, class Scaler>
+void CheckOperatorMinusAssignmentScaler(Vector<T>& v1, const Scaler& s)
+{
+    if (v1.Size() == 0)
+    {
+        EXPECT_THROW(
+            try
+            {
+                v1 -= s;
+            }
+            catch (const Exceptions::EmptyVector& e)
+            {
+                std::stringstream ss;
+                ss << "Vector: Cannot perform subtraction on an empty vector.";
+                EXPECT_TRUE(e.what() == ss.str());
+                throw e;
+            },
+            Exceptions::EmptyVector);
+        return;
+    }
+    const Vector<T> result = v1 - s;
+    v1 -= s;
+    for (std::size_t i = 0; i < v1.Size(); i++)
+        EXPECT_DOUBLE_EQ(v1[i], result[i]);
+}
+
+TEST(Vector, OperatorMinusAssginmentScaler)
+{
+    Vector<int> v1({ -4542, 34856 });
+    Vector<int> v2({ 96, -234, 34534, 89063, 24189, -2856, 9056534, 805325 });
+    Vector<float> v3({ -5636.1454f, 243.2f, -582.32f, 874.3f, 23.234f, 1540.f, 332.3f, 6800450.f, 23.34532f });
+    Vector<double> v4({ 23.435, -1.24454, -923.55676, -964.3, 0.0, 23.0324, -7.45455, 0.4485, 1.2323, 2.3423 });
+    Vector<int> v0;
+    const int s1 = 322342;
+    const float s2 = 25873.631415f;
+    const double s3 = 543.885644345;
+    CheckOperatorMinusAssignmentScaler(v1, s1);
+    CheckOperatorMinusAssignmentScaler(v1, s2);
+    CheckOperatorMinusAssignmentScaler(v1, s3);
+    CheckOperatorMinusAssignmentScaler(v2, s1);
+    CheckOperatorMinusAssignmentScaler(v2, s2);
+    CheckOperatorMinusAssignmentScaler(v2, s3);
+    CheckOperatorMinusAssignmentScaler(v3, s1);
+    CheckOperatorMinusAssignmentScaler(v3, s2);
+    CheckOperatorMinusAssignmentScaler(v3, s3);
+    CheckOperatorMinusAssignmentScaler(v4, s1);
+    CheckOperatorMinusAssignmentScaler(v4, s2);
+    CheckOperatorMinusAssignmentScaler(v4, s3);
+    CheckOperatorMinusAssignmentScaler(v0, s3);
 }
 
 TEST(Vector, ZeroVector)
