@@ -17,12 +17,14 @@ void Random::UpdateSeed()
 
 int Random::Generate()
 {
+    int randomValue;
 #pragma omp critical
     {
         srand(seed + time(NULL));
         UpdateSeed();
+        randomValue = rand();
     }
-    return rand();
+    return randomValue;
 }
 
 int Random::IntRange(int low, int high)
