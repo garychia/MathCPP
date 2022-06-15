@@ -119,7 +119,7 @@ namespace DataStructures
                 "Vector: Cannot perform addtion on the given empty vector.");
         else if (Dimension() % other.Dimension() != 0)
             throw Exceptions::InvalidArgument(
-                "Vector: Expected the dimension of the second vector to be a factor of that of the first.");
+                "Vector: Expected the dimension of the second operand to be a factor of that of the first operand.");
         Vector<decltype(this->data[0] + other[0])> result(*this);
 #pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < Dimension(); i++)
@@ -185,7 +185,7 @@ namespace DataStructures
                 "Vector: Cannot perform addtion on the given empty vector.");
         else if (Dimension() % other.Dimension() != 0)
             throw Exceptions::InvalidArgument(
-                "Vector: Expected the dimension of the second vector to be a factor of that of the first.");
+                "Vector: Expected the dimension of the second operand to be a factor of that of the first operand.");
 #pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < Dimension(); i++)
             this->data[i] += other[i % other.Dimension()];
@@ -283,10 +283,23 @@ namespace DataStructures
                 "Vector: Cannot perform subtraction on the given empty vector.");
         else if (Dimension() % other.Dimension() != 0)
             throw Exceptions::InvalidArgument(
-                "Vector: Expected the dimension of the second vector to be a factor of that of the first.");
+                "Vector: Expected the dimension of the second operand to be a factor of that of the first operand.");
 #pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < Dimension(); i++)
             this->data[i] -= other[i % other.Dimension()];
+        return *this;
+    }
+
+    template <class T>
+    template <class ScalerType>
+    Vector<T> &Vector<T>::operator-=(const ScalerType &scaler)
+    {
+        if (this->size == 0)
+            throw Exceptions::EmptyVector(
+                "Vector: Cannot perform subtraction on an empty vector.");
+#pragma omp parallel for schedule(dynamic)
+        for (std::size_t i = 0; i < Dimension(); i++)
+            this->data[i] -= scaler;
         return *this;
     }
 

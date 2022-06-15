@@ -235,6 +235,15 @@ namespace DataStructures
         Vector<T> &operator-=(const Vector<OtherType> &other);
 
         /**
+         * Perform inplace subtraction with a scaler.
+         * @param scaler a scaler to be subtracted from each element of the Vector.
+         * @return the reference to the Vector.
+         * @throw EmptyVector if the Vector is empty.
+         **/
+        template <class ScalerType>
+        Vector<T> &operator-=(const ScalerType &scaler);
+
+        /**
          * Perform element-wise multiplication with a Vector and a scaler.
          * @param scaler a scaler to be multiplied with each element of the Vector.
          * @return a new Vector as the multiplication result.
