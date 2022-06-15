@@ -1092,6 +1092,106 @@ TEST(Vector, OperatorMinusAssginmentScaler)
     CheckOperatorMinusAssignmentScaler(v0, s3);
 }
 
+template <class T, class Scaler>
+void CheckVectorScale(const Vector<T>& v1, const Scaler& s)
+{
+    if (v1.Size() == 0)
+    {
+        EXPECT_THROW(
+            try
+            {
+                v1.Scale(s);
+            }
+            catch (const Exceptions::EmptyVector& e)
+            {
+                std::stringstream ss;
+                ss << "Vector: Cannot perform scaling on an empty vector.";
+                EXPECT_TRUE(e.what() == ss.str());
+                throw e;
+            },
+            Exceptions::EmptyVector);
+        return;
+    }
+    const auto result = v1.Scale(s);
+    for (std::size_t i = 0; i < v1.Size(); i++)
+        EXPECT_DOUBLE_EQ(v1[i] * s, result[i]);
+}
+
+TEST(Vector, Scale)
+{
+    Vector<int> v1({ -4542, 34856, 7435, 438, -2594 });
+    Vector<int> v2({ 96, -234, 34534, 89063, 24189, -2856, 6, 805325, 934 });
+    Vector<float> v3({ -5636.1454f, 243.2f, -582.32f, 874.3f, 23.234f, 1540.f, 332.3f, 6800450.f, 23.34532f });
+    Vector<double> v4({ 23.435, -1.24454, -923.55676, -964.3, 0.0, 23.0324, -7.45455, 0.4485, 1.2323, 2.3423 });
+    Vector<int> v0;
+    const int s1 = -12;
+    const float s2 = 25873.631415f;
+    const double s3 = 543.885644345;
+    CheckVectorScale(v1, s1);
+    CheckVectorScale(v1, s2);
+    CheckVectorScale(v1, s3);
+    CheckVectorScale(v2, s1);
+    CheckVectorScale(v2, s2);
+    CheckVectorScale(v2, s3);
+    CheckVectorScale(v3, s1);
+    CheckVectorScale(v3, s2);
+    CheckVectorScale(v3, s3);
+    CheckVectorScale(v4, s1);
+    CheckVectorScale(v4, s2);
+    CheckVectorScale(v4, s3);
+    CheckVectorScale(v0, s3);
+}
+
+template <class T, class Scaler>
+void CheckOperatorMultiplyScaler(const Vector<T>& v1, const Scaler& s)
+{
+    if (v1.Size() == 0)
+    {
+        EXPECT_THROW(
+            try
+            {
+                v1 * s;
+            }
+            catch (const Exceptions::EmptyVector& e)
+            {
+                std::stringstream ss;
+                ss << "Vector: Cannot perform scaling on an empty vector.";
+                EXPECT_TRUE(e.what() == ss.str());
+                throw e;
+            },
+            Exceptions::EmptyVector);
+        return;
+    }
+    const auto result = v1 * s;
+    for (std::size_t i = 0; i < v1.Size(); i++)
+        EXPECT_DOUBLE_EQ(v1[i] * s, result[i]);
+}
+
+TEST(Vector, OperatorMultiplyScaler)
+{
+    Vector<int> v1({ -4542, 34856, 7435, 438, -2594 });
+    Vector<int> v2({ 96, -234, 34534, 89063, 24189, -2856, 6, 805325, 934 });
+    Vector<float> v3({ -5636.1454f, 243.2f, -582.32f, 874.3f, 23.234f, 1540.f, 332.3f, 6800450.f, 23.34532f });
+    Vector<double> v4({ 23.435, -1.24454, -923.55676, -964.3, 0.0, 23.0324, -7.45455, 0.4485, 1.2323, 2.3423 });
+    Vector<int> v0;
+    const int s1 = -12;
+    const float s2 = 525873.631415f;
+    const double s3 = 454453.885644345;
+    CheckOperatorMultiplyScaler(v1, s1);
+    CheckOperatorMultiplyScaler(v1, s2);
+    CheckOperatorMultiplyScaler(v1, s3);
+    CheckOperatorMultiplyScaler(v2, s1);
+    CheckOperatorMultiplyScaler(v2, s2);
+    CheckOperatorMultiplyScaler(v2, s3);
+    CheckOperatorMultiplyScaler(v3, s1);
+    CheckOperatorMultiplyScaler(v3, s2);
+    CheckOperatorMultiplyScaler(v3, s3);
+    CheckOperatorMultiplyScaler(v4, s1);
+    CheckOperatorMultiplyScaler(v4, s2);
+    CheckOperatorMultiplyScaler(v4, s3);
+    CheckOperatorMultiplyScaler(v0, s3);
+}
+
 TEST(Vector, ZeroVector)
 {
     const int VECTOR_LENGHTS[] = {0, 2, 4, 8, 16, 32, 64, 128, 256};
