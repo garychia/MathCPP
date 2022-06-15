@@ -21,8 +21,8 @@ int Random::Generate()
     {
         srand(seed + time(NULL));
         UpdateSeed();
-        return rand();
     }
+    return rand();
 }
 
 int Random::IntRange(int low, int high)
