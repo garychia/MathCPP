@@ -8,13 +8,13 @@
 
 using namespace DataStructures;
 
-TEST(Tuple, TupleEmptyConstructor)
+TEST(Tuple, EmptyConstructor)
 {
     Tuple<int> empty;
     EXPECT_EQ(empty.Size(), ZERO);
 }
 
-TEST(Tuple, TupleFillConstructor)
+TEST(Tuple, FillConstructor)
 {
     const int TUPLE_LENGHTS[] = {0, 2, 4, 8, 16, 32, 64, 128, 256};
     for (int i = 0; i < sizeof(TUPLE_LENGHTS) / sizeof(TUPLE_LENGHTS[ZERO]); i++)
@@ -27,7 +27,7 @@ TEST(Tuple, TupleFillConstructor)
     }
 }
 
-TEST(Tuple, TupleInitializerListConstructor)
+TEST(Tuple, InitializerListConstructor)
 {
     const auto INT_TUPLE_CONTENT = {43, -13, 90, -39, 0, 23, -75};
     const auto FLOAT_TUPLE_CONTENT = {-2.124f, 23.2f - 82.32f, 2343.3f, 1.04f, 0.f, 321.3f, -9.f};
@@ -49,7 +49,7 @@ TEST(Tuple, TupleInitializerListConstructor)
         EXPECT_DOUBLE_EQ(initTupleDouble[i++], content);
 }
 
-TEST(Tuple, TupleArrayConstructor)
+TEST(Tuple, ArrayConstructor)
 {
     const std::array<int, 7> INT_TUPLE_CONTENT = {43, -13, 90, -39, 0, 23, -75};
     const std::array<float, 8> FLOAT_TUPLE_CONTENT = {-2.124f, 23.2f, -82.32f, 2343.3f, 1.04f, 0.f, 321.3f, -9.f};
@@ -71,7 +71,7 @@ TEST(Tuple, TupleArrayConstructor)
         EXPECT_DOUBLE_EQ(initTupleDouble[i++], content);
 }
 
-TEST(Tuple, TupleStdVectorConstructor)
+TEST(Tuple, StdVectorConstructor)
 {
     const std::vector<int> INT_TUPLE_CONTENT({43, -13, 90, -39, 0, 23, -75});
     const std::vector<float> FLOAT_TUPLE_CONTENT({-2.124f, 23.2f, -82.32f, 84.3f, 1.04f, 0.f, 32.3f, -9.f, 23.f});
@@ -93,7 +93,7 @@ TEST(Tuple, TupleStdVectorConstructor)
         EXPECT_DOUBLE_EQ(initTupleDouble[i++], content);
 }
 
-TEST(Tuple, TupleCopyConstructor)
+TEST(Tuple, CopyConstructor)
 {
     const std::vector<int> INT_TUPLE_CONTENT({43, -13, 90, -39, 0, 23, -75});
     const std::vector<float> FLOAT_TUPLE_CONTENT({-2.124f, 23.2f, -82.32f, 84.3f, 1.04f, 0.f, 32.3f, -9.f, 23.f});
@@ -126,7 +126,7 @@ TEST(Tuple, TupleCopyConstructor)
         EXPECT_DOUBLE_EQ(initTupleFloatToDoubleCopy[i], initTupleFloat[i]);
 }
 
-TEST(Tuple, TupleMoveConstructor)
+TEST(Tuple, MoveConstructor)
 {
     const std::vector<int> INT_TUPLE_CONTENT({43, -13, 90, -39, 0, 23, -75, 23, 35, -93, 75, 46});
     const std::vector<float> FLOAT_TUPLE_CONTENT({-2.124f, 23.2f, -82.32f, 84.3f, 1.04f, 0.f, 32.3f, -9.f, 23.f});
@@ -151,7 +151,7 @@ TEST(Tuple, TupleMoveConstructor)
         EXPECT_DOUBLE_EQ(initTupleDouble[i], initTupleDoubleCopy[i]);
 }
 
-TEST(Tuple, TupleCopyAssignment)
+TEST(Tuple, CopyAssignment)
 {
     const std::vector<int> INT_TUPLE_CONTENT({43, -13, 90, -39, 0, 23, -75});
     const std::vector<float> FLOAT_TUPLE_CONTENT({-2.124f, 23.2f, -82.32f, 84.3f, 1.04f, 0.f, 32.3f, -9.f, 23.f});
@@ -184,7 +184,7 @@ TEST(Tuple, TupleCopyAssignment)
         EXPECT_DOUBLE_EQ(initTupleDoubleCopy[i], initTupleFloat[i]);
 }
 
-TEST(Tuple, TupleElementAccess)
+TEST(Tuple, ElementAccess)
 {
     std::vector<int> elements;
     for (int i = -100; i < 101; i++)
@@ -210,7 +210,7 @@ TEST(Tuple, TupleElementAccess)
         Exceptions::IndexOutOfBound);
 }
 
-TEST(Tuple, TupleEqualOperator)
+TEST(Tuple, EqualOperator)
 {
     const auto TupleIntContent1 = {1, 2, 3, 4};
     const auto TupleIntContent2 = {1, 2, 3, 0};
@@ -225,7 +225,7 @@ TEST(Tuple, TupleEqualOperator)
     EXPECT_FALSE(t1 == t3);
 }
 
-TEST(Tuple, TupleNotEqualOperator)
+TEST(Tuple, NotEqualOperator)
 {
     const auto TupleFloatContent1 = {3.12f, 2.3f, 3.75f, 4.43f};
     const auto TupleFloatContent2 = {3.12f, 2.3f, 3.75f, 0.4f};
@@ -240,7 +240,7 @@ TEST(Tuple, TupleNotEqualOperator)
     EXPECT_TRUE(t1 != t3);
 }
 
-TEST(Tuple, TupleToString)
+TEST(Tuple, ToString)
 {
     Tuple<int> empty;
     EXPECT_TRUE(empty.ToString() == "()");
