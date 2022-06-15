@@ -8,3 +8,7 @@ target_include_directories(Misc PUBLIC
     ${PROJECT_SOURCE_DIR}/src/Exceptions
     ${PROJECT_SOURCE_DIR}/src/MachineLearning
     ${PROJECT_SOURCE_DIR}/src/Misc)
+
+if (MSVC)
+    target_compile_options(Misc PUBLIC "/openmp:llvm")
+endif (MSVC)
