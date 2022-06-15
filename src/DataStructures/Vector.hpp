@@ -175,6 +175,15 @@ namespace DataStructures
         Vector<T> &operator+=(const Vector<OtherType> &other);
 
         /**
+         * Perform inplace addition with a scaler.
+         * @param scaler a scaler to be added to each element of the Vector.
+         * @return the reference to this Vector.
+         * @throw EmptyVector if this Vector is empty.
+         **/
+        template <class ScalerType>
+        Vector<T> &operator+=(const ScalerType &scaler);
+
+        /**
          * Perform subtraction with two Vectors.
          * @param other a Vector as the second operand.
          * @return a new Vector as the subtraction result.
