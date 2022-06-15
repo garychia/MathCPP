@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include <sstream>
+#include <array>
 
 #include "Tuple.hpp"
 
