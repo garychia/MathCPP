@@ -366,13 +366,13 @@ namespace DataStructures
     template <class OtherType>
     auto Vector<T>::Divide(const OtherType &scaler) const
     {
-        if (this->size == 0)
+        if (Dimension() == 0)
             throw Exceptions::EmptyVector(
-                "Vector: Cannot perform division on an empty vector.");
+                "Vector: Cannot perform element-wise division on an empty vector.");
         else if (scaler == 0)
             throw Exceptions::DividedByZero(
-                "Vector: Cannot divide a vector by 0.");
-        Vector<decltype(this->data[0] / scaler)> result(*this);
+                "Vector: Cannot perform element-wise division as the second operand is 0.");
+        Vector<decltype((*this)[0] / scaler)> result(*this);
 #pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < Dimension(); i++)
             result[i] /= scaler;
