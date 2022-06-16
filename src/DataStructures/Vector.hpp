@@ -386,7 +386,8 @@ namespace DataStructures
          * @throw EmptyVector if the Vector is empty.
          * @throw DividedByZero if this Vector is a zero vector.
          **/
-        Vector<T> Normalized() const;
+        template <class ReturnType>
+        Vector<ReturnType> Normalized() const;
 
         /**
          * Normalize the Vector inplace.

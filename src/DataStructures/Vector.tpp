@@ -388,7 +388,7 @@ namespace DataStructures
                 "Vector: Cannot perform element-wise division on an empty vector.");
         else if (vector.Dimension() == 0)
             throw Exceptions::InvalidArgument(
-                "Vector: Cannot perform element-wise division when the second operand is empty.");
+                "Vector: Cannot perform element-wise division as the second operand is empty.");
         else if (Dimension() % vector.Dimension() != 0)
             throw Exceptions::InvalidArgument(
                 "Vector: Cannot perform element-wise division. Expected the dimension of the "
@@ -426,12 +426,14 @@ namespace DataStructures
     template <class OtherType>
     Vector<T> &Vector<T>::operator/=(const OtherType &scaler)
     {
-        if (this->size == 0)
+        if (Dimension() == 0)
             throw Exceptions::EmptyVector(
                 "Vector: Cannot perform element-wise division on an empty vector.");
+        else if (scaler == 0)
+            throw Exceptions::DividedByZero("Vector: Cannot perform element-wise division as the second operand is 0.");
 #pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < Dimension(); i++)
-            this->data[i] /= scaler;
+            (*this)[i] /= scaler;
         return *this;
     }
 
@@ -475,21 +477,22 @@ namespace DataStructures
         else if (Dimension() != other.Dimension())
             throw Exceptions::InvalidArgument(
                 "Vector: Cannot perform dot product on vectors with different dimensions.");
-        decltype(this->data[0] * other[0]) result = 0;
+        decltype((*this)[0] * other[0]) result = 0;
 #pragma omp parallel for schedule(dynamic) reduction(+ \
                                                      : result)
         for (std::size_t i = 0; i < Dimension(); i++)
-            result += this->data[i] * other[i];
+            result += (*this)[i] * other[i];
         return result;
     }
 
     template <class T>
-    Vector<T> Vector<T>::Normalized() const
+    template <class ReturnType>
+    Vector<ReturnType> Vector<T>::Normalized() const
     {
-        if (this->size == 0)
+        if (Dimension() == 0)
             throw Exceptions::EmptyVector(
                 "Vector: Cannot perform normalization on an empty vector.");
-        const T length = Length<T>();
+        const ReturnType length = Length<ReturnType>();
         if (length == 0)
             throw Exceptions::DividedByZero("Vector: Cannot normalize a zero vector.");
         return *this / length;
