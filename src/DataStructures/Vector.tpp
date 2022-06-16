@@ -145,32 +145,14 @@ namespace DataStructures
     template <class OtherType>
     auto Vector<T>::operator+(const Vector<OtherType> &other) const
     {
-        try
-        {
-            return this->Add(other);
-        }
-        catch (const Exceptions::EmptyVector &e)
-        {
-            throw e;
-        }
-        catch (const Exceptions::InvalidArgument &e)
-        {
-            throw e;
-        }
+        return this->Add(other);
     }
 
     template <class T>
     template <class ScalerType>
     auto Vector<T>::operator+(const ScalerType &scaler) const
     {
-        try
-        {
-            return this->Add(scaler);
-        }
-        catch (const Exceptions::EmptyVector &e)
-        {
-            throw e;
-        }
+        return this->Add(scaler);
     }
 
     template <class T>
@@ -243,32 +225,14 @@ namespace DataStructures
     template <class OtherType>
     auto Vector<T>::operator-(const Vector<OtherType> &other) const
     {
-        try
-        {
-            return this->Minus(other);
-        }
-        catch (const Exceptions::EmptyVector &e)
-        {
-            throw e;
-        }
-        catch (const Exceptions::InvalidArgument &e)
-        {
-            throw e;
-        }
+        return this->Minus(other);
     }
 
     template <class T>
     template <class ScalerType>
     auto Vector<T>::operator-(const ScalerType &scaler) const
     {
-        try
-        {
-            return this->Minus(scaler);
-        }
-        catch (const Exceptions::EmptyVector &e)
-        {
-            throw e;
-        }
+        return this->Minus(scaler);
     }
 
     template <class T>
@@ -304,8 +268,8 @@ namespace DataStructures
     }
 
     template <class T>
-    template <class OtherType>
-    auto Vector<T>::Scale(const OtherType &scaler) const
+    template <class ScalerType>
+    auto Vector<T>::Scale(const ScalerType &scaler) const
     {
         if (this->size == 0)
             throw Exceptions::EmptyVector(
@@ -319,16 +283,29 @@ namespace DataStructures
 
     template <class T>
     template <class OtherType>
+    auto Vector<T>::Scale(const Vector<OtherType> &other) const
+    {
+        if (Dimension() == 0)
+            throw Exceptions::EmptyVector(
+                "Vector: Cannot perform scaling on an empty vector.");
+        else if (other.Dimension() == 0)
+            throw Exceptions::InvalidArgument(
+                "Vector: Cannot perform scaling with an empty vector as the second operand.");
+        else if (Dimension() % other.Dimension() != 0)
+            throw Exceptions::InvalidArgument(
+                "Vector: Expected the dimension of the second operand to be a factor of that of the first operand.");
+        Vector<decltype((*this)[0] * other[0])> result(*this);
+#pragma omp parallel for schedule(dynamic)
+        for (std::size_t i = 0; i < Dimension(); i++)
+            result[i] *= other[i % other.Dimension()];
+        return result;
+    }
+
+    template <class T>
+    template <class OtherType>
     auto Vector<T>::operator*(const OtherType &scaler) const
     {
-        try
-        {
-            return this->Scale(scaler);
-        }
-        catch (const Exceptions::EmptyVector &e)
-        {
-            throw e;
-        }
+        return this->Scale(scaler);
     }
 
     template <class T>
@@ -340,7 +317,7 @@ namespace DataStructures
                 "Vector: Cannot perform element-wise multiplication on an empty vector.");
         if (other.Dimension() == 0)
             throw Exceptions::InvalidArgument(
-                "Vector: Cannot perform element-wise multiplication when the second operand is empty.");
+                "Vector: Cannot perform element-wise multiplication with an empty vector as the second operand.");
         if (this->Dimension() % other.Dimension() != 0)
             throw Exceptions::InvalidArgument(
                 "Vector: Expect the dimension of the second operand is a factor of that "
@@ -353,30 +330,35 @@ namespace DataStructures
     }
 
     template <class T>
-    Vector<T> &Vector<T>::operator*=(const T &scaler)
+    template <class ScalerType>
+    Vector<T> &Vector<T>::operator*=(const ScalerType &scaler)
     {
         if (this->size == 0)
             throw Exceptions::EmptyVector(
                 "Vector: Cannot perform scaling on an empty vector.");
 #pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < Dimension(); i++)
-            this->data[i] *= scaler;
+            (*this)[i] *= scaler;
         return *this;
     }
 
     template <class T>
-    Vector<T> &Vector<T>::operator*=(const Vector<T> &other)
+    template <class OtherType>
+    Vector<T> &Vector<T>::operator*=(const Vector<OtherType> &other)
     {
-        if (this->size == 0)
+        if (Dimension() == 0)
             throw Exceptions::EmptyVector(
                 "Vector: Cannot perform element-wise multiplication on an empty vector.");
-        if (Dimension() != other.Dimension())
+        if (!other.Dimension())
             throw Exceptions::InvalidArgument(
-                "Vector: Cannot perform element-wise multiplication on vectors of "
-                "different dimensions.");
+                "Vector: Cannot perform element-wise multiplication with an empty vector as the second operand.");
+        if (Dimension() % other.Dimension() != 0)
+            throw Exceptions::InvalidArgument(
+                "Vector: Expect the dimension of the second operand is a factor of that "
+                "of the first operand when performing element-wise multiplication.");
 #pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < Dimension(); i++)
-            this->data[i] *= other[i];
+            (*this)[i] *= other[i % other.Dimension()];
         return *this;
     }
 
@@ -401,16 +383,16 @@ namespace DataStructures
     template <class OtherType>
     auto Vector<T>::Divide(const Vector<OtherType> &vector) const
     {
-        if (this->size == 0)
+        if (Dimension() == 0)
             throw Exceptions::EmptyVector(
-                "Vector: Cannot perform division on an empty vector.");
-        if (vector.Dimension() == 0)
+                "Vector: Cannot perform element-wise division on an empty vector.");
+        else if (vector.Dimension() == 0)
             throw Exceptions::InvalidArgument(
                 "Vector: Cannot perform element-wise division when the second operand is empty.");
-        if (this->size % vector.Dimension() != 0)
+        else if (Dimension() % vector.Dimension() != 0)
             throw Exceptions::InvalidArgument(
-                "Vector: Cannot perform element-wise division due to the dimension of the "
-                "second vector is not a factor of that of the first operand.");
+                "Vector: Cannot perform element-wise division. Expected the dimension of the "
+                "second operand to be a factor of that of the first operand.");
         Vector<decltype((*this)[0] / vector[0])> result(*this);
         std::size_t j;
 #pragma omp parallel for schedule(dynamic) private(j)
@@ -419,7 +401,8 @@ namespace DataStructures
             j = i % vector.Dimension();
             if (vector[j] == 0)
                 throw Exceptions::DividedByZero(
-                    "Vection: Division failed due to a zero denominator.");
+                    "Vector: Expect none of the element of the second operand to be 0 when performing"
+                    "element-wise division.");
             result[i] /= vector[j];
         }
         return result;
@@ -429,40 +412,14 @@ namespace DataStructures
     template <class OtherType>
     auto Vector<T>::operator/(const OtherType &scaler) const
     {
-        try
-        {
-            return this->Divide(scaler);
-        }
-        catch (const Exceptions::EmptyVector &e)
-        {
-            throw e;
-        }
-        catch (const Exceptions::DividedByZero &e)
-        {
-            throw e;
-        }
+        return this->Divide(scaler);
     }
 
     template <class T>
     template <class OtherType>
     auto Vector<T>::operator/(const Vector<OtherType> &vector) const
     {
-        try
-        {
-            return this->Divide(vector);
-        }
-        catch (const Exceptions::EmptyVector &e)
-        {
-            throw e;
-        }
-        catch (const Exceptions::InvalidArgument &e)
-        {
-            throw e;
-        }
-        catch (const Exceptions::DividedByZero &e)
-        {
-            throw e;
-        }
+        return this->Divide(vector);
     }
 
     template <class T>
@@ -482,19 +439,27 @@ namespace DataStructures
     template <class OtherType>
     Vector<T> &Vector<T>::operator/=(const Vector<OtherType> &vector)
     {
-        try
+        if (Dimension() == 0)
+            throw Exceptions::EmptyVector(
+                "Vector: Cannot perform element-wise division on an empty vector.");
+        else if (vector.Dimension() == 0)
+            throw Exceptions::InvalidArgument(
+                "Vector: Cannot perform element-wise division when the second operand is empty.");
+        else if (Dimension() % vector.Dimension() != 0)
+            throw Exceptions::InvalidArgument(
+                "Vector: Cannot perform element-wise division. Expected the dimension of the "
+                "second operand to be a factor of that of the first operand.");
+#pragma omp parallel for schedule(dynamic)
+        for (std::size_t i = 0; i < Dimension(); i++)
         {
-            (*this) = Divide(vector);
-            return *this;
+            const auto element = vector[i % vector.Dimension()];
+            if (element == 0)
+                throw Exceptions::DividedByZero(
+                    "Vector: Expect none of the element of the second operand to be 0 when performing"
+                    "element-wise division.");
+            (*this)[i] /= element;
         }
-        catch (const Exceptions::EmptyVector &e)
-        {
-            throw e;
-        }
-        catch (const Exceptions::InvalidArgument &e)
-        {
-            throw e;
-        }
+        return *this;
     }
 
     template <class T>

@@ -249,8 +249,20 @@ namespace DataStructures
          * @return a new Vector as the multiplication result.
          * @throw EmptyVector if this Vector is empty.
          **/
+        template <class ScalerType>
+        auto Scale(const ScalerType &scaler) const;
+
+        /**
+         * Perform element-wise multiplication with two Vectors.
+         * @param other a Vector as the second operand.
+         * @return a new Vector as the element-wise multiplication result.
+         * @throw EmptyVector if this Vector is empty.
+         * @throw InvalidArgument if the second operand is empty.
+         * @throw InvalidArgument if the dimension of the second operand is not a
+         * factor of the first operand.
+         **/
         template <class OtherType>
-        auto Scale(const OtherType &scaler) const;
+        auto Scale(const Vector<OtherType> &other) const;
 
         /**
          * Perform element-wise multiplication with a Vector and a scaler. (See Vector::Scale)
@@ -258,8 +270,8 @@ namespace DataStructures
          * @return a new Vector as the multiplication result.
          * @throw EmptyVector if the Vector is empty.
          **/
-        template <class OtherType>
-        auto operator*(const OtherType &scaler) const;
+        template <class ScalerType>
+        auto operator*(const ScalerType &scaler) const;
 
         /**
          * Perform element-wise multiplication with two Vectors.
@@ -278,7 +290,8 @@ namespace DataStructures
          * @return the reference to the Vector.
          * @throw EmptyVector when this vector is empty.
          **/
-        Vector<T> &operator*=(const T &scaler);
+        template <class ScalerType>
+        Vector<T> &operator*=(const ScalerType &scaler);
 
         /**
          * Perform inplace element-wise Vector multiplication.
@@ -287,7 +300,8 @@ namespace DataStructures
          * @throw EmptyVector if this vector is empty.
          * @throw InvalidArgument if the dimensions of the Vectors are different.
          **/
-        Vector<T> &operator*=(const Vector<T> &other);
+        template <class OtherType>
+        Vector<T> &operator*=(const Vector<OtherType> &other);
 
         /**
          * Divide each element of the Vector by a scaler.
@@ -414,7 +428,7 @@ namespace DataStructures
          * @return a Vector with the stacked elements.
          **/
         static Vector<T> Combine(const std::initializer_list<Vector<T>> &vectors);
-        
+
         template <class OtherType>
         friend class Vector;
     };
