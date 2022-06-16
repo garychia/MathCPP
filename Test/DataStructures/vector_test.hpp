@@ -1437,6 +1437,541 @@ TEST(Vector, DivideScaler)
     CheckDivideScaler(v0, s0);
 }
 
+template <class T, class U>
+void CheckDivideVector(const Vector<T> &v1, const Vector<U> &v2)
+{
+    if (v1.Dimension() == 0)
+    {
+        EXPECT_THROW(
+            try {
+                v1.Divide(v2);
+            } catch (const Exceptions::EmptyVector &e) {
+                std::stringstream ss;
+                ss << "Vector: Cannot perform element-wise division on an empty vector.";
+                EXPECT_TRUE(e.what() == ss.str());
+                throw e;
+            },
+            Exceptions::EmptyVector);
+        return;
+    }
+    else if (v2.Dimension() == 0)
+    {
+        EXPECT_THROW(
+            try {
+                v1.Divide(v2);
+            } catch (const Exceptions::InvalidArgument &e) {
+                std::stringstream ss;
+                ss << "Vector: Cannot perform element-wise division as the second operand is empty.";
+                EXPECT_TRUE(e.what() == ss.str());
+                throw e;
+            },
+            Exceptions::InvalidArgument);
+        return;
+    }
+    else if (v1.Dimension() % v2.Dimension() != 0)
+    {
+        EXPECT_THROW(
+            try {
+                v1.Divide(v2);
+            } catch (const Exceptions::InvalidArgument &e) {
+                std::stringstream ss;
+                ss << "Vector: Cannot perform element-wise division. Expected the dimension of the "
+                      "second operand to be a factor of that of the first operand.";
+                EXPECT_TRUE(e.what() == ss.str());
+                throw e;
+            },
+            Exceptions::InvalidArgument);
+        return;
+    }
+    bool hasZero = false;
+    for (std::size_t i = 0; i < v2.Size(); i++)
+        if (v2[i] == 0)
+        {
+            hasZero = true;
+            break;
+        }
+    if (!hasZero)
+    {
+        const auto result = v1.Divide(v2);
+        for (std::size_t i = 0; i < result.Size(); i++)
+            EXPECT_DOUBLE_EQ(v1[i] / v2[i % v2.Dimension()], result[i]);
+    }
+    else
+    {
+        EXPECT_THROW(
+            try {
+                v1.Divide(v2);
+            } catch (const Exceptions::DividedByZero &e) {
+                std::stringstream ss;
+                ss << "Division by zero occurred.\n";
+                ss << "Vector: Expect none of the element of the second operand to be 0 when performing"
+                      "element-wise division.";
+                EXPECT_TRUE(e.what() == ss.str());
+                throw e;
+            },
+            Exceptions::DividedByZero);
+        return;
+    }
+}
+
+TEST(Vector, DivideVector)
+{
+    Vector<int> v1({64, -13, 943});
+    Vector<int> v2({269, -34, 43, 283, 364, -323, 734, 849});
+    Vector<float> v3({-2.124f, 23.2f, -82.32f, 84.3f, 1.04f, 0.3f, 32.3f, -49.f, 23.43f});
+    Vector<double> v4({3.14, -1.24, -0.5576, -94.3, 0.1, 23.0, -7.5, 64.56, 1.23, 2.3423});
+    Vector<float> badV1({-2.124f, 23.2f, -4.32f, 0.f, 1.04f, 0.f, 32.3f, -49.f, 23.43f});
+    Vector<double> badV2({3.14, -1.24, -0.5576, -2.3, 0.0, 23.0, -7.5, 64.56, 1.23, 2.0});
+    Vector<int> v0;
+    CheckDivideVector(v1, v2);
+    CheckDivideVector(v2, v1);
+    CheckDivideVector(v1, v3);
+    CheckDivideVector(v3, v1);
+    CheckDivideVector(v1, v4);
+    CheckDivideVector(v4, v1);
+    CheckDivideVector(v0, v1);
+    CheckDivideVector(v1, v0);
+    CheckDivideVector(v1, badV1);
+    CheckDivideVector(v1, badV2);
+    CheckDivideVector(v0, v0);
+}
+
+template <class T, class Scaler>
+void CheckOperatorDivideScaler(const Vector<T> &v1, const Scaler &s)
+{
+    if (v1.Size() == 0)
+    {
+        EXPECT_THROW(
+            try {
+                v1 / s;
+            } catch (const Exceptions::EmptyVector &e) {
+                std::stringstream ss;
+                ss << "Vector: Cannot perform element-wise division on an empty vector.";
+                EXPECT_TRUE(e.what() == ss.str());
+                throw e;
+            },
+            Exceptions::EmptyVector);
+        return;
+    }
+    else if (s == 0)
+    {
+        EXPECT_THROW(
+            try {
+                v1 / s;
+            } catch (const Exceptions::DividedByZero &e) {
+                std::stringstream ss;
+                ss << "Division by zero occurred.\n";
+                ss << "Vector: Cannot perform element-wise division as the second operand is 0.";
+                EXPECT_TRUE(e.what() == ss.str());
+                throw e;
+            },
+            Exceptions::DividedByZero);
+        return;
+    }
+    const auto result = v1 / s;
+    for (std::size_t i = 0; i < v1.Size(); i++)
+        EXPECT_DOUBLE_EQ(v1[i] / s, result[i]);
+}
+
+TEST(Vector, OperatorDivideScaler)
+{
+    Vector<int> v1({-4542, 34856, 7435, 438, -2594});
+    Vector<int> v2({96, -234, 34534, 89063, 24189, -2856, 6, 805325, 934});
+    Vector<float> v3({-5636.1454f, 243.2f, -582.32f, 874.3f, 23.234f, 1540.f, 332.3f, 6800450.f, 23.34532f});
+    Vector<double> v4({23.435, -1.24454, -923.55676, -964.3, 0.0, 23.0324, -7.45455, 0.4485, 1.2323, 2.3423});
+    Vector<int> v0;
+    const int s1 = -12;
+    const float s2 = 25873.631415f;
+    const double s3 = 543.885644345;
+    const float s0 = 0.f;
+    CheckOperatorDivideScaler(v1, s1);
+    CheckOperatorDivideScaler(v1, s2);
+    CheckOperatorDivideScaler(v1, s3);
+    CheckOperatorDivideScaler(v1, s0);
+    CheckOperatorDivideScaler(v2, s1);
+    CheckOperatorDivideScaler(v2, s2);
+    CheckOperatorDivideScaler(v2, s3);
+    CheckOperatorDivideScaler(v2, s0);
+    CheckOperatorDivideScaler(v3, s1);
+    CheckOperatorDivideScaler(v3, s2);
+    CheckOperatorDivideScaler(v3, s3);
+    CheckOperatorDivideScaler(v3, s0);
+    CheckOperatorDivideScaler(v4, s1);
+    CheckOperatorDivideScaler(v4, s2);
+    CheckOperatorDivideScaler(v4, s3);
+    CheckOperatorDivideScaler(v4, s0);
+    CheckOperatorDivideScaler(v0, s3);
+    CheckOperatorDivideScaler(v0, s0);
+}
+
+template <class T, class U>
+void CheckOperatorDivideVector(const Vector<T> &v1, const Vector<U> &v2)
+{
+    if (v1.Dimension() == 0)
+    {
+        EXPECT_THROW(
+            try {
+                v1 / v2;
+            } catch (const Exceptions::EmptyVector &e) {
+                std::stringstream ss;
+                ss << "Vector: Cannot perform element-wise division on an empty vector.";
+                EXPECT_TRUE(e.what() == ss.str());
+                throw e;
+            },
+            Exceptions::EmptyVector);
+        return;
+    }
+    else if (v2.Dimension() == 0)
+    {
+        EXPECT_THROW(
+            try {
+                v1 / v2;
+            } catch (const Exceptions::InvalidArgument &e) {
+                std::stringstream ss;
+                ss << "Vector: Cannot perform element-wise division as the second operand is empty.";
+                EXPECT_TRUE(e.what() == ss.str());
+                throw e;
+            },
+            Exceptions::InvalidArgument);
+        return;
+    }
+    else if (v1.Dimension() % v2.Dimension() != 0)
+    {
+        EXPECT_THROW(
+            try {
+                v1 / v2;
+            } catch (const Exceptions::InvalidArgument &e) {
+                std::stringstream ss;
+                ss << "Vector: Cannot perform element-wise division. Expected the dimension of the "
+                      "second operand to be a factor of that of the first operand.";
+                EXPECT_TRUE(e.what() == ss.str());
+                throw e;
+            },
+            Exceptions::InvalidArgument);
+        return;
+    }
+    bool hasZero = false;
+    for (std::size_t i = 0; i < v2.Size(); i++)
+        if (v2[i] == 0)
+        {
+            hasZero = true;
+            break;
+        }
+    if (!hasZero)
+    {
+        const auto result = v1 / v2;
+        for (std::size_t i = 0; i < result.Size(); i++)
+            EXPECT_DOUBLE_EQ(v1[i] / v2[i % v2.Dimension()], result[i]);
+    }
+    else
+    {
+        EXPECT_THROW(
+            try {
+                v1 / v2;
+            } catch (const Exceptions::DividedByZero &e) {
+                std::stringstream ss;
+                ss << "Division by zero occurred.\n";
+                ss << "Vector: Expect none of the element of the second operand to be 0 when performing"
+                      "element-wise division.";
+                EXPECT_TRUE(e.what() == ss.str());
+                throw e;
+            },
+            Exceptions::DividedByZero);
+        return;
+    }
+}
+
+TEST(Vector, OperatorDivideVector)
+{
+    Vector<int> v1({64, -13, 943});
+    Vector<int> v2({269, -34, 43, 283, 364, -323, 734, 849});
+    Vector<float> v3({-2.124f, 23.2f, -82.32f, 84.3f, 1.04f, 0.3f, 32.3f, -49.f, 23.43f});
+    Vector<double> v4({3.14, -1.24, -0.5576, -94.3, 0.1, 23.0, -7.5, 64.56, 1.23, 2.3423});
+    Vector<float> badV1({-2.124f, 23.2f, -4.32f, 0.f, 1.04f, 0.f, 32.3f, -49.f, 23.43f});
+    Vector<double> badV2({3.14, -1.24, -0.5576, -2.3, 0.0, 23.0, -7.5, 64.56, 1.23, 2.0});
+    Vector<int> v0;
+    CheckOperatorDivideVector(v1, v2);
+    CheckOperatorDivideVector(v2, v1);
+    CheckOperatorDivideVector(v1, v3);
+    CheckOperatorDivideVector(v3, v1);
+    CheckOperatorDivideVector(v1, v4);
+    CheckOperatorDivideVector(v4, v1);
+    CheckOperatorDivideVector(v0, v1);
+    CheckOperatorDivideVector(v1, v0);
+    CheckOperatorDivideVector(v1, badV1);
+    CheckOperatorDivideVector(v1, badV2);
+    CheckOperatorDivideVector(v0, v0);
+}
+
+template <class T, class Scaler>
+void CheckOperatorDivideAssignmentScaler(Vector<T> &v1, const Scaler &s)
+{
+    if (v1.Size() == 0)
+    {
+        EXPECT_THROW(
+            try {
+                v1 /= s;
+            } catch (const Exceptions::EmptyVector &e) {
+                std::stringstream ss;
+                ss << "Vector: Cannot perform element-wise division on an empty vector.";
+                EXPECT_TRUE(e.what() == ss.str());
+                throw e;
+            },
+            Exceptions::EmptyVector);
+        return;
+    }
+    else if (s == 0)
+    {
+        EXPECT_THROW(
+            try {
+                v1 /= s;
+            } catch (const Exceptions::DividedByZero &e) {
+                std::stringstream ss;
+                ss << "Division by zero occurred.\n";
+                ss << "Vector: Cannot perform element-wise division as the second operand is 0.";
+                EXPECT_TRUE(e.what() == ss.str());
+                throw e;
+            },
+            Exceptions::DividedByZero);
+        return;
+    }
+    const auto v1Copy = v1;
+    v1 /= s;
+    for (std::size_t i = 0; i < v1.Dimension(); i++)
+        EXPECT_DOUBLE_EQ(v1[i], T(v1Copy[i] / s));
+}
+
+TEST(Vector, OperatorDivideAssignmentScaler)
+{
+    Vector<int> v1({-34, 243, -7435, 4554, -4});
+    Vector<int> v2({96, -234, 12, -43, 56, -89, 6, 64, 934});
+    Vector<float> v3({-103.1454f, 13.2f, -75.32f, 74.3f, -23.234f, 67.f, 53.3f, 434.f, 23.565});
+    Vector<double> v4({23.435, -1.24454, -421.55676, -403.3, 324.0, 23.0324, -7.45455, 0.4485, 71.756, 42.3423});
+    Vector<int> v0;
+    const int s1 = -234;
+    const float s2 = 34.4378;
+    const double s3 = 905.2345;
+    const double s0 = 0.0;
+    CheckOperatorDivideAssignmentScaler(v1, s1);
+    CheckOperatorDivideAssignmentScaler(v1, s2);
+    CheckOperatorDivideAssignmentScaler(v1, s3);
+    CheckOperatorDivideAssignmentScaler(v1, s0);
+    CheckOperatorDivideAssignmentScaler(v2, s1);
+    CheckOperatorDivideAssignmentScaler(v2, s2);
+    CheckOperatorDivideAssignmentScaler(v2, s3);
+    CheckOperatorDivideAssignmentScaler(v2, s0);
+    CheckOperatorDivideAssignmentScaler(v3, s1);
+    CheckOperatorDivideAssignmentScaler(v3, s2);
+    CheckOperatorDivideAssignmentScaler(v3, s3);
+    CheckOperatorDivideAssignmentScaler(v3, s0);
+    CheckOperatorDivideAssignmentScaler(v4, s1);
+    CheckOperatorDivideAssignmentScaler(v4, s2);
+    CheckOperatorDivideAssignmentScaler(v4, s3);
+    CheckOperatorDivideAssignmentScaler(v4, s0);
+    CheckOperatorDivideAssignmentScaler(v0, s3);
+    CheckOperatorDivideAssignmentScaler(v0, s0);
+}
+
+template <class T, class U>
+void CheckOperatorDivideAssignmentVector(Vector<T> &v1, const Vector<U> &v2)
+{
+    if (v1.Size() == 0)
+    {
+        EXPECT_THROW(
+            try {
+                v1 /= v2;
+            } catch (const Exceptions::EmptyVector &e) {
+                std::stringstream ss;
+                ss << "Vector: Cannot perform element-wise division on an empty vector.";
+                EXPECT_TRUE(e.what() == ss.str());
+                throw e;
+            },
+            Exceptions::EmptyVector);
+        return;
+    }
+    else if (v2.Size() == 0)
+    {
+        EXPECT_THROW(
+            try {
+                v1 /= v2;
+            } catch (const Exceptions::InvalidArgument &e) {
+                std::stringstream ss;
+                ss << "Vector: Cannot perform element-wise division when the second operand is empty.";
+                EXPECT_TRUE(e.what() == ss.str());
+                throw e;
+            },
+            Exceptions::InvalidArgument);
+        return;
+    }
+    else if (v1.Size() % v2.Size() != 0)
+    {
+        EXPECT_THROW(
+            try {
+                v1 /= v2;
+            } catch (const Exceptions::InvalidArgument &e) {
+                std::stringstream ss;
+                ss << "Vector: Cannot perform element-wise division. Expected the dimension of the "
+                      "second operand to be a factor of that of the first operand.";
+                EXPECT_TRUE(e.what() == ss.str());
+                throw e;
+            },
+            Exceptions::InvalidArgument);
+        return;
+    }
+    const auto v1Copy = v1;
+    v1 /= v2;
+    for (std::size_t i = 0; i < v1Copy.Size(); i++)
+        EXPECT_DOUBLE_EQ(v1[i], T(v1Copy[i] / v2[i % v2.Dimension()]));
+}
+
+TEST(Vector, OperatorDivideAssignmentVector)
+{
+    Vector<int> v1({64, -13, 943});
+    Vector<int> v2({269, -34, 43, 283, 364, -323, 734, 849});
+    Vector<float> v3({-2.124f, 23.2f, -82.32f, 84.3f, 1.04f, 0.3f, 32.3f, -49.f, 23.43f});
+    Vector<double> v4({3.14, -1.24, -0.5576, -94.3, 0.1, 23.0, -7.5, 64.56, 1.23, 2.3423});
+    Vector<float> badV1({-2.124f, 23.2f, -4.32f, 0.f, 1.04f, 0.f, 32.3f, -49.f, 23.43f});
+    Vector<double> badV2({3.14, -1.24, -0.5576, -2.3, 0.0, 23.0, -7.5, 64.56, 1.23, 2.0});
+    Vector<int> v0;
+    CheckOperatorDivideAssignmentVector(v1, v2);
+    CheckOperatorDivideAssignmentVector(v2, v1);
+    CheckOperatorDivideAssignmentVector(v1, v3);
+    CheckOperatorDivideAssignmentVector(v3, v1);
+    CheckOperatorDivideAssignmentVector(v1, v4);
+    CheckOperatorDivideAssignmentVector(v4, v1);
+    CheckOperatorDivideAssignmentVector(v0, v1);
+    CheckOperatorDivideAssignmentVector(v1, v0);
+    CheckOperatorDivideAssignmentVector(v1, badV1);
+    CheckOperatorDivideAssignmentVector(v1, badV2);
+    CheckOperatorDivideAssignmentVector(v0, v0);
+}
+
+template <class T, class U>
+void CheckDotProduct(const Vector<T> &v1, const Vector<U> &v2)
+{
+    if (v1.Dimension() == 0)
+    {
+        EXPECT_THROW(
+            try {
+                v1.Dot(v2);
+            } catch (const Exceptions::EmptyVector &e) {
+                std::stringstream ss;
+                ss << "Vector: Cannot perform dot product on an empty vector.";
+                EXPECT_TRUE(e.what() == ss.str());
+                throw e;
+            },
+            Exceptions::EmptyVector);
+        return;
+    }
+    else if (v2.Dimension() == 0)
+    {
+        EXPECT_THROW(
+            try {
+                v1.Dot(v2);
+            } catch (const Exceptions::InvalidArgument &e) {
+                std::stringstream ss;
+                ss << "Vector: Cannot perform dot product when the second operand is empty.";
+                EXPECT_TRUE(e.what() == ss.str());
+                throw e;
+            },
+            Exceptions::InvalidArgument);
+        return;
+    }
+    else if (v1.Dimension() != v2.Dimension())
+    {
+        EXPECT_THROW(
+            try {
+                v1.Dot(v2);
+            } catch (const Exceptions::InvalidArgument &e) {
+                std::stringstream ss;
+                ss << "Vector: Cannot perform dot product on vectors with different dimensions.";
+                EXPECT_TRUE(e.what() == ss.str());
+                throw e;
+            },
+            Exceptions::InvalidArgument);
+        return;
+    }
+    double result = 0;
+    for (std::size_t i = 0; i < v1.Dimension(); i++)
+        result += v1[i] * v2[i];
+    EXPECT_DOUBLE_EQ(result, v1.Dot(v2));
+}
+
+TEST(Vector, DotProduct)
+{
+    Vector<int> i1({4, 34, -23, 43, -69});
+    Vector<int> i2({3, 54, 294, 984, 0});
+    Vector<int> badI1;
+    Vector<int> badI2({3, 54, 294, 984, 0, 213});
+    Vector<float> f1({4, 34, -23, 43, -69});
+    Vector<float> f2({3, 54, 294, 984, 0});
+    Vector<float> d1({4, 34, -23, 43, -69});
+    Vector<float> d2({3, 54, 294, 984, 0});
+    CheckDotProduct(i1, i2);
+    CheckDotProduct(i1, badI1);
+    CheckDotProduct(i1, badI2);
+    CheckDotProduct(i1, f1);
+    CheckDotProduct(f1, f2);
+    CheckDotProduct(f1, f1);
+    CheckDotProduct(d1, d2);
+}
+
+template <class T>
+void CheckNormalized(const Vector<T> &v)
+{
+    if (v.Dimension() == 0)
+    {
+        EXPECT_THROW(
+            try {
+                v.template Normalized<double>();
+            } catch (const Exceptions::EmptyVector &e) {
+                std::stringstream ss;
+                ss << "Vector: Cannot perform normalization on an empty vector.";
+                EXPECT_TRUE(e.what() == ss.str());
+                throw e;
+            },
+            Exceptions::EmptyVector);
+        return;
+    }
+    const auto len = v.template Length<double>();
+    if (len == 0)
+    {
+        EXPECT_THROW(
+            try {
+                v.template Normalized<double>();
+            } catch (const Exceptions::DividedByZero &e) {
+                std::stringstream ss;
+                ss << "Division by zero occurred.\n";
+                ss << "Vector: Cannot normalize a zero vector.";
+                EXPECT_TRUE(e.what() == ss.str());
+                throw e;
+            },
+            Exceptions::DividedByZero);
+        return;
+    }
+    const auto normalized = v.template Normalized<double>();
+    for (std::size_t i = 0; i < v.Dimension(); i++)
+        EXPECT_DOUBLE_EQ(normalized[i], (double)v[i] / len);
+}
+
+TEST(Vector, Normalized)
+{
+    Vector<int> v1({64, -13, 943});
+    Vector<int> v2({269, -34, 43, 283, 364, -323, 734, 849});
+    Vector<float> v3({-2.124f, 23.2f, -82.32f, 84.3f, 1.04f, 0.3f, 32.3f, -49.f, 23.43f});
+    Vector<double> v4({3.14, -1.24, -0.5576, -94.3, 0.1, 23.0, -7.5, 64.56, 1.23, 2.3423});
+    Vector<float> badV1({0.f, 0.f, 0.f});
+    Vector<double> badV2({0.0});
+    Vector<int> v0;
+    CheckNormalized(v1);
+    CheckNormalized(v2);
+    CheckNormalized(v3);
+    CheckNormalized(v4);
+    CheckNormalized(badV1);
+    CheckNormalized(badV2);
+    CheckNormalized(v0);
+}
+
 TEST(Vector, ZeroVector)
 {
     const int VECTOR_LENGHTS[] = {0, 2, 4, 8, 16, 32, 64, 128, 256};
