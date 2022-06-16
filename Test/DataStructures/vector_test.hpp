@@ -330,17 +330,14 @@ TEST(Vector, LpNorm)
 }
 
 template <class T, class U>
-void CheckVectorAddition(const Vector<T>& v1, const Vector<U>& v2)
+void CheckVectorAddition(const Vector<T> &v1, const Vector<U> &v2)
 {
     if (v1.Size() == 0)
     {
         EXPECT_THROW(
-            try
-            {
+            try {
                 v1.Add(v2);
-            }
-            catch (const Exceptions::EmptyVector& e)
-            {
+            } catch (const Exceptions::EmptyVector &e) {
                 std::stringstream ss;
                 ss << "Vector: Cannot perform addition on an empty vector.";
                 EXPECT_TRUE(e.what() == ss.str());
@@ -352,12 +349,9 @@ void CheckVectorAddition(const Vector<T>& v1, const Vector<U>& v2)
     else if (v2.Size() == 0)
     {
         EXPECT_THROW(
-            try
-            {
+            try {
                 v1.Add(v2);
-            }
-            catch (const Exceptions::InvalidArgument& e)
-            {
+            } catch (const Exceptions::InvalidArgument &e) {
                 std::stringstream ss;
                 ss << "Vector: Cannot perform addtion on the given empty vector.";
                 EXPECT_TRUE(e.what() == ss.str());
@@ -369,12 +363,9 @@ void CheckVectorAddition(const Vector<T>& v1, const Vector<U>& v2)
     else if (v1.Size() % v2.Size() != 0)
     {
         EXPECT_THROW(
-            try
-            {
+            try {
                 v1.Add(v2);
-            }
-            catch (const Exceptions::InvalidArgument& e)
-            {
+            } catch (const Exceptions::InvalidArgument &e) {
                 std::stringstream ss;
                 ss << "Vector: Expected the dimension of the second operand to be a factor of that of the first operand.";
                 EXPECT_TRUE(e.what() == ss.str());
@@ -390,10 +381,10 @@ void CheckVectorAddition(const Vector<T>& v1, const Vector<U>& v2)
 
 TEST(Vector, AddVectors)
 {
-    Vector<int> v1({ 43, -13 });
-    Vector<int> v2({ 96, -4, 99, 83, 48, -263, 34, 89 });
-    Vector<float> v3({ -2.124f, 23.2f, -82.32f, 84.3f, 1.04f, 0.f, 32.3f, -9.f, 23.f });
-    Vector<double> v4({ 3.14, -1.24, -0.5576, -94.3, 0.0, 23.0, -7.5, 0.85, 1.23, 2.3423 });
+    Vector<int> v1({43, -13});
+    Vector<int> v2({96, -4, 99, 83, 48, -263, 34, 89});
+    Vector<float> v3({-2.124f, 23.2f, -82.32f, 84.3f, 1.04f, 0.f, 32.3f, -9.f, 23.f});
+    Vector<double> v4({3.14, -1.24, -0.5576, -94.3, 0.0, 23.0, -7.5, 0.85, 1.23, 2.3423});
     Vector<int> v0;
     CheckVectorAddition(v1, v2);
     CheckVectorAddition(v2, v1);
@@ -406,17 +397,14 @@ TEST(Vector, AddVectors)
 }
 
 template <class T, class Scaler>
-void CheckScalerAddition(const Vector<T>& v1, const Scaler& s)
+void CheckScalerAddition(const Vector<T> &v1, const Scaler &s)
 {
     if (v1.Size() == 0)
     {
         EXPECT_THROW(
-            try
-            {
+            try {
                 v1.Add(s);
-            }
-            catch (const Exceptions::EmptyVector& e)
-            {
+            } catch (const Exceptions::EmptyVector &e) {
                 std::stringstream ss;
                 ss << "Vector: Cannot perform addition on an empty vector.";
                 EXPECT_TRUE(e.what() == ss.str());
@@ -432,10 +420,10 @@ void CheckScalerAddition(const Vector<T>& v1, const Scaler& s)
 
 TEST(Vector, AddScaler)
 {
-    Vector<int> v1({ 43, -13 });
-    Vector<int> v2({ 96, -4, 99, 83, 48, -263, 34, 89 });
-    Vector<float> v3({ -2.124f, 23.2f, -82.32f, 84.3f, 1.04f, 0.f, 32.3f, -9.f, 23.f });
-    Vector<double> v4({ 3.14, -1.24, -0.5576, -94.3, 0.0, 23.0, -7.5, 0.85, 1.23, 2.3423 });
+    Vector<int> v1({43, -13});
+    Vector<int> v2({96, -4, 99, 83, 48, -263, 34, 89});
+    Vector<float> v3({-2.124f, 23.2f, -82.32f, 84.3f, 1.04f, 0.f, 32.3f, -9.f, 23.f});
+    Vector<double> v4({3.14, -1.24, -0.5576, -94.3, 0.0, 23.0, -7.5, 0.85, 1.23, 2.3423});
     Vector<int> v0;
     const int s1 = 32;
     const float s2 = 3.1415f;
@@ -456,17 +444,14 @@ TEST(Vector, AddScaler)
 }
 
 template <class T, class U>
-void CheckOperatorPlusVector(const Vector<T>& v1, const Vector<U>& v2)
+void CheckOperatorPlusVector(const Vector<T> &v1, const Vector<U> &v2)
 {
     if (v1.Size() == 0)
     {
         EXPECT_THROW(
-            try
-            {
+            try {
                 v1 + v2;
-            }
-            catch (const Exceptions::EmptyVector& e)
-            {
+            } catch (const Exceptions::EmptyVector &e) {
                 std::stringstream ss;
                 ss << "Vector: Cannot perform addition on an empty vector.";
                 EXPECT_TRUE(e.what() == ss.str());
@@ -478,12 +463,9 @@ void CheckOperatorPlusVector(const Vector<T>& v1, const Vector<U>& v2)
     else if (v2.Size() == 0)
     {
         EXPECT_THROW(
-            try
-            {
+            try {
                 v1 + v2;
-            }
-            catch (const Exceptions::InvalidArgument& e)
-            {
+            } catch (const Exceptions::InvalidArgument &e) {
                 std::stringstream ss;
                 ss << "Vector: Cannot perform addtion on the given empty vector.";
                 EXPECT_TRUE(e.what() == ss.str());
@@ -495,12 +477,9 @@ void CheckOperatorPlusVector(const Vector<T>& v1, const Vector<U>& v2)
     else if (v1.Size() % v2.Size() != 0)
     {
         EXPECT_THROW(
-            try
-            {
+            try {
                 v1 + v2;
-            }
-            catch (const Exceptions::InvalidArgument& e)
-            {
+            } catch (const Exceptions::InvalidArgument &e) {
                 std::stringstream ss;
                 ss << "Vector: Expected the dimension of the second operand to be a factor of that of the first operand.";
                 EXPECT_TRUE(e.what() == ss.str());
@@ -516,10 +495,10 @@ void CheckOperatorPlusVector(const Vector<T>& v1, const Vector<U>& v2)
 
 TEST(Vector, OperatorPlusVector)
 {
-    Vector<int> v1({ 43, -13 });
-    Vector<int> v2({ 96, -4, 99, 83, 48, -263, 34, 89 });
-    Vector<float> v3({ -2.124f, 23.2f, -82.32f, 84.3f, 1.04f, 0.f, 32.3f, -9.f, 23.f });
-    Vector<double> v4({ 3.14, -1.24, -0.5576, -94.3, 0.0, 23.0, -7.5, 0.85, 1.23, 2.3423 });
+    Vector<int> v1({43, -13});
+    Vector<int> v2({96, -4, 99, 83, 48, -263, 34, 89});
+    Vector<float> v3({-2.124f, 23.2f, -82.32f, 84.3f, 1.04f, 0.f, 32.3f, -9.f, 23.f});
+    Vector<double> v4({3.14, -1.24, -0.5576, -94.3, 0.0, 23.0, -7.5, 0.85, 1.23, 2.3423});
     Vector<int> v0;
     CheckOperatorPlusVector(v1, v2);
     CheckOperatorPlusVector(v2, v1);
@@ -532,17 +511,14 @@ TEST(Vector, OperatorPlusVector)
 }
 
 template <class T, class Scaler>
-void CheckOperatorPlusScaler(const Vector<T>& v1, const Scaler& s)
+void CheckOperatorPlusScaler(const Vector<T> &v1, const Scaler &s)
 {
     if (v1.Size() == 0)
     {
         EXPECT_THROW(
-            try
-            {
+            try {
                 v1 + s;
-            }
-            catch (const Exceptions::EmptyVector& e)
-            {
+            } catch (const Exceptions::EmptyVector &e) {
                 std::stringstream ss;
                 ss << "Vector: Cannot perform addition on an empty vector.";
                 EXPECT_TRUE(e.what() == ss.str());
@@ -558,10 +534,10 @@ void CheckOperatorPlusScaler(const Vector<T>& v1, const Scaler& s)
 
 TEST(Vector, OperatorPlusScaler)
 {
-    Vector<int> v1({ 43, -13 });
-    Vector<int> v2({ 96, -4, 99, 83, 48, -263, 34, 89 });
-    Vector<float> v3({ -2.124f, 23.2f, -82.32f, 84.3f, 1.04f, 0.f, 32.3f, -9.f, 23.f });
-    Vector<double> v4({ 3.14, -1.24, -0.5576, -94.3, 0.0, 23.0, -7.5, 0.85, 1.23, 2.3423 });
+    Vector<int> v1({43, -13});
+    Vector<int> v2({96, -4, 99, 83, 48, -263, 34, 89});
+    Vector<float> v3({-2.124f, 23.2f, -82.32f, 84.3f, 1.04f, 0.f, 32.3f, -9.f, 23.f});
+    Vector<double> v4({3.14, -1.24, -0.5576, -94.3, 0.0, 23.0, -7.5, 0.85, 1.23, 2.3423});
     Vector<int> v0;
     const int s1 = 32;
     const float s2 = 3.1415f;
@@ -582,17 +558,14 @@ TEST(Vector, OperatorPlusScaler)
 }
 
 template <class T, class U>
-void CheckOperatorPlusAssignmentVector(Vector<T>& v1, const Vector<U>& v2)
+void CheckOperatorPlusAssignmentVector(Vector<T> &v1, const Vector<U> &v2)
 {
     if (v1.Size() == 0)
     {
         EXPECT_THROW(
-            try
-            {
+            try {
                 v1 += v2;
-            }
-            catch (const Exceptions::EmptyVector& e)
-            {
+            } catch (const Exceptions::EmptyVector &e) {
                 std::stringstream ss;
                 ss << "Vector: Cannot perform addition on an empty vector.";
                 EXPECT_TRUE(e.what() == ss.str());
@@ -604,12 +577,9 @@ void CheckOperatorPlusAssignmentVector(Vector<T>& v1, const Vector<U>& v2)
     else if (v2.Size() == 0)
     {
         EXPECT_THROW(
-            try
-            {
+            try {
                 v1 += v2;
-            }
-            catch (const Exceptions::InvalidArgument& e)
-            {
+            } catch (const Exceptions::InvalidArgument &e) {
                 std::stringstream ss;
                 ss << "Vector: Cannot perform addtion on the given empty vector.";
                 EXPECT_TRUE(e.what() == ss.str());
@@ -621,12 +591,9 @@ void CheckOperatorPlusAssignmentVector(Vector<T>& v1, const Vector<U>& v2)
     else if (v1.Size() % v2.Size() != 0)
     {
         EXPECT_THROW(
-            try
-            {
+            try {
                 v1 += v2;
-            }
-            catch (const Exceptions::InvalidArgument& e)
-            {
+            } catch (const Exceptions::InvalidArgument &e) {
                 std::stringstream ss;
                 ss << "Vector: Expected the dimension of the second operand to be a factor of that of the first operand.";
                 EXPECT_TRUE(e.what() == ss.str());
@@ -643,10 +610,10 @@ void CheckOperatorPlusAssignmentVector(Vector<T>& v1, const Vector<U>& v2)
 
 TEST(Vector, OperatorPlusAssignmentVector)
 {
-    Vector<int> v1({ 43, -13 });
-    Vector<int> v2({ 96, -4, 99, 83, 48, -263, 34, 89 });
-    Vector<float> v3({ -2.124f, 23.2f, -82.32f, 84.3f, 1.04f, 0.f, 32.3f, -9.f, 23.f });
-    Vector<double> v4({ 3.14, -1.24, -0.5576, -94.3, 0.0, 23.0, -7.5, 0.85, 1.23, 2.3423 });
+    Vector<int> v1({43, -13});
+    Vector<int> v2({96, -4, 99, 83, 48, -263, 34, 89});
+    Vector<float> v3({-2.124f, 23.2f, -82.32f, 84.3f, 1.04f, 0.f, 32.3f, -9.f, 23.f});
+    Vector<double> v4({3.14, -1.24, -0.5576, -94.3, 0.0, 23.0, -7.5, 0.85, 1.23, 2.3423});
     Vector<int> v0;
     CheckOperatorPlusAssignmentVector(v1, v2);
     CheckOperatorPlusAssignmentVector(v2, v1);
@@ -659,17 +626,14 @@ TEST(Vector, OperatorPlusAssignmentVector)
 }
 
 template <class T, class Scaler>
-void CheckOperatorPlusAssignmentScaler(Vector<T>& v1, const Scaler& s)
+void CheckOperatorPlusAssignmentScaler(Vector<T> &v1, const Scaler &s)
 {
     if (v1.Size() == 0)
     {
         EXPECT_THROW(
-            try
-            {
+            try {
                 v1 += s;
-            }
-            catch (const Exceptions::EmptyVector& e)
-            {
+            } catch (const Exceptions::EmptyVector &e) {
                 std::stringstream ss;
                 ss << "Vector: Cannot perform addition on an empty vector.";
                 EXPECT_TRUE(e.what() == ss.str());
@@ -686,10 +650,10 @@ void CheckOperatorPlusAssignmentScaler(Vector<T>& v1, const Scaler& s)
 
 TEST(Vector, OperatorPlusAssignmentScaler)
 {
-    Vector<int> v1({ 43, -13 });
-    Vector<int> v2({ 96, -4, 99, 83, 48, -263, 34, 89 });
-    Vector<float> v3({ -2.124f, 23.2f, -82.32f, 84.3f, 1.04f, 0.f, 32.3f, -9.f, 23.f });
-    Vector<double> v4({ 3.14, -1.24, -0.5576, -94.3, 0.0, 23.0, -7.5, 0.85, 1.23, 2.3423 });
+    Vector<int> v1({43, -13});
+    Vector<int> v2({96, -4, 99, 83, 48, -263, 34, 89});
+    Vector<float> v3({-2.124f, 23.2f, -82.32f, 84.3f, 1.04f, 0.f, 32.3f, -9.f, 23.f});
+    Vector<double> v4({3.14, -1.24, -0.5576, -94.3, 0.0, 23.0, -7.5, 0.85, 1.23, 2.3423});
     Vector<int> v0;
     const int s1 = 32;
     const float s2 = 3.1415f;
@@ -710,17 +674,14 @@ TEST(Vector, OperatorPlusAssignmentScaler)
 }
 
 template <class T, class U>
-void CheckVectorSubtraction(const Vector<T>& v1, const Vector<U>& v2)
+void CheckVectorSubtraction(const Vector<T> &v1, const Vector<U> &v2)
 {
     if (v1.Size() == 0)
     {
         EXPECT_THROW(
-            try
-            {
+            try {
                 v1.Minus(v2);
-            }
-            catch (const Exceptions::EmptyVector& e)
-            {
+            } catch (const Exceptions::EmptyVector &e) {
                 std::stringstream ss;
                 ss << "Vector: Cannot perform subtraction on an empty vector.";
                 EXPECT_TRUE(e.what() == ss.str());
@@ -732,12 +693,9 @@ void CheckVectorSubtraction(const Vector<T>& v1, const Vector<U>& v2)
     else if (v2.Size() == 0)
     {
         EXPECT_THROW(
-            try
-            {
+            try {
                 v1.Minus(v2);
-            }
-            catch (const Exceptions::InvalidArgument& e)
-            {
+            } catch (const Exceptions::InvalidArgument &e) {
                 std::stringstream ss;
                 ss << "Vector: Cannot perform subtraction on the given empty vector.";
                 EXPECT_TRUE(e.what() == ss.str());
@@ -749,12 +707,9 @@ void CheckVectorSubtraction(const Vector<T>& v1, const Vector<U>& v2)
     else if (v1.Size() % v2.Size() != 0)
     {
         EXPECT_THROW(
-            try
-            {
+            try {
                 v1.Minus(v2);
-            }
-            catch (const Exceptions::InvalidArgument& e)
-            {
+            } catch (const Exceptions::InvalidArgument &e) {
                 std::stringstream ss;
                 ss << "Vector: Expected the dimension of the second operand to be a factor of that of the first operand.";
                 EXPECT_TRUE(e.what() == ss.str());
@@ -770,10 +725,10 @@ void CheckVectorSubtraction(const Vector<T>& v1, const Vector<U>& v2)
 
 TEST(Vector, Minus)
 {
-    Vector<int> v1({ 64, -13 });
-    Vector<int> v2({ 96, -4, 234, 83, 64, -23, 34, 89 });
-    Vector<float> v3({ -2.124f, 23.2f, -82.32f, 84.3f, 1.04f, 0.f, 32.3f, -49.f, 23.43f });
-    Vector<double> v4({ 3.14, -1.24, -0.5576, -94.3, 0.0, 23.0, -7.5, 64.56, 1.23, 2.3423 });
+    Vector<int> v1({64, -13});
+    Vector<int> v2({96, -4, 234, 83, 64, -23, 34, 89});
+    Vector<float> v3({-2.124f, 23.2f, -82.32f, 84.3f, 1.04f, 0.f, 32.3f, -49.f, 23.43f});
+    Vector<double> v4({3.14, -1.24, -0.5576, -94.3, 0.0, 23.0, -7.5, 64.56, 1.23, 2.3423});
     Vector<int> v0;
     CheckVectorSubtraction(v1, v2);
     CheckVectorSubtraction(v2, v1);
@@ -787,17 +742,14 @@ TEST(Vector, Minus)
 }
 
 template <class T, class Scaler>
-void CheckScalerSubtraction(const Vector<T>& v1, const Scaler& s)
+void CheckScalerSubtraction(const Vector<T> &v1, const Scaler &s)
 {
     if (v1.Size() == 0)
     {
         EXPECT_THROW(
-            try
-            {
+            try {
                 v1.Minus(s);
-            }
-            catch (const Exceptions::EmptyVector& e)
-            {
+            } catch (const Exceptions::EmptyVector &e) {
                 std::stringstream ss;
                 ss << "Vector: Cannot perform subtraction on an empty vector.";
                 EXPECT_TRUE(e.what() == ss.str());
@@ -813,10 +765,10 @@ void CheckScalerSubtraction(const Vector<T>& v1, const Scaler& s)
 
 TEST(Vector, MinusScaler)
 {
-    Vector<int> v1({ 55, -19 });
-    Vector<int> v2({ 96, -4, 34, 83, 48, -286, 34, 325 });
-    Vector<float> v3({ -2.1454f, 243.2f, -582.32f, 874.3f, 165.04f, 10.f, 332.3f, 0.f, 23.f });
-    Vector<double> v4({ 23.435, -1.24454, -0.55676, -964.3, 0.0, 23.0, -7.45455, 0.4485, 1.2323, 2.3423 });
+    Vector<int> v1({55, -19});
+    Vector<int> v2({96, -4, 34, 83, 48, -286, 34, 325});
+    Vector<float> v3({-2.1454f, 243.2f, -582.32f, 874.3f, 165.04f, 10.f, 332.3f, 0.f, 23.f});
+    Vector<double> v4({23.435, -1.24454, -0.55676, -964.3, 0.0, 23.0, -7.45455, 0.4485, 1.2323, 2.3423});
     Vector<int> v0;
     const int s1 = 322342;
     const float s2 = 25873.1415f;
@@ -837,17 +789,14 @@ TEST(Vector, MinusScaler)
 }
 
 template <class T, class U>
-void CheckOperatorMinusVector(const Vector<T>& v1, const Vector<U>& v2)
+void CheckOperatorMinusVector(const Vector<T> &v1, const Vector<U> &v2)
 {
     if (v1.Size() == 0)
     {
         EXPECT_THROW(
-            try
-            {
+            try {
                 v1 - v2;
-            }
-            catch (const Exceptions::EmptyVector& e)
-            {
+            } catch (const Exceptions::EmptyVector &e) {
                 std::stringstream ss;
                 ss << "Vector: Cannot perform subtraction on an empty vector.";
                 EXPECT_TRUE(e.what() == ss.str());
@@ -859,12 +808,9 @@ void CheckOperatorMinusVector(const Vector<T>& v1, const Vector<U>& v2)
     else if (v2.Size() == 0)
     {
         EXPECT_THROW(
-            try
-            {
+            try {
                 v1 - v2;
-            }
-            catch (const Exceptions::InvalidArgument& e)
-            {
+            } catch (const Exceptions::InvalidArgument &e) {
                 std::stringstream ss;
                 ss << "Vector: Cannot perform subtraction on the given empty vector.";
                 EXPECT_TRUE(e.what() == ss.str());
@@ -876,12 +822,9 @@ void CheckOperatorMinusVector(const Vector<T>& v1, const Vector<U>& v2)
     else if (v1.Size() % v2.Size() != 0)
     {
         EXPECT_THROW(
-            try
-            {
+            try {
                 v1 - v2;
-            }
-            catch (const Exceptions::InvalidArgument& e)
-            {
+            } catch (const Exceptions::InvalidArgument &e) {
                 std::stringstream ss;
                 ss << "Vector: Expected the dimension of the second operand to be a factor of that of the first operand.";
                 EXPECT_TRUE(e.what() == ss.str());
@@ -897,10 +840,10 @@ void CheckOperatorMinusVector(const Vector<T>& v1, const Vector<U>& v2)
 
 TEST(Vector, OperatorMinusVector)
 {
-    Vector<int> v1({ 64, -13 });
-    Vector<int> v2({ 96, -4, 234, 83, 64, -23, 34, 89 });
-    Vector<float> v3({ -2.124f, 23.2f, -82.32f, 84.3f, 1.04f, 0.f, 32.3f, -49.f, 23.43f });
-    Vector<double> v4({ 3.14, -1.24, -0.5576, -94.3, 0.0, 23.0, -7.5, 64.56, 1.23, 2.3423 });
+    Vector<int> v1({64, -13});
+    Vector<int> v2({96, -4, 234, 83, 64, -23, 34, 89});
+    Vector<float> v3({-2.124f, 23.2f, -82.32f, 84.3f, 1.04f, 0.f, 32.3f, -49.f, 23.43f});
+    Vector<double> v4({3.14, -1.24, -0.5576, -94.3, 0.0, 23.0, -7.5, 64.56, 1.23, 2.3423});
     Vector<int> v0;
     CheckOperatorMinusVector(v1, v2);
     CheckOperatorMinusVector(v2, v1);
@@ -914,17 +857,14 @@ TEST(Vector, OperatorMinusVector)
 }
 
 template <class T, class Scaler>
-void CheckOperatorMinusScaler(const Vector<T>& v1, const Scaler& s)
+void CheckOperatorMinusScaler(const Vector<T> &v1, const Scaler &s)
 {
     if (v1.Size() == 0)
     {
         EXPECT_THROW(
-            try
-            {
+            try {
                 v1 - s;
-            }
-            catch (const Exceptions::EmptyVector& e)
-            {
+            } catch (const Exceptions::EmptyVector &e) {
                 std::stringstream ss;
                 ss << "Vector: Cannot perform subtraction on an empty vector.";
                 EXPECT_TRUE(e.what() == ss.str());
@@ -940,10 +880,10 @@ void CheckOperatorMinusScaler(const Vector<T>& v1, const Scaler& s)
 
 TEST(Vector, OperatorMinusScaler)
 {
-    Vector<int> v1({ -4542, 34856 });
-    Vector<int> v2({ 96, -234, 34534, 89063, 24189, -2856, 9056534, 805325 });
-    Vector<float> v3({ -5636.1454f, 243.2f, -582.32f, 874.3f, 23.234f, 1540.f, 332.3f, 6800450.f, 23.34532f });
-    Vector<double> v4({ 23.435, -1.24454, -923.55676, -964.3, 0.0, 23.0324, -7.45455, 0.4485, 1.2323, 2.3423 });
+    Vector<int> v1({-4542, 34856});
+    Vector<int> v2({96, -234, 34534, 89063, 24189, -2856, 9056534, 805325});
+    Vector<float> v3({-5636.1454f, 243.2f, -582.32f, 874.3f, 23.234f, 1540.f, 332.3f, 6800450.f, 23.34532f});
+    Vector<double> v4({23.435, -1.24454, -923.55676, -964.3, 0.0, 23.0324, -7.45455, 0.4485, 1.2323, 2.3423});
     Vector<int> v0;
     const int s1 = 322342;
     const float s2 = 25873.631415f;
@@ -964,17 +904,14 @@ TEST(Vector, OperatorMinusScaler)
 }
 
 template <class T, class U>
-void CheckOperatorMinusAssignmentVector(Vector<T>& v1, const Vector<U>& v2)
+void CheckOperatorMinusAssignmentVector(Vector<T> &v1, const Vector<U> &v2)
 {
     if (v1.Size() == 0)
     {
         EXPECT_THROW(
-            try
-            {
+            try {
                 v1 -= v2;
-            }
-            catch (const Exceptions::EmptyVector& e)
-            {
+            } catch (const Exceptions::EmptyVector &e) {
                 std::stringstream ss;
                 ss << "Vector: Cannot perform subtraction on an empty vector.";
                 EXPECT_TRUE(e.what() == ss.str());
@@ -986,12 +923,9 @@ void CheckOperatorMinusAssignmentVector(Vector<T>& v1, const Vector<U>& v2)
     else if (v2.Size() == 0)
     {
         EXPECT_THROW(
-            try
-            {
+            try {
                 v1 -= v2;
-            }
-            catch (const Exceptions::InvalidArgument& e)
-            {
+            } catch (const Exceptions::InvalidArgument &e) {
                 std::stringstream ss;
                 ss << "Vector: Cannot perform subtraction on the given empty vector.";
                 EXPECT_TRUE(e.what() == ss.str());
@@ -1003,12 +937,9 @@ void CheckOperatorMinusAssignmentVector(Vector<T>& v1, const Vector<U>& v2)
     else if (v1.Size() % v2.Size() != 0)
     {
         EXPECT_THROW(
-            try
-            {
+            try {
                 v1 -= v2;
-            }
-            catch (const Exceptions::InvalidArgument& e)
-            {
+            } catch (const Exceptions::InvalidArgument &e) {
                 std::stringstream ss;
                 ss << "Vector: Expected the dimension of the second operand to be a factor of that of the first operand.";
                 EXPECT_TRUE(e.what() == ss.str());
@@ -1025,10 +956,10 @@ void CheckOperatorMinusAssignmentVector(Vector<T>& v1, const Vector<U>& v2)
 
 TEST(Vector, OperatorMinusAssignmentVector)
 {
-    Vector<int> v1({ 64, -13 });
-    Vector<int> v2({ 96, -4, 234, 83, 64, -23, 34, 89 });
-    Vector<float> v3({ -2.124f, 23.2f, -82.32f, 84.3f, 1.04f, 0.f, 32.3f, -49.f, 23.43f });
-    Vector<double> v4({ 3.14, -1.24, -0.5576, -94.3, 0.0, 23.0, -7.5, 64.56, 1.23, 2.3423 });
+    Vector<int> v1({64, -13});
+    Vector<int> v2({96, -4, 234, 83, 64, -23, 34, 89});
+    Vector<float> v3({-2.124f, 23.2f, -82.32f, 84.3f, 1.04f, 0.f, 32.3f, -49.f, 23.43f});
+    Vector<double> v4({3.14, -1.24, -0.5576, -94.3, 0.0, 23.0, -7.5, 64.56, 1.23, 2.3423});
     Vector<int> v0;
     CheckOperatorMinusAssignmentVector(v1, v2);
     CheckOperatorMinusAssignmentVector(v2, v1);
@@ -1042,17 +973,14 @@ TEST(Vector, OperatorMinusAssignmentVector)
 }
 
 template <class T, class Scaler>
-void CheckOperatorMinusAssignmentScaler(Vector<T>& v1, const Scaler& s)
+void CheckOperatorMinusAssignmentScaler(Vector<T> &v1, const Scaler &s)
 {
     if (v1.Size() == 0)
     {
         EXPECT_THROW(
-            try
-            {
+            try {
                 v1 -= s;
-            }
-            catch (const Exceptions::EmptyVector& e)
-            {
+            } catch (const Exceptions::EmptyVector &e) {
                 std::stringstream ss;
                 ss << "Vector: Cannot perform subtraction on an empty vector.";
                 EXPECT_TRUE(e.what() == ss.str());
@@ -1069,10 +997,10 @@ void CheckOperatorMinusAssignmentScaler(Vector<T>& v1, const Scaler& s)
 
 TEST(Vector, OperatorMinusAssginmentScaler)
 {
-    Vector<int> v1({ -4542, 34856 });
-    Vector<int> v2({ 96, -234, 34534, 89063, 24189, -2856, 9056534, 805325 });
-    Vector<float> v3({ -5636.1454f, 243.2f, -582.32f, 874.3f, 23.234f, 1540.f, 332.3f, 6800450.f, 23.34532f });
-    Vector<double> v4({ 23.435, -1.24454, -923.55676, -964.3, 0.0, 23.0324, -7.45455, 0.4485, 1.2323, 2.3423 });
+    Vector<int> v1({-4542, 34856});
+    Vector<int> v2({96, -234, 34534, 89063, 24189, -2856, 9056534, 805325});
+    Vector<float> v3({-5636.1454f, 243.2f, -582.32f, 874.3f, 23.234f, 1540.f, 332.3f, 6800450.f, 23.34532f});
+    Vector<double> v4({23.435, -1.24454, -923.55676, -964.3, 0.0, 23.0324, -7.45455, 0.4485, 1.2323, 2.3423});
     Vector<int> v0;
     const int s1 = 322342;
     const float s2 = 25873.631415f;
@@ -1093,17 +1021,14 @@ TEST(Vector, OperatorMinusAssginmentScaler)
 }
 
 template <class T, class Scaler>
-void CheckVectorScale(const Vector<T>& v1, const Scaler& s)
+void CheckScaleScaler(const Vector<T> &v1, const Scaler &s)
 {
     if (v1.Size() == 0)
     {
         EXPECT_THROW(
-            try
-            {
+            try {
                 v1.Scale(s);
-            }
-            catch (const Exceptions::EmptyVector& e)
-            {
+            } catch (const Exceptions::EmptyVector &e) {
                 std::stringstream ss;
                 ss << "Vector: Cannot perform scaling on an empty vector.";
                 EXPECT_TRUE(e.what() == ss.str());
@@ -1117,43 +1042,108 @@ void CheckVectorScale(const Vector<T>& v1, const Scaler& s)
         EXPECT_DOUBLE_EQ(v1[i] * s, result[i]);
 }
 
-TEST(Vector, Scale)
+TEST(Vector, ScaleScaler)
 {
-    Vector<int> v1({ -4542, 34856, 7435, 438, -2594 });
-    Vector<int> v2({ 96, -234, 34534, 89063, 24189, -2856, 6, 805325, 934 });
-    Vector<float> v3({ -5636.1454f, 243.2f, -582.32f, 874.3f, 23.234f, 1540.f, 332.3f, 6800450.f, 23.34532f });
-    Vector<double> v4({ 23.435, -1.24454, -923.55676, -964.3, 0.0, 23.0324, -7.45455, 0.4485, 1.2323, 2.3423 });
+    Vector<int> v1({-4542, 34856, 7435, 438, -2594});
+    Vector<int> v2({96, -234, 34534, 89063, 24189, -2856, 6, 805325, 934});
+    Vector<float> v3({-5636.1454f, 243.2f, -582.32f, 874.3f, 23.234f, 1540.f, 332.3f, 6800450.f, 23.34532f});
+    Vector<double> v4({23.435, -1.24454, -923.55676, -964.3, 0.0, 23.0324, -7.45455, 0.4485, 1.2323, 2.3423});
     Vector<int> v0;
     const int s1 = -12;
     const float s2 = 25873.631415f;
     const double s3 = 543.885644345;
-    CheckVectorScale(v1, s1);
-    CheckVectorScale(v1, s2);
-    CheckVectorScale(v1, s3);
-    CheckVectorScale(v2, s1);
-    CheckVectorScale(v2, s2);
-    CheckVectorScale(v2, s3);
-    CheckVectorScale(v3, s1);
-    CheckVectorScale(v3, s2);
-    CheckVectorScale(v3, s3);
-    CheckVectorScale(v4, s1);
-    CheckVectorScale(v4, s2);
-    CheckVectorScale(v4, s3);
-    CheckVectorScale(v0, s3);
+    CheckScaleScaler(v1, s1);
+    CheckScaleScaler(v1, s2);
+    CheckScaleScaler(v1, s3);
+    CheckScaleScaler(v2, s1);
+    CheckScaleScaler(v2, s2);
+    CheckScaleScaler(v2, s3);
+    CheckScaleScaler(v3, s1);
+    CheckScaleScaler(v3, s2);
+    CheckScaleScaler(v3, s3);
+    CheckScaleScaler(v4, s1);
+    CheckScaleScaler(v4, s2);
+    CheckScaleScaler(v4, s3);
+    CheckScaleScaler(v0, s3);
+}
+
+template <class T, class U>
+void CheckScaleVector(const Vector<T> &v1, const Vector<U> &v2)
+{
+    if (v1.Dimension() == 0)
+    {
+        EXPECT_THROW(
+            try {
+                v1.Scale(v2);
+            } catch (const Exceptions::EmptyVector &e) {
+                std::stringstream ss;
+                ss << "Vector: Cannot perform scaling on an empty vector.";
+                EXPECT_TRUE(e.what() == ss.str());
+                throw e;
+            },
+            Exceptions::EmptyVector);
+        return;
+    }
+    else if (v2.Dimension() == 0)
+    {
+        EXPECT_THROW(
+            try {
+                v1.Scale(v2);
+            } catch (const Exceptions::InvalidArgument &e) {
+                std::stringstream ss;
+                ss << "Vector: Cannot perform scaling with an empty vector as the second operand.";
+                EXPECT_TRUE(e.what() == ss.str());
+                throw e;
+            },
+            Exceptions::InvalidArgument);
+        return;
+    }
+    else if (v1.Dimension() % v2.Dimension() != 0)
+    {
+        EXPECT_THROW(
+            try {
+                v1.Scale(v2);
+            } catch (const Exceptions::InvalidArgument &e) {
+                std::stringstream ss;
+                ss << "Vector: Expected the dimension of the second operand to be a factor of that of the first operand.";
+                EXPECT_TRUE(e.what() == ss.str());
+                throw e;
+            },
+            Exceptions::InvalidArgument);
+        return;
+    }
+    const auto result = v1.Scale(v2);
+    for (std::size_t i = 0; i < result.Size(); i++)
+        EXPECT_DOUBLE_EQ(v1[i] * v2[i % v2.Dimension()], result[i]);
+}
+
+TEST(Vector, ScaleVector)
+{
+    Vector<int> v1({64, -13, 943});
+    Vector<int> v2({269, -34, 43, 283, 364, -323, 734, 849});
+    Vector<float> v3({-2.124f, 23.2f, -82.32f, 84.3f, 1.04f, 0.f, 32.3f, -49.f, 23.43f});
+    Vector<double> v4({3.14, -1.24, -0.5576, -94.3, 0.0, 23.0, -7.5, 64.56, 1.23, 2.3423});
+    Vector<int> v0;
+    CheckScaleVector(v1, v2);
+    CheckScaleVector(v2, v1);
+    CheckScaleVector(v1, v3);
+    CheckScaleVector(v3, v1);
+    CheckScaleVector(v1, v4);
+    CheckScaleVector(v4, v1);
+    CheckScaleVector(v0, v1);
+    CheckScaleVector(v1, v0);
+    CheckScaleVector(v0, v0);
 }
 
 template <class T, class Scaler>
-void CheckOperatorMultiplyScaler(const Vector<T>& v1, const Scaler& s)
+void CheckOperatorMultiplyScaler(const Vector<T> &v1, const Scaler &s)
 {
     if (v1.Size() == 0)
     {
         EXPECT_THROW(
-            try
-            {
-                v1 * s;
-            }
-            catch (const Exceptions::EmptyVector& e)
-            {
+            try {
+                v1 *s;
+            } catch (const Exceptions::EmptyVector &e) {
                 std::stringstream ss;
                 ss << "Vector: Cannot perform scaling on an empty vector.";
                 EXPECT_TRUE(e.what() == ss.str());
@@ -1169,10 +1159,10 @@ void CheckOperatorMultiplyScaler(const Vector<T>& v1, const Scaler& s)
 
 TEST(Vector, OperatorMultiplyScaler)
 {
-    Vector<int> v1({ -4542, 34856, 7435, 438, -2594 });
-    Vector<int> v2({ 96, -234, 34534, 89063, 24189, -2856, 6, 805325, 934 });
-    Vector<float> v3({ -5636.1454f, 243.2f, -582.32f, 874.3f, 23.234f, 1540.f, 332.3f, 6800450.f, 23.34532f });
-    Vector<double> v4({ 23.435, -1.24454, -923.55676, -964.3, 0.0, 23.0324, -7.45455, 0.4485, 1.2323, 2.3423 });
+    Vector<int> v1({-4542, 34856, 7435, 438, -2594});
+    Vector<int> v2({96, -234, 34534, 89063, 24189, -2856, 6, 805325, 934});
+    Vector<float> v3({-5636.1454f, 243.2f, -582.32f, 874.3f, 23.234f, 1540.f, 332.3f, 6800450.f, 23.34532f});
+    Vector<double> v4({23.435, -1.24454, -923.55676, -964.3, 0.0, 23.0324, -7.45455, 0.4485, 1.2323, 2.3423});
     Vector<int> v0;
     const int s1 = -12;
     const float s2 = 525873.631415f;
@@ -1190,6 +1180,261 @@ TEST(Vector, OperatorMultiplyScaler)
     CheckOperatorMultiplyScaler(v4, s2);
     CheckOperatorMultiplyScaler(v4, s3);
     CheckOperatorMultiplyScaler(v0, s3);
+}
+
+template <class T, class U>
+void CheckOperatorMultiplyVector(const Vector<T> &v1, const Vector<U> &v2)
+{
+    if (v1.Dimension() == 0)
+    {
+        EXPECT_THROW(
+            try {
+                v1 *v2;
+            } catch (const Exceptions::EmptyVector &e) {
+                std::stringstream ss;
+                ss << "Vector: Cannot perform element-wise multiplication on an empty vector.";
+                EXPECT_TRUE(e.what() == ss.str());
+                throw e;
+            },
+            Exceptions::EmptyVector);
+        return;
+    }
+    else if (v2.Dimension() == 0)
+    {
+        EXPECT_THROW(
+            try {
+                v1 *v2;
+            } catch (const Exceptions::InvalidArgument &e) {
+                std::stringstream ss;
+                ss << "Vector: Cannot perform element-wise multiplication with an empty vector as the second operand.";
+                EXPECT_TRUE(e.what() == ss.str());
+                throw e;
+            },
+            Exceptions::InvalidArgument);
+        return;
+    }
+    else if (v1.Dimension() % v2.Dimension() != 0)
+    {
+        EXPECT_THROW(
+            try {
+                v1 *v2;
+            } catch (const Exceptions::InvalidArgument &e) {
+                std::stringstream ss;
+                ss << "Vector: Expect the dimension of the second operand is a factor of that "
+                      "of the first operand when performing element-wise multiplication.";
+                EXPECT_TRUE(e.what() == ss.str());
+                throw e;
+            },
+            Exceptions::InvalidArgument);
+        return;
+    }
+    const auto result = v1 * v2;
+    for (std::size_t i = 0; i < result.Size(); i++)
+        EXPECT_DOUBLE_EQ(v1[i] * v2[i % v2.Dimension()], result[i]);
+}
+
+TEST(Vector, OperatorMultiplyVector)
+{
+    Vector<int> v1({64, -13, 943});
+    Vector<int> v2({269, -34, 43, 283, 364, -323, 734, 849});
+    Vector<float> v3({-2.124f, 23.2f, -82.32f, 84.3f, 1.04f, 0.f, 32.3f, -49.f, 23.43f});
+    Vector<double> v4({3.14, -1.24, -0.5576, -94.3, 0.0, 23.0, -7.5, 64.56, 1.23, 2.3423});
+    Vector<int> v0;
+    CheckOperatorMultiplyVector(v1, v2);
+    CheckOperatorMultiplyVector(v2, v1);
+    CheckOperatorMultiplyVector(v1, v3);
+    CheckOperatorMultiplyVector(v3, v1);
+    CheckOperatorMultiplyVector(v1, v4);
+    CheckOperatorMultiplyVector(v4, v1);
+    CheckOperatorMultiplyVector(v0, v1);
+    CheckOperatorMultiplyVector(v1, v0);
+    CheckOperatorMultiplyVector(v0, v0);
+}
+
+template <class T, class Scaler>
+void CheckOperatorMultiplyAssignmentScaler(Vector<T> &v1, const Scaler &s)
+{
+    if (v1.Size() == 0)
+    {
+        EXPECT_THROW(
+            try {
+                v1 *= s;
+            } catch (const Exceptions::EmptyVector &e) {
+                std::stringstream ss;
+                ss << "Vector: Cannot perform scaling on an empty vector.";
+                EXPECT_TRUE(e.what() == ss.str());
+                throw e;
+            },
+            Exceptions::EmptyVector);
+        return;
+    }
+    const auto v1Copy = v1;
+    v1 *= s;
+    for (std::size_t i = 0; i < v1.Dimension(); i++)
+        EXPECT_DOUBLE_EQ(v1[i], T(v1Copy[i] * s));
+}
+
+TEST(Vector, OperatorMultiplyAssignmentScaler)
+{
+    Vector<int> v1({-34, 243, -7435, 4554, -4});
+    Vector<int> v2({96, -234, 12, -43, 56, -89, 6, 64, 934});
+    Vector<float> v3({-103.1454f, 13.2f, -75.32f, 74.3f, -23.234f, 67.f, 53.3f, 434.f, 23.565});
+    Vector<double> v4({23.435, -1.24454, -421.55676, -403.3, 324.0, 23.0324, -7.45455, 0.4485, 71.756, 42.3423});
+    Vector<int> v0;
+    const int s1 = -234;
+    const float s2 = 34.4378;
+    const double s3 = 905.2345;
+    CheckOperatorMultiplyAssignmentScaler(v1, s1);
+    CheckOperatorMultiplyAssignmentScaler(v1, s2);
+    CheckOperatorMultiplyAssignmentScaler(v1, s3);
+    CheckOperatorMultiplyAssignmentScaler(v2, s1);
+    CheckOperatorMultiplyAssignmentScaler(v2, s2);
+    CheckOperatorMultiplyAssignmentScaler(v2, s3);
+    CheckOperatorMultiplyAssignmentScaler(v3, s1);
+    CheckOperatorMultiplyAssignmentScaler(v3, s2);
+    CheckOperatorMultiplyAssignmentScaler(v3, s3);
+    CheckOperatorMultiplyAssignmentScaler(v4, s1);
+    CheckOperatorMultiplyAssignmentScaler(v4, s2);
+    CheckOperatorMultiplyAssignmentScaler(v4, s3);
+    CheckOperatorMultiplyAssignmentScaler(v0, s3);
+}
+
+template <class T, class U>
+void CheckOperatorMultiplyAssignmentVector(Vector<T> &v1, const Vector<U> &v2)
+{
+    if (v1.Size() == 0)
+    {
+        EXPECT_THROW(
+            try {
+                v1 *= v2;
+            } catch (const Exceptions::EmptyVector &e) {
+                std::stringstream ss;
+                ss << "Vector: Cannot perform element-wise multiplication on an empty vector.";
+                EXPECT_TRUE(e.what() == ss.str());
+                throw e;
+            },
+            Exceptions::EmptyVector);
+        return;
+    }
+    else if (v2.Size() == 0)
+    {
+        EXPECT_THROW(
+            try {
+                v1 *= v2;
+            } catch (const Exceptions::InvalidArgument &e) {
+                std::stringstream ss;
+                ss << "Vector: Cannot perform element-wise multiplication with an empty vector as the second operand.";
+                EXPECT_TRUE(e.what() == ss.str());
+                throw e;
+            },
+            Exceptions::InvalidArgument);
+        return;
+    }
+    else if (v1.Size() % v2.Size() != 0)
+    {
+        EXPECT_THROW(
+            try {
+                v1 *= v2;
+            } catch (const Exceptions::InvalidArgument &e) {
+                std::stringstream ss;
+                ss << "Vector: Expect the dimension of the second operand is a factor of that "
+                      "of the first operand when performing element-wise multiplication.";
+                EXPECT_TRUE(e.what() == ss.str());
+                throw e;
+            },
+            Exceptions::InvalidArgument);
+        return;
+    }
+    const Vector<T> result = v1 * v2;
+    v1 *= v2;
+    for (std::size_t i = 0; i < result.Size(); i++)
+        EXPECT_DOUBLE_EQ(v1[i], result[i]);
+}
+
+TEST(Vector, OperatorMultiplyAssignmentVector)
+{
+    Vector<int> v1({64, -13});
+    Vector<int> v2({96, -4, 234, 83, 64, -23, 34, 89});
+    Vector<float> v3({-2.124f, 23.2f, -82.32f, 84.3f, 1.04f, 0.f, 32.3f, -49.f, 23.43f});
+    Vector<double> v4({3.14, -1.24, -0.5576, -94.3, 0.0, 23.0, -7.5, 64.56, 1.23, 2.3423});
+    Vector<int> v0;
+    CheckOperatorMultiplyAssignmentVector(v1, v2);
+    CheckOperatorMultiplyAssignmentVector(v2, v1);
+    CheckOperatorMultiplyAssignmentVector(v1, v3);
+    CheckOperatorMultiplyAssignmentVector(v3, v1);
+    CheckOperatorMultiplyAssignmentVector(v1, v4);
+    CheckOperatorMultiplyAssignmentVector(v4, v1);
+    CheckOperatorMultiplyAssignmentVector(v0, v1);
+    CheckOperatorMultiplyAssignmentVector(v1, v0);
+    CheckOperatorMultiplyAssignmentVector(v0, v0);
+}
+
+template <class T, class Scaler>
+void CheckDivideScaler(const Vector<T> &v1, const Scaler &s)
+{
+    if (v1.Size() == 0)
+    {
+        EXPECT_THROW(
+            try {
+                v1.Divide(s);
+            } catch (const Exceptions::EmptyVector &e) {
+                std::stringstream ss;
+                ss << "Vector: Cannot perform element-wise division on an empty vector.";
+                EXPECT_TRUE(e.what() == ss.str());
+                throw e;
+            },
+            Exceptions::EmptyVector);
+        return;
+    }
+    else if (s == 0)
+    {
+        EXPECT_THROW(
+            try {
+                v1.Divide(s);
+            } catch (const Exceptions::DividedByZero &e) {
+                std::stringstream ss;
+                ss << "Division by zero occurred.\n";
+                ss << "Vector: Cannot perform element-wise division as the second operand is 0.";
+                EXPECT_TRUE(e.what() == ss.str());
+                throw e;
+            },
+            Exceptions::DividedByZero);
+        return;
+    }
+    const auto result = v1.Divide(s);
+    for (std::size_t i = 0; i < v1.Size(); i++)
+        EXPECT_DOUBLE_EQ(v1[i] / s, result[i]);
+}
+
+TEST(Vector, DivideScaler)
+{
+    Vector<int> v1({-4542, 34856, 7435, 438, -2594});
+    Vector<int> v2({96, -234, 34534, 89063, 24189, -2856, 6, 805325, 934});
+    Vector<float> v3({-5636.1454f, 243.2f, -582.32f, 874.3f, 23.234f, 1540.f, 332.3f, 6800450.f, 23.34532f});
+    Vector<double> v4({23.435, -1.24454, -923.55676, -964.3, 0.0, 23.0324, -7.45455, 0.4485, 1.2323, 2.3423});
+    Vector<int> v0;
+    const int s1 = -12;
+    const float s2 = 525873.631415f;
+    const double s3 = 454453.885644345;
+    const int s0 = 0;
+    CheckDivideScaler(v1, s1);
+    CheckDivideScaler(v1, s2);
+    CheckDivideScaler(v1, s3);
+    CheckDivideScaler(v1, s0);
+    CheckDivideScaler(v2, s1);
+    CheckDivideScaler(v2, s2);
+    CheckDivideScaler(v2, s3);
+    CheckDivideScaler(v2, s0);
+    CheckDivideScaler(v3, s1);
+    CheckDivideScaler(v3, s2);
+    CheckDivideScaler(v3, s3);
+    CheckDivideScaler(v3, s0);
+    CheckDivideScaler(v4, s1);
+    CheckDivideScaler(v4, s2);
+    CheckDivideScaler(v4, s3);
+    CheckDivideScaler(v4, s0);
+    CheckDivideScaler(v0, s3);
+    CheckDivideScaler(v0, s0);
 }
 
 TEST(Vector, ZeroVector)
