@@ -414,19 +414,7 @@ namespace DataStructures
          * @return a Vector with the stacked elements.
          **/
         static Vector<T> Combine(const std::initializer_list<Vector<T>> &vectors);
-
-        template <class ScalerType>
-        friend auto operator+(const ScalerType &scaler, const Vector<T> &v);
-
-        template <class ScalerType>
-        friend auto operator-(const ScalerType &scaler, const Vector<T> &v);
-
-        template <class ScalerType>
-        friend auto operator*(const ScalerType &scaler, const Vector<T> &v);
-
-        template <class ScalerType>
-        friend auto operator/(const ScalerType &scaler, const Vector<T> &v);
-
+        
         template <class OtherType>
         friend class Vector;
     };
