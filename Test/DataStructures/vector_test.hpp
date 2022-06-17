@@ -2028,6 +2028,29 @@ TEST(Vector, Normalize)
     CheckNormalize(v0);
 }
 
+template <class T>
+void CheckSum(const Vector<T> &v)
+{
+    T sum = 0;
+    for (std::size_t i = 0; i < v.Size(); i++)
+        sum += v[i];
+    EXPECT_NEAR(sum, v.Sum(), 0.0001);
+}
+
+TEST(Vector, Sum)
+{
+    Vector<float> v1({64.32f, -13.34f, 943.644f});
+    Vector<double> v2({269.4, -34.64, 43.032, 283.34032, 364.0, -43.0, 4.023, 9.0});
+    Vector<float> v3({-2.124f, 23.2f, -82.32f, 84.3f, 1.04f, 0.3f, 32.3f, -49.f, 23.43f});
+    Vector<double> v4({3.14, -1.24, -0.5576, -94.3, 0.1, 23.0, -7.5, 64.56, 1.23, 2.3423});
+    Vector<int> v0;
+    CheckSum(v1);
+    CheckSum(v2);
+    CheckSum(v3);
+    CheckSum(v4);
+    CheckSum(v0);
+}
+
 TEST(Vector, ZeroVector)
 {
     const int VECTOR_LENGHTS[] = {0, 2, 4, 8, 16, 32, 64, 128, 256};
