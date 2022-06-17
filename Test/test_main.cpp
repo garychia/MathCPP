@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+#include "math_test.hpp"
 #include "tuple_test.hpp"
 #include "vector_test.hpp"
 #include "vector3d_test.hpp"
