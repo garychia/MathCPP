@@ -254,7 +254,6 @@ TEST(Vector, Length)
     EXPECT_FLOAT_EQ(t4.Length<float>(), 5.f);
     Vector<float> t5({-3.f, -4.f});
     EXPECT_FLOAT_EQ(t5.Length<float>(), 5.f);
-
     Vector<int> t0;
     EXPECT_THROW(
         try {
@@ -1970,6 +1969,63 @@ TEST(Vector, Normalized)
     CheckNormalized(badV1);
     CheckNormalized(badV2);
     CheckNormalized(v0);
+}
+
+template <class T>
+void CheckNormalize(Vector<T> &v)
+{
+    if (v.Dimension() == 0)
+    {
+        EXPECT_THROW(
+            try {
+                v.Normalize();
+            } catch (const Exceptions::EmptyVector &e) {
+                std::stringstream ss;
+                ss << "Vector: Cannot perform normalization on an empty vector.";
+                EXPECT_TRUE(e.what() == ss.str());
+                throw e;
+            },
+            Exceptions::EmptyVector);
+        return;
+    }
+    const auto len = v.template Length<T>();
+    if (len == 0)
+    {
+        EXPECT_THROW(
+            try {
+                v.Normalize();
+            } catch (const Exceptions::DividedByZero &e) {
+                std::stringstream ss;
+                ss << "Division by zero occurred.\n";
+                ss << "Vector: Cannot normalize a zero vector.";
+                EXPECT_TRUE(e.what() == ss.str());
+                throw e;
+            },
+            Exceptions::DividedByZero);
+        return;
+    }
+    const auto vCopy = v;
+    v.Normalize();
+    for (std::size_t i = 0; i < v.Dimension(); i++)
+        EXPECT_DOUBLE_EQ(vCopy[i] / len, v[i]);
+}
+
+TEST(Vector, Normalize)
+{
+    Vector<float> v1({64.32f, -13.34f, 943.644f});
+    Vector<double> v2({269.4, -34.64, 43.032, 283.34032, 364.0, -43.0, 4.023, 9.0});
+    Vector<float> v3({-2.124f, 23.2f, -82.32f, 84.3f, 1.04f, 0.3f, 32.3f, -49.f, 23.43f});
+    Vector<double> v4({3.14, -1.24, -0.5576, -94.3, 0.1, 23.0, -7.5, 64.56, 1.23, 2.3423});
+    Vector<float> badV1({0.f, 0.f, 0.f});
+    Vector<double> badV2({0.0});
+    Vector<int> v0;
+    CheckNormalize(v1);
+    CheckNormalize(v2);
+    CheckNormalize(v3);
+    CheckNormalize(v4);
+    CheckNormalize(badV1);
+    CheckNormalize(badV2);
+    CheckNormalize(v0);
 }
 
 TEST(Vector, ZeroVector)
