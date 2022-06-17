@@ -100,7 +100,7 @@ namespace DataStructures
             throw Exceptions::EmptyVector(
                 "Vector: Lp norm of an empty vector is undefined.");
         ReturnType squaredTotal = 0;
-#pragma omp parallel for schedule(dynamic) reduction(+:squaredTotal)
+#pragma omp parallel for schedule(dynamic) reduction(+ : squaredTotal)
         for (std::size_t i = 0; i < Dimension(); i++)
             squaredTotal += Math::Power<ReturnType, int>((*this)[i], p);
         return Math::Power<ReturnType, double>(squaredTotal, (double)1 / p);
@@ -513,7 +513,7 @@ namespace DataStructures
     T Vector<T>::Sum() const
     {
         T total = 0;
-#pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(dynamic) reduction(+ : total)
         for (std::size_t i = 0; i < this->size; i++)
             total += (*this)[i];
         return total;
