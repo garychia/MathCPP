@@ -1,67 +1,73 @@
 #include "Vector.hpp"
 #include "Matrix.hpp"
+#include "List.hpp"
 #include "Exceptions.hpp"
 
 #include <sstream>
 
-#define EPSILON 0.0000000001
-#define LN_2 0.69314718
-#define PI 3.14159265
-#define PI_TIMES_2 6.28318531
-#define ABS(x) (x) >= 0 ? (x) : -(x)
+#define EPSILON 0.00000000001
+#define LN_2 0.69314718056
+#define PI 3.14159265359
+#define PI_TIMES_2 6.28318530718
+#define ABS(x) ((x) >= 0 ? (x) : -(x))
 
 namespace Math
 {
     template <class T>
     T Exponent(const T &x)
     {
-        const T input = x < 0 ? -x : x;
-        T result = 1;
-        T numerator = input;
-        T denominator = 1;
-        std::size_t i = 2;
-        while (numerator / denominator > EPSILON)
+        if (x == 0)
+            return 1;
+        const auto input = ABS(x);
+        T result = 0;
+        T numerator = 1;
+        std::size_t denominator = 1;
+        std::size_t i = 1;
+        T term = numerator / denominator;
+        while (ABS(term) > EPSILON)
         {
-            result += numerator / denominator;
+            result += term;
+            if (ABS(numerator) >= 1E10 / input)
+            {
+                numerator /= denominator;
+                denominator = 1;
+            }
             numerator *= input;
             denominator *= i;
             i++;
+            term = numerator / denominator;
         }
-        return x < 0 ? 1 / result : result;
+        return x > 0 ? result : 1 / result;
     }
 
     template <class T>
     T NaturalLog(const T &x)
     {
         if (x <= 0)
-        {
-            std::stringstream ss;
-            ss << "NaturalLog: Input must be positive but got "
-               << x
-               << ".";
-            throw Exceptions::InvalidArgument(ss.str());
-        }
-        std::size_t exponent = 0;
+            throw Exceptions::InvalidArgument(
+                "NaturalLog: Expected the input to be positive.");
         T input = x;
-        while (input >= 2)
+        T exp = 0;
+        while (input > 1)
         {
             input /= 2;
-            exponent++;
+            exp++;
         }
+        input = input - 1;
+        bool positiveTerm = true;
         T result = 0;
-        T factor = 1;
-        T numerator = input - 1;
-        std::size_t denominator = 1;
+        T numerator = input;
+        T denominator = 1;
         T ratio = numerator / denominator;
-        while (ABS(ratio) > EPSILON)
+        for (std::size_t i = 0; i < 1000; i++)
         {
-            result += factor * numerator / denominator;
-            factor = -factor;
-            numerator *= input - 1;
+            result += ratio * (positiveTerm ? 1 : -1);
+            numerator *= input;
             denominator++;
             ratio = numerator / denominator;
+            positiveTerm = !positiveTerm;
         }
-        return result + exponent * LN_2;
+        return result + LN_2 * exp;
     }
 
     template <class T>
@@ -139,33 +145,65 @@ namespace Math
         return (exponential - 1) / (exponential + 1);
     }
 
+    template <class T>
+    T _PowerLong(const T &scaler, long n)
+    {
+        if (scaler == 0 && n <= 0)
+        {
+            std::stringstream ss;
+            ss << "Power: " << scaler;
+            ss << " to the power of " << n;
+            ss << " is undefined.";
+            throw Exceptions::InvalidArgument(ss.str());
+        }
+        else if (scaler == 0 || scaler == 1)
+            return scaler;
+        else if (n == 0)
+            return 1;
+        auto p = n > 0 ? n : -n;
+        DataStructures::List<bool> even;
+        while (p > 1)
+        {
+            even.Append((p & 1) == 0);
+            p >>= 1;
+        }
+        auto result = scaler;
+        if (!even.IsEmpty())
+        {
+            std::size_t i = even.Size();
+            while (i != 0)
+            {
+                result *= result;
+                if (!even[i - 1])
+                    result *= scaler;
+                i--;
+            }
+        }
+        return n > 0 ? result : T(1) / result;
+    }
+
     template <class T, class PowerType>
     T Power(const T &scaler, PowerType n)
     {
-        if (scaler > 0)
-            return Exponent(n * NaturalLog(scaler));
-        else if (scaler == 0)
+        if (scaler == 0 && n > 0)
             return 0;
-        else if ((long)n % 2 == 0)
-            return Exponent(n * NaturalLog(-scaler));
-        return -Exponent(n * NaturalLog(scaler));
-    }
-
-    template <class T>
-    T Power(const T &scaler, int n)
-    {
-        if (n < 0)
-            return 1 / Power(scaler, -n);
-        else if (n == 0)
-            return 1;
-        else if (n == 1)
-            return scaler;
-        else if (n % 2 == 0)
+        else if (scaler > 0)
         {
-            const T partial = Power(scaler, n / 2);
-            return partial * partial;
+            if (n == 0)
+                return 1;
+            else if (n == 1)
+                return scaler;
+            else if (n < 0)
+                return T(1) / Power(scaler, -n);
+            return Exponent(n * NaturalLog(scaler));
         }
-        return scaler * Power(scaler, n - 1);
+        else if (scaler < 0 && (long)n == n)
+            return _PowerLong<T>(scaler, (long)n);
+        std::stringstream ss;
+        ss << "Power: " << scaler;
+        ss << " to the power of " << n;
+        ss << " is undefined.";
+        throw Exceptions::InvalidArgument(ss.str());
     }
 
     template <class T>
