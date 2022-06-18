@@ -2072,6 +2072,24 @@ TEST(Vector, Map)
     CheckMap(v3, f2);
 }
 
+template <class T>
+void CheckAsRawPointer(const Vector<T> &v)
+{
+    const auto p = v.AsRawPointer();
+    for (std::size_t i = 0; i < v.Size(); i++)
+        EXPECT_DOUBLE_EQ(v[i], p[i]);
+}
+
+TEST(Vector, AsRawPointer)
+{
+    Vector<int> v1({64, -133, 53});
+    Vector<float> v2({-2.124f, 23.2f, -82.32f, 84.3f, 1.04f, 0.3f, 32.3f, -49.f, 23.43f});
+    Vector<double> v3({3.14, -2.0, 32.32, 8.235, 23.0, -7.5, 64.56, 1.23, 2.3423});
+    CheckAsRawPointer(v1);
+    CheckAsRawPointer(v2);
+    CheckAsRawPointer(v3);
+}
+
 TEST(Vector, ZeroVector)
 {
     const int VECTOR_LENGHTS[] = {0, 2, 4, 8, 16, 32, 64, 128, 256};
@@ -2083,4 +2101,17 @@ TEST(Vector, ZeroVector)
         for (int j = 0; j < VECTOR_LENGHTS[j]; j++)
             EXPECT_EQ(zeroVector[j], 0);
     }
+}
+
+TEST(Vector, Combine)
+{
+    const std::vector<int> VECTOR_CONTENT_1({ 467, 235, 42, 692, 832, 11});
+    const std::vector<int> VECTOR_CONTENT_2({ 1, 1, 2, 2, 4, 4});
+    Vector<int> v1(VECTOR_CONTENT_1);
+    Vector<int> v2(VECTOR_CONTENT_2);
+    auto combined = Vector<int>::Combine({v1, v2});
+    for (std::size_t i = 0; i < VECTOR_CONTENT_1.size(); i++)
+        EXPECT_EQ(combined[i], VECTOR_CONTENT_1[i]);
+    for (std::size_t i = 0; i < VECTOR_CONTENT_2.size(); i++)
+        EXPECT_EQ(combined[VECTOR_CONTENT_1.size() + i], VECTOR_CONTENT_2[i]);
 }
