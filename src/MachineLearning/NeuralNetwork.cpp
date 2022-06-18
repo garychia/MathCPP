@@ -92,13 +92,18 @@ namespace MachineLearning
 
     void NeuralNetwork::Learn(const Matrix<double> &derivative, const double &learningRate)
     {
-        Matrix<double> currentDerivative = derivative;
-        std::size_t i = layers.Size() - 1;
-        while (i != 0)
+        if (!layers.IsEmpty())
         {
-            currentDerivative = layers[i]->Backward(currentDerivative);
-            layers[i]->UpdateWeights(learningRate);
-            i--;
+            Matrix<double> currentDerivative = derivative;
+            std::size_t i = layers.Size() - 1;
+            while (true)
+            {
+                currentDerivative = layers[i]->Backward(currentDerivative);
+                layers[i]->UpdateWeights(learningRate);
+                if (i == 0)
+                    break;
+                i--;
+            }
         }
     }
 
