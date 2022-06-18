@@ -2051,6 +2051,27 @@ TEST(Vector, Sum)
     CheckSum(v0);
 }
 
+template <class T, class Func>
+void CheckMap(const Vector<T> &v, Func &&f)
+{
+    const auto result = v.Map(f);
+    for (std::size_t i = 0; i < v.Size(); i++)
+        EXPECT_DOUBLE_EQ(f(v[i]), result[i]);
+}
+
+TEST(Vector, Map)
+{
+    Vector<int> v1({64, -133, 53});
+    Vector<float> v2({-2.124f, 23.2f, -82.32f, 84.3f, 1.04f, 0.3f, 32.3f, -49.f, 23.43f});
+    Vector<double> v3({3.14, -2.0, 32.32, 8.235, 23.0, -7.5, 64.56, 1.23, 2.3423});
+    const auto multTwo = [](const int e) { return e * 2; };
+    const auto f1 = [](const float e) { return 2.f * e * e - 4.f * e + 435.23f; };
+    const auto f2 = [](const double e) { return -3.2 * e * e * e + 2.3 * e * e + 9 * e + 23.4223; };
+    CheckMap(v1, multTwo);
+    CheckMap(v2, f1);
+    CheckMap(v3, f2);
+}
+
 TEST(Vector, ZeroVector)
 {
     const int VECTOR_LENGHTS[] = {0, 2, 4, 8, 16, 32, 64, 128, 256};
