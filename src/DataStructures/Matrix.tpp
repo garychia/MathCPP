@@ -644,7 +644,7 @@ namespace DataStructures
     std::string Matrix<T>::ToString() const
     {
         if (nRows == 0)
-            return "[EMPTY MATRIX]";
+            return "[]";
         std::stringstream ss;
         ss << "[";
         for (std::size_t i = 0; i < nRows; i++)
