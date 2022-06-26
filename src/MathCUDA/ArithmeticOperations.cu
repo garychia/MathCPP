@@ -9,14 +9,7 @@
 			dest[i] = operand1[i] op operand2[i];                                                                                           \
 	}
 
-// ARITHMETIC_FUNCTION(ArrayAddition, +);
-template <class OutputType, class FirstOperandType, class SecondOperandType, class IndexType>
-__global__ void ArrayAddition(OutputType* dest, const FirstOperandType* operand1, const SecondOperandType* operand2, const IndexType size)
-{                                                                                                                                      
-	const std::size_t i = threadIdx.x + blockIdx.x * blockDim.x;                                                                        
-	if (i < size)
-		dest[i] = operand1[i] + operand2[i];
-}
+ARITHMETIC_FUNCTION(ArrayAddition, +);
 ARITHMETIC_FUNCTION(ArraySubtraction, -);
 ARITHMETIC_FUNCTION(ArrayMultiplication, *);
 ARITHMETIC_FUNCTION(ArrayDivision, /);
