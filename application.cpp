@@ -16,7 +16,7 @@ int main(void)
     NeuralNetwork network(layerTypes, shapes, NeuralNetwork::LossType::NLL);
     std::cout << network << std::endl;
     std::cout << network.Predict(input) << std::endl;
-    const auto history = network.Train(input, labels, 1, 0.01);
-    std::cout << history << std::endl;
+    const auto history = network.Train(input, labels, 1000, 0.01);
+    std::cout << network.Predict(input) << std::endl;
     return 0;
 }

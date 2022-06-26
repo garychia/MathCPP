@@ -3,6 +3,9 @@
 #include <omp.h>
 #endif
 
+#ifdef __CUDA_ENABLED__
+#include "CudaHelpers.hpp"
+#endif
 #include "Exceptions.hpp"
 #include "Math.hpp"
 
@@ -120,9 +123,15 @@ namespace DataStructures
             throw Exceptions::InvalidArgument(
                 "Vector: Expected the dimension of the second operand to be a factor of that of the first operand.");
         Vector<decltype(this->data[0] + other[0])> result(*this);
+#ifdef __CUDA_ENABLED__
+#pragma omp parallel for schedule(dynamic)
+        for (std::size_t i = 0; i < Dimension(); i += other.Dimension())
+            CudaHelpers::AddWithTwoArrays(&result[i], &(*this)[i], other.data, other.Dimension());
+#else
 #pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < Dimension(); i++)
             result[i] += other[i % other.Dimension()];
+#endif
         return result;
     }
 
