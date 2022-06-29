@@ -36,7 +36,7 @@
                             sizeof(op_type_2) * nElements, cudaMemcpyHostToDevice,                                             \
                             streams[i]);                                                                                       \
             const std::size_t threadsPerBlock = nElements > 32 ? 32 : nElements;                                               \
-            const std::size_t blocksPerGrid = (size + threadsPerBlock - 1) / threadsPerBlock;                                  \
+            const std::size_t blocksPerGrid = (nElements + threadsPerBlock - 1) / threadsPerBlock;                             \
             helper_func<<<blocksPerGrid, threadsPerBlock, 0, streams[i]>>>(dest + lower, op1 + lower, op2 + lower, nElements); \
             cudaMemcpyAsync(Dest + lower, dest + lower,                                                                        \
                             sizeof(output_type) * nElements, cudaMemcpyDeviceToHost,                                           \
