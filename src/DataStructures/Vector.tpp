@@ -221,9 +221,15 @@ namespace DataStructures
             throw Exceptions::InvalidArgument(
                 "Vector: Expected the dimension of the second operand to be a factor of that of the first operand.");
         Vector<decltype(this->data[0] - other[0])> result(*this);
+#ifdef __CUDA_ENABLED__
+#pragma omp parallel for schedule(dynamic)
+        for (std::size_t i = 0; i < Dimension(); i += other.Dimension())
+            CudaHelpers::SubtractWithTwoArrays(&result[i], &(*this)[i], other.data, other.Dimension());
+#else
 #pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < Dimension(); i++)
             result[i] -= other[i % other.Dimension()];
+#endif
         return result;
     }
 
@@ -235,9 +241,13 @@ namespace DataStructures
             throw Exceptions::EmptyVector(
                 "Vector: Cannot perform subtraction on an empty vector.");
         Vector<decltype(this->data[0] - scaler)> result(*this);
+#ifdef __CUDA_ENABLED__
+        CudaHelpers::SubtractWithArrayScaler(&result[0], &(*this)[0], scaler, Dimension());
+#else
 #pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < Dimension(); i++)
             result[i] -= scaler;
+#endif
         return result;
     }
 
@@ -268,9 +278,13 @@ namespace DataStructures
         else if (Dimension() % other.Dimension() != 0)
             throw Exceptions::InvalidArgument(
                 "Vector: Expected the dimension of the second operand to be a factor of that of the first operand.");
+#ifdef __CUDA_ENABLED__
+        *this = Minus(other);
+#else
 #pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < Dimension(); i++)
             this->data[i] -= other[i % other.Dimension()];
+#endif
         return *this;
     }
 
@@ -281,9 +295,13 @@ namespace DataStructures
         if (this->size == 0)
             throw Exceptions::EmptyVector(
                 "Vector: Cannot perform subtraction on an empty vector.");
+#ifdef __CUDA_ENABLED__
+        *this = Minus(scaler);
+#else
 #pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < Dimension(); i++)
             this->data[i] -= scaler;
+#endif
         return *this;
     }
 
@@ -295,9 +313,13 @@ namespace DataStructures
             throw Exceptions::EmptyVector(
                 "Vector: Cannot perform scaling on an empty vector.");
         Vector<decltype(this->data[0] * scaler)> result(*this);
+#ifdef __CUDA_ENABLED__
+    CudaHelpers::MultiplyWithArrayScaler(&result[0], &(*this)[0], scaler, Dimension());
+#else
 #pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < Dimension(); i++)
             result[i] *= scaler;
+#endif
         return result;
     }
 
@@ -315,9 +337,15 @@ namespace DataStructures
             throw Exceptions::InvalidArgument(
                 "Vector: Expected the dimension of the second operand to be a factor of that of the first operand.");
         Vector<decltype((*this)[0] * other[0])> result(*this);
+#ifdef __CUDA_ENABLED__
+#pragma omp parallel for schedule(dynamic)
+        for (std::size_t i = 0; i < Dimension(); i += other.Dimension())
+            CudaHelpers::MultiplyWithTwoArrays(&result[i], &(*this)[i], other.data, other.Dimension());
+#else
 #pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < Dimension(); i++)
             result[i] *= other[i % other.Dimension()];
+#endif
         return result;
     }
 
@@ -343,9 +371,15 @@ namespace DataStructures
                 "Vector: Expect the dimension of the second operand is a factor of that "
                 "of the first operand when performing element-wise multiplication.");
         Vector<decltype((*this)[0] * other[0])> result(*this);
+#ifdef __CUDA_ENABLED__
+#pragma omp parallel for schedule(dynamic)
+        for (std::size_t i = 0; i < Dimension(); i += other.Dimension())
+            CudaHelpers::MultiplyWithTwoArrays(&result[i], &(*this)[i], other.data, other.Dimension());
+#else
 #pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < this->size; i++)
             result[i] *= other[i % other.Dimension()];
+#endif
         return result;
     }
 
@@ -356,9 +390,13 @@ namespace DataStructures
         if (this->size == 0)
             throw Exceptions::EmptyVector(
                 "Vector: Cannot perform scaling on an empty vector.");
+#ifdef __CUDA_ENABLED__
+        *this = Scale(scaler);
+#else
 #pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < Dimension(); i++)
             (*this)[i] *= scaler;
+#endif
         return *this;
     }
 
@@ -376,9 +414,13 @@ namespace DataStructures
             throw Exceptions::InvalidArgument(
                 "Vector: Expect the dimension of the second operand is a factor of that "
                 "of the first operand when performing element-wise multiplication.");
+#ifdef __CUDA_ENABLED__
+        *this = Scale(other);
+#else
 #pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < Dimension(); i++)
             (*this)[i] *= other[i % other.Dimension()];
+#endif
         return *this;
     }
 
@@ -393,9 +435,13 @@ namespace DataStructures
             throw Exceptions::DividedByZero(
                 "Vector: Cannot perform element-wise division as the second operand is 0.");
         Vector<decltype((*this)[0] / scaler)> result(*this);
+#ifdef __CUDA_ENABLED__
+    CudaHelpers::DivideWithArrayScaler(&result[0], &(*this)[0], scaler, Dimension());
+#else
 #pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < Dimension(); i++)
             result[i] /= scaler;
+#endif
         return result;
     }
 
@@ -415,6 +461,19 @@ namespace DataStructures
                 "second operand to be a factor of that of the first operand.");
         Vector<decltype((*this)[0] / vector[0])> result(*this);
         std::size_t j;
+#ifdef __CUDA_ENABLED__
+#pragma omp parallel for schedule(dynamic) private(j)
+        for (std::size_t i = 0; i < vector.Dimension(); i++)
+        {
+            if (vector[i] == 0)
+                throw Exceptions::DividedByZero(
+                    "Vector: Expect none of the element of the second operand to be 0 when performing"
+                    "element-wise division.");
+        }
+#pragma omp parallel for schedule(dynamic)
+        for (std::size_t i = 0; i < Dimension(); i += vector.Dimension())
+            CudaHelpers::DivideWithTwoArrays(&result[i], &(*this)[i], vector.data, vector.Dimension());
+#else
 #pragma omp parallel for schedule(dynamic) private(j)
         for (std::size_t i = 0; i < Dimension(); i++)
         {
@@ -425,6 +484,7 @@ namespace DataStructures
                     "element-wise division.");
             result[i] /= vector[j];
         }
+#endif
         return result;
     }
 
@@ -451,9 +511,13 @@ namespace DataStructures
                 "Vector: Cannot perform element-wise division on an empty vector.");
         else if (scaler == 0)
             throw Exceptions::DividedByZero("Vector: Cannot perform element-wise division as the second operand is 0.");
+#ifdef __CUDA_ENABLED__
+        *this = Divide(scaler);
+#else
 #pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < Dimension(); i++)
             (*this)[i] /= scaler;
+#endif
         return *this;
     }
 
@@ -471,6 +535,9 @@ namespace DataStructures
             throw Exceptions::InvalidArgument(
                 "Vector: Cannot perform element-wise division. Expected the dimension of the "
                 "second operand to be a factor of that of the first operand.");
+#ifdef __CUDA_ENABLED__
+        *this = Divide(vector);
+#else
 #pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < Dimension(); i++)
         {
@@ -481,6 +548,7 @@ namespace DataStructures
                     "element-wise division.");
             (*this)[i] /= element;
         }
+#endif
         return *this;
     }
 
@@ -497,12 +565,7 @@ namespace DataStructures
         else if (Dimension() != other.Dimension())
             throw Exceptions::InvalidArgument(
                 "Vector: Cannot perform dot product on vectors with different dimensions.");
-        decltype((*this)[0] * other[0]) result = 0;
-#pragma omp parallel for schedule(dynamic) reduction(+ \
-                                                     : result)
-        for (std::size_t i = 0; i < Dimension(); i++)
-            result += (*this)[i] * other[i];
-        return result;
+        return Scale(other).Sum();
     }
 
     template <class T>
