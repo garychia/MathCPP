@@ -197,9 +197,13 @@ namespace DataStructures
         if (this->size == 0)
             throw Exceptions::EmptyVector(
                 "Vector: Cannot perform addition on an empty vector.");
+#ifdef __CUDA_ENABLED__
+        *this = Add(scaler);
+#else
 #pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < Dimension(); i++)
             this->data[i] += scaler;
+#endif
         return *this;
     }
 
