@@ -4,24 +4,62 @@
 #include "cuda_runtime.h"
 
 /**
- * @brief Perform element-wise addition on two array.
+ * @brief Perform element-wise addition on two arrays.
  * 
- * @tparam T the type of the array elements.
+ * @tparam OutputType the element type of the array that will store the result.
+ * @tparam FirstOperandType the element type of the array that is the first operand.
+ * @tparam SecondOperandType the element type of the array that is the second operand.
  * @tparam IndexType the type of the index.
- * @param dest the destination array where the results will be stored.
- * @param operand1 the first array as an input to the addition.
- * @param operand2 the second array as an input to the addition.
- * @param size the total number of pairs of array elements to be added.
+ * @param dest the array used to store the result.
+ * @param operand1 the array that represents the first operand.
+ * @param operand2 the array that represents the second operand.
+ * @param size the size of the arrays.
  */
 template <class OutputType, class FirstOperandType, class SecondOperandType, class IndexType>
 __global__ void ArrayAddition(OutputType *dest, const FirstOperandType *operand1, const SecondOperandType *operand2, const IndexType size);
 
+/**
+ * @brief Perform element-wise subtraction on two arrays.
+ * 
+ * @tparam OutputType the element type of the array that will store the result.
+ * @tparam FirstOperandType the element type of the array that is the first operand.
+ * @tparam SecondOperandType the element type of the array that is the second operand.
+ * @tparam IndexType the type of the index.
+ * @param dest the array used to store the result.
+ * @param operand1 the array that represents the first operand.
+ * @param operand2 the array that represents the second operand.
+ * @param size the size of the arrays.
+ */
 template <class OutputType, class FirstOperandType, class SecondOperandType, class IndexType>
 __global__ void ArraySubtraction(OutputType *dest, const FirstOperandType *operand1, const SecondOperandType *operand2, const IndexType size);
 
+/**
+ * @brief Perform element-wise multiplication on two arrays.
+ * 
+ * @tparam OutputType the element type of the array that will store the result.
+ * @tparam FirstOperandType the element type of the array that is the first operand.
+ * @tparam SecondOperandType the element type of the array that is the second operand.
+ * @tparam IndexType the type of the index.
+ * @param dest the array used to store the result.
+ * @param operand1 the array that represents the first operand.
+ * @param operand2 the array that represents the second operand.
+ * @param size the size of the arrays.
+ */
 template <class OutputType, class FirstOperandType, class SecondOperandType, class IndexType>
 __global__ void ArrayMultiplication(OutputType *dest, const FirstOperandType *operand1, const SecondOperandType *operand2, const IndexType size);
 
+/**
+ * @brief Perform element-wise division on two arrays.
+ * 
+ * @tparam OutputType the element type of the array that will store the result.
+ * @tparam FirstOperandType the element type of the array that is the first operand.
+ * @tparam SecondOperandType the element type of the array that is the second operand.
+ * @tparam IndexType the type of the index.
+ * @param dest the array used to store the result.
+ * @param operand1 the array that represents the first operand.
+ * @param operand2 the array that represents the second operand.
+ * @param size the size of the arrays.
+ */
 template <class OutputType, class FirstOperandType, class SecondOperandType, class IndexType>
 __global__ void ArrayDivision(OutputType *dest, const FirstOperandType *operand1, const SecondOperandType *operand2, const IndexType size);
 
