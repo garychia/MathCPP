@@ -26,6 +26,8 @@
             const auto lowerBound = i * arrayChunckSize;                                                          \
             const auto upperBound = MIN(lowerBound + arrayChunckSize, size);                                      \
             const auto nElements = upperBound - lowerBound;                                                       \
+            if (0 == nElements)                                                                                   \
+                break;                                                                                            \
             cudaMemcpyAsync(dest + lowerBound, Dest + lowerBound,                                                 \
                             sizeof(output_type) * nElements, cudaMemcpyHostToDevice,                              \
                             streams[i]);                                                                          \
@@ -35,7 +37,7 @@
             cudaMemcpyAsync(op2 + lowerBound, Operand2 + lowerBound,                                              \
                             sizeof(op_type_2) * nElements, cudaMemcpyHostToDevice,                                \
                             streams[i]);                                                                          \
-            const std::size_t threadsPerBlock = nElements > 32 ? 32 : (nElements > 0 ? nElements : 1);            \
+            const std::size_t threadsPerBlock = nElements > 32 ? 32 : nElements;                                  \
             const std::size_t blocksPerGrid = (nElements + threadsPerBlock - 1) / threadsPerBlock;                \
             helper_func<<<blocksPerGrid, threadsPerBlock, 0, streams[i]>>>(                                       \
                 dest + lowerBound,                                                                                \
