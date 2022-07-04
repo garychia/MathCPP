@@ -180,9 +180,13 @@ namespace DataStructures
         else if (Dimension() % other.Dimension() != 0)
             throw Exceptions::InvalidArgument(
                 "Vector: Expected the dimension of the second operand to be a factor of that of the first operand.");
+#ifdef __CUDA_ENABLED__
+        *this = Add(other);
+#else
 #pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < Dimension(); i++)
             this->data[i] += other[i % other.Dimension()];
+#endif
         return *this;
     }
 
