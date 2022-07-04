@@ -63,6 +63,19 @@ __global__ void ArrayMultiplication(OutputType *dest, const FirstOperandType *op
 template <class OutputType, class FirstOperandType, class SecondOperandType, class IndexType>
 __global__ void ArrayDivision(OutputType *dest, const FirstOperandType *operand1, const SecondOperandType *operand2, const IndexType size);
 
+
+template <class OutputType, class ArrayType, class ScalerType, class IndexType>
+__global__ void ArrayScalerAddition(OutputType* dest, const ArrayType* arr, const ScalerType scaler, const IndexType size);
+
+template <class OutputType, class ArrayType, class ScalerType, class IndexType>
+__global__ void ArrayScalerSubtraction(OutputType* dest, const ArrayType* arr, const ScalerType scaler, const IndexType size);
+
+template <class OutputType, class ArrayType, class ScalerType, class IndexType>
+__global__ void ArrayScalerMultiplication(OutputType* dest, const ArrayType* arr, const ScalerType scaler, const IndexType size);
+
+template <class OutputType, class ArrayType, class ScalerType, class IndexType>
+__global__ void ArrayScalerDivision(OutputType* dest, const ArrayType* arr, const ScalerType scaler, const IndexType size);
+
 /**
  * @brief Calculate each element of an array raised to a given power.
  * 
