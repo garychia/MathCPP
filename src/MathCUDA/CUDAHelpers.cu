@@ -1,6 +1,7 @@
 #include "ArithmeticOperations.cuh"
 
 #include "CUDAHelpers.hpp"
+#include "CUDAUtilities.cuh"
 
 #define MIN(a, b) (a) < (b) ? (a) : (b)
 
@@ -11,16 +12,16 @@
         const std::size_t bytesOfArray1 = size * sizeof(op_type_1);                                               \
         const std::size_t bytesOfArray2 = size * sizeof(op_type_2);                                               \
         output_type *dest;                                                                                        \
-        cudaMalloc(&dest, bytesOfOutput);                                                                         \
+        CheckCUDAStatus(cudaMalloc(&dest, bytesOfOutput));                                                        \
         op_type_1 *op1;                                                                                           \
-        cudaMalloc(&op1, bytesOfArray1);                                                                          \
+        CheckCUDAStatus(cudaMalloc(&op1, bytesOfArray1));                                                         \
         op_type_2 *op2;                                                                                           \
-        cudaMalloc(&op2, bytesOfArray2);                                                                          \
+        CheckCUDAStatus(cudaMalloc(&op2, bytesOfArray2));                                                         \
         const std::size_t numOfStreams = 8;                                                                       \
         const std::size_t arrayChunckSize = (size + numOfStreams - 1) / numOfStreams;                             \
         cudaStream_t streams[numOfStreams];                                                                       \
         for (std::size_t i = 0; i < numOfStreams; i++)                                                            \
-            cudaStreamCreate(&streams[i]);                                                                        \
+            CheckCUDAStatus(cudaStreamCreate(&streams[i]));                                                       \
         for (std::size_t i = 0; i < numOfStreams; i++)                                                            \
         {                                                                                                         \
             const auto lowerBound = i * arrayChunckSize;                                                          \
@@ -28,15 +29,15 @@
             const auto nElements = upperBound - lowerBound;                                                       \
             if (0 == nElements)                                                                                   \
                 break;                                                                                            \
-            cudaMemcpyAsync(dest + lowerBound, Dest + lowerBound,                                                 \
-                            sizeof(output_type) * nElements, cudaMemcpyHostToDevice,                              \
-                            streams[i]);                                                                          \
-            cudaMemcpyAsync(op1 + lowerBound, Operand1 + lowerBound,                                              \
-                            sizeof(op_type_1) * nElements, cudaMemcpyHostToDevice,                                \
-                            streams[i]);                                                                          \
-            cudaMemcpyAsync(op2 + lowerBound, Operand2 + lowerBound,                                              \
-                            sizeof(op_type_2) * nElements, cudaMemcpyHostToDevice,                                \
-                            streams[i]);                                                                          \
+            CheckCUDAStatus(cudaMemcpyAsync(dest + lowerBound, Dest + lowerBound,                                 \
+                                            sizeof(output_type) * nElements, cudaMemcpyHostToDevice,              \
+                                            streams[i]));                                                         \
+            CheckCUDAStatus(cudaMemcpyAsync(op1 + lowerBound, Operand1 + lowerBound,                              \
+                                            sizeof(op_type_1) * nElements, cudaMemcpyHostToDevice,                \
+                                            streams[i]));                                                         \
+            CheckCUDAStatus(cudaMemcpyAsync(op2 + lowerBound, Operand2 + lowerBound,                              \
+                                            sizeof(op_type_2) * nElements, cudaMemcpyHostToDevice,                \
+                                            streams[i]));                                                         \
             const std::size_t threadsPerBlock = nElements > 32 ? 32 : nElements;                                  \
             const std::size_t blocksPerGrid = (nElements + threadsPerBlock - 1) / threadsPerBlock;                \
             helper_func<<<blocksPerGrid, threadsPerBlock, 0, streams[i]>>>(                                       \
@@ -44,17 +45,17 @@
                 op1 + lowerBound,                                                                                 \
                 op2 + lowerBound,                                                                                 \
                 nElements);                                                                                       \
-            cudaMemcpyAsync(Dest + lowerBound, dest + lowerBound,                                                 \
-                            sizeof(output_type) * nElements, cudaMemcpyDeviceToHost,                              \
-                            streams[i]);                                                                          \
+            CheckCUDAStatus(cudaMemcpyAsync(Dest + lowerBound, dest + lowerBound,                                 \
+                                            sizeof(output_type) * nElements, cudaMemcpyDeviceToHost,              \
+                                            streams[i]));                                                         \
         }                                                                                                         \
         for (std::size_t i = 0; i < numOfStreams; i++)                                                            \
-            cudaStreamSynchronize(streams[i]);                                                                    \
+            CheckCUDAStatus(cudaStreamSynchronize(streams[i]));                                                   \
         for (std::size_t i = 0; i < numOfStreams; i++)                                                            \
-            cudaStreamDestroy(streams[i]);                                                                        \
-        cudaFree(dest);                                                                                           \
-        cudaFree(op1);                                                                                            \
-        cudaFree(op2);                                                                                            \
+            CheckCUDAStatus(cudaStreamDestroy(streams[i]));                                                       \
+        CheckCUDAStatus(cudaFree(dest));                                                                          \
+        CheckCUDAStatus(cudaFree(op1));                                                                           \
+        CheckCUDAStatus(cudaFree(op2));                                                                           \
     }
 
 #define TWO_OPERAND_ARITHMETIC_FUNCTION_IMPLEMENTATIONS(func_name, helper_func)                    \
