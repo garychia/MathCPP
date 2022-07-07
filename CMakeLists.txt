@@ -33,7 +33,7 @@ if (MSVC)
     target_compile_options(Misc PUBLIC "/openmp:llvm")
 endif (MSVC)
 
-target_link_libraries(MathCPP PUBLIC MathCPPML)
+target_link_libraries(MathCPP PUBLIC MathCPPNN)
 target_link_libraries(MathCPP PUBLIC Misc)
 
 find_package(OpenMP)

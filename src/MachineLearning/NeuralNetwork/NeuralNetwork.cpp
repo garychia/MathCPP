@@ -1,11 +1,11 @@
 #include "NeuralNetwork.hpp"
 #include "Exceptions.hpp"
 
-#include "LinearLayer.hpp"
-#include "ReLULayer.hpp"
-#include "SoftMaxLayer.hpp"
-#include "TanhLayer.hpp"
-#include "NLLLayer.hpp"
+#include "Layers/LinearLayer.hpp"
+#include "Layers/ReLULayer.hpp"
+#include "Layers/SoftMaxLayer.hpp"
+#include "Layers/TanhLayer.hpp"
+#include "Layers/NLLLayer.hpp"
 
 #include "Random.hpp"
 

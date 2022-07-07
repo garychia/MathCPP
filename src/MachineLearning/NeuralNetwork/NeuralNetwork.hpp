@@ -1,8 +1,8 @@
 #ifndef NEURALNETWORK_HPP
 #define NEURALNETWORK_HPP
 
-#include "NeuralLayer.hpp"
-#include "LossLayer.hpp"
+#include "Layers/NeuralLayer.hpp"
+#include "Layers/LossLayer.hpp"
 
 #include <string>
 #include <sstream>
