@@ -8,6 +8,7 @@ set(NN_SOURCES
     ${CMAKE_SOURCE_DIR}/src/MachineLearning/NeuralNetwork/Layers/SoftMaxLayer.cpp
     ${CMAKE_SOURCE_DIR}/src/MachineLearning/NeuralNetwork/Layers/LossLayer.cpp
     ${CMAKE_SOURCE_DIR}/src/MachineLearning/NeuralNetwork/Layers/NLLLayer.cpp
+    ${CMAKE_SOURCE_DIR}/src/MachineLearning/NeuralNetwork/Layers/BatchNormLayer.cpp
     ${CMAKE_SOURCE_DIR}/src/MachineLearning/NeuralNetwork/NeuralNetwork.cpp)
 
 set(NN_HEADERS
@@ -20,6 +21,7 @@ set(NN_HEADERS
     ${CMAKE_SOURCE_DIR}/src/MachineLearning/NeuralNetwork/Layers/SoftMaxLayer.hpp
     ${CMAKE_SOURCE_DIR}/src/MachineLearning/NeuralNetwork/Layers/LossLayer.hpp
     ${CMAKE_SOURCE_DIR}/src/MachineLearning/NeuralNetwork/Layers/NLLLayer.hpp
+    ${CMAKE_SOURCE_DIR}/src/MachineLearning/NeuralNetwork/Layers/BatchNormLayer.hpp
     ${CMAKE_SOURCE_DIR}/src/MachineLearning/NeuralNetwork/NeuralNetwork.hpp)
 
 add_library(MathCPPNN ${NN_SOURCES} ${NN_HEADERS})
