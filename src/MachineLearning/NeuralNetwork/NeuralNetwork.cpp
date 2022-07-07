@@ -24,16 +24,14 @@ namespace MachineLearning
                 "NeuralNetwork: Input and output size must be specified for each layer.");
         for (std::size_t i = 0; i < layerTypes.Size(); i++)
         {
-            if (shapes[i].Size() != 2)
-                throw Exceptions::InvalidArgument(
-                    "NeuralNetwork: Input and output size for each layer must be specified exactly by 2 numbers.");
-            const auto inputSize = shapes[i][0];
-            const auto outputSize = shapes[i][1];
             switch (layerTypes[i])
             {
             case LayerType::Linear:
             {
-                layers.Append(new LinearLayer(inputSize, outputSize));
+                if (shapes[i].Size() != 2)
+                    throw Exceptions::InvalidArgument(
+                        "NeuralNetwork: the input and output sizes of a LinearLayer must be specified.");
+                layers.Append(new LinearLayer(shapes[i][0], shapes[i][1]));
                 break;
             }
             case LayerType::ReLU:
