@@ -28,6 +28,14 @@ ARRAY_SCALER_FUNCTION(ArrayScalerSubtraction, -);
 ARRAY_SCALER_FUNCTION(ArrayScalerMultiplication, *);
 ARRAY_SCALER_FUNCTION(ArrayScalerDivision, /);
 
+template <class T, class U, class MapFunction>
+__global__ void ArrayMap(T *output, const U *input, MapFunction f, std::size_t size)
+{
+	const std::size_t i = threadIdx.x + blockIdx.x * blockDim.x;
+	if (i < size)
+		output[i] = f(input[i]);
+}
+
 template <class T, class IndexType, class PowerType>
 __global__ void Power(T *dest, const T *arr, IndexType size, PowerType power)
 {
