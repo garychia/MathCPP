@@ -39,7 +39,7 @@ __global__ void ArrayMap(T *output, const U *input, MapFunction f, std::size_t s
 template <class T, class IndexType, class PowerType>
 __global__ void Power(T *dest, const T *arr, IndexType size, PowerType power)
 {
-	unsigned int i = threadIdx.x + blockIdx.x * blockDim.x;
+	const IndexType i = threadIdx.x + blockIdx.x * blockDim.x;
 	if (i < size)
 		dest[i] = Math::Power(arr[i], power);
 }
