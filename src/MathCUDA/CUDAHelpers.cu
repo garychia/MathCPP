@@ -126,6 +126,63 @@
     ARRAY_SCALER_FUNCTION_IMPLEMENTATION(func_name, double, float, double, helper_func)  \
     ARRAY_SCALER_FUNCTION_IMPLEMENTATION(func_name, double, double, float, helper_func)
 
+#define SCALER_ARRAY_FUNCTION_IMPLEMENTATION(func_name, output_type, scaler_type, arr_type, op)        \
+    void func_name(output_type *dest, const scaler_type scaler, const arr_type *arr, std::size_t size) \
+    {                                                                                                  \
+        const std::size_t bytesOfOutput = size * sizeof(output_type);                                  \
+        const std::size_t bytesOfArray1 = size * sizeof(arr_type);                                     \
+        output_type *destGPU;                                                                          \
+        cudaMalloc(&destGPU, bytesOfOutput);                                                           \
+        arr_type *arrGPU;                                                                              \
+        cudaMalloc(&arrGPU, bytesOfArray1);                                                            \
+        const std::size_t numOfStreams = 8;                                                            \
+        const std::size_t arrayChunckSize = (size + numOfStreams - 1) / numOfStreams;                  \
+        cudaStream_t streams[numOfStreams];                                                            \
+        for (std::size_t i = 0; i < numOfStreams; i++)                                                 \
+            cudaStreamCreate(&streams[i]);                                                             \
+        const auto f = [=] __device__(const arr_type &e) { return scaler op e; };                      \
+        for (std::size_t i = 0; i < numOfStreams; i++)                                                 \
+        {                                                                                              \
+            const auto lowerBound = i * arrayChunckSize;                                               \
+            const auto upperBound = MIN(lowerBound + arrayChunckSize, size);                           \
+            const auto nElements = upperBound - lowerBound;                                            \
+            if (0 == nElements)                                                                        \
+                break;                                                                                 \
+            cudaMemcpyAsync(destGPU + lowerBound, dest + lowerBound,                                   \
+                            sizeof(output_type) * nElements, cudaMemcpyHostToDevice,                   \
+                            streams[i]);                                                               \
+            cudaMemcpyAsync(arrGPU + lowerBound, arr + lowerBound,                                     \
+                            sizeof(arr_type) * nElements, cudaMemcpyHostToDevice,                      \
+                            streams[i]);                                                               \
+            const std::size_t threadsPerBlock = nElements > 32 ? 32 : nElements;                       \
+            const std::size_t blocksPerGrid = (nElements + threadsPerBlock - 1) / threadsPerBlock;     \
+            ArrayMap<<<blocksPerGrid, threadsPerBlock, 0, streams[i]>>>(                               \
+                destGPU + lowerBound,                                                                  \
+                arrGPU + lowerBound,                                                                   \
+                f, nElements);                                                                         \
+            cudaMemcpyAsync(dest + lowerBound, destGPU + lowerBound,                                   \
+                            sizeof(output_type) * nElements, cudaMemcpyDeviceToHost,                   \
+                            streams[i]);                                                               \
+        }                                                                                              \
+        for (std::size_t i = 0; i < numOfStreams; i++)                                                 \
+            cudaStreamSynchronize(streams[i]);                                                         \
+        for (std::size_t i = 0; i < numOfStreams; i++)                                                 \
+            cudaStreamDestroy(streams[i]);                                                             \
+        cudaFree(destGPU);                                                                             \
+        cudaFree(arrGPU);                                                                              \
+    }
+
+#define SCALER_ARRAY_FUNCTION_IMPLEMENTATIONS(func_name, op)                    \
+    SCALER_ARRAY_FUNCTION_IMPLEMENTATION(func_name, int, int, int, op)          \
+    SCALER_ARRAY_FUNCTION_IMPLEMENTATION(func_name, float, int, float, op)      \
+    SCALER_ARRAY_FUNCTION_IMPLEMENTATION(func_name, float, float, int, op)      \
+    SCALER_ARRAY_FUNCTION_IMPLEMENTATION(func_name, float, float, float, op)    \
+    SCALER_ARRAY_FUNCTION_IMPLEMENTATION(func_name, double, int, double, op)    \
+    SCALER_ARRAY_FUNCTION_IMPLEMENTATION(func_name, double, double, int, op)    \
+    SCALER_ARRAY_FUNCTION_IMPLEMENTATION(func_name, double, double, double, op) \
+    SCALER_ARRAY_FUNCTION_IMPLEMENTATION(func_name, double, float, double, op)  \
+    SCALER_ARRAY_FUNCTION_IMPLEMENTATION(func_name, double, double, float, op)
+
 namespace CudaHelpers
 {
     TWO_OPERAND_ARITHMETIC_FUNCTION_IMPLEMENTATIONS(AddWithTwoArrays, ArrayAddition)
@@ -137,4 +194,9 @@ namespace CudaHelpers
     ARRAY_SCALER_FUNCTION_IMPLEMENTATIONS(SubtractWithArrayScaler, ArrayScalerSubtraction);
     ARRAY_SCALER_FUNCTION_IMPLEMENTATIONS(MultiplyWithArrayScaler, ArrayScalerMultiplication);
     ARRAY_SCALER_FUNCTION_IMPLEMENTATIONS(DivideWithArrayScaler, ArrayScalerDivision);
+
+    SCALER_ARRAY_FUNCTION_IMPLEMENTATIONS(AddWithScalerArray, +);
+    SCALER_ARRAY_FUNCTION_IMPLEMENTATIONS(SubtractWithScalerArray, -);
+    SCALER_ARRAY_FUNCTION_IMPLEMENTATIONS(MultiplyWithScalerArray, *);
+    SCALER_ARRAY_FUNCTION_IMPLEMENTATIONS(DivideWithScalerArray, /);
 }
