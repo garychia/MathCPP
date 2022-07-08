@@ -6,6 +6,7 @@
 #include "Layers/SoftMaxLayer.hpp"
 #include "Layers/TanhLayer.hpp"
 #include "Layers/NLLLayer.hpp"
+#include "Layers/BatchNormLayer.hpp"
 
 #include "Random.hpp"
 
@@ -47,6 +48,14 @@ namespace MachineLearning
             case LayerType::Tanh:
             {
                 layers.Append(new TanhLayer());
+                break;
+            }
+            case LayerType::BatchNormalization:
+            {
+                if (shapes[i].Size() != 1)
+                    throw Exceptions::InvalidArgument(
+                        "NeuralNetwork: the size of input to a BatchNormLayer must be specified.");
+                layers.Append(new BatchNormLayer(shapes[i][0]));
                 break;
             }
             default:

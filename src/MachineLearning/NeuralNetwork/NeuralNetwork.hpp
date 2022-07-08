@@ -26,7 +26,8 @@ namespace MachineLearning
             Linear,
             ReLU,
             SoftMax,
-            Tanh
+            Tanh,
+            BatchNormalization
         };
 
         enum class LossType
