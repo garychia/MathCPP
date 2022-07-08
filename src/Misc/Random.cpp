@@ -10,9 +10,17 @@
 
 int Random::seed = 0;
 
-void Random::UpdateSeed()
+bool Random::useSeed = false;
+
+void Random::SetSeed(int randomSeed)
 {
-    seed = seed % 903 + (seed << 3) + 17;
+    seed = randomSeed;
+    useSeed = true;
+}
+
+void Random::UnsetSeed()
+{
+    useSeed = false;
 }
 
 int Random::Generate()
@@ -20,8 +28,11 @@ int Random::Generate()
     int randomValue;
 #pragma omp critical
     {
-        srand(seed + time(NULL));
-        UpdateSeed();
+#ifdef _OPENMP
+        srand((useSeed ? seed : clock()) + omp_get_thread_num());
+#else
+        srand(useSeed ? seed : clock());
+#endif
         randomValue = rand();
     }
     return randomValue;
@@ -36,7 +47,7 @@ unsigned int Random::Choose(unsigned int nElements, const DataStructures::List<d
 {
     if (prob.IsEmpty())
         return IntRange(0, nElements);
-    const double randomProb = (double)(Generate() % 10001) / 10000;
+    const double randomProb = (double)(Generate() % 1001) / 1000;
     double currentProbability = 0.0;
     for (std::size_t i = 0; i < prob.Size(); i++)
     {

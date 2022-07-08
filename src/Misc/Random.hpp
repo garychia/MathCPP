@@ -8,10 +8,21 @@ class Random
 private:
     static int seed;
 
-    static void UpdateSeed();
+    static bool useSeed;
 
     static int Generate();
 public:
+    /**
+     * Set up the random seed.
+     * @param randomSeed the seed.
+     **/
+    static void SetSeed(int randomSeed);
+
+    /**
+     * Remove the seed.
+     **/
+    static void UnsetSeed();
+
     /**
      * Generate a random integer.
      * @param low the minimum value of the output (inclusive).
