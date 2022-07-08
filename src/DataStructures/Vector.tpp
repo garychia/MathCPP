@@ -462,7 +462,7 @@ namespace DataStructures
         Vector<decltype((*this)[0] / vector[0])> result(*this);
         std::size_t j;
 #ifdef __CUDA_ENABLED__
-#pragma omp parallel for schedule(dynamic) private(j)
+#pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < vector.Dimension(); i++)
         {
             if (vector[i] == 0)
@@ -643,9 +643,15 @@ namespace DataStructures
     auto operator+(const ScalerType &scaler, const Vector<T> &v)
     {
         Vector<decltype(scaler + v[0])> result(v);
+#ifdef __CUDA_ENABLED__
+        if (v.Dimension() == 0)
+            throw Exceptions::EmptyVector("Vector: Cannot perform addition on an empty vector.");
+        CudaHelpers::AddWithScalerArray(&result[0], scaler, &v[0], v.Dimension());
+#else
 #pragma omp parallel for
         for (std::size_t i = 0; i < result.Dimension(); i++)
             result[i] += scaler;
+#endif
         return result;
     }
 
@@ -653,9 +659,15 @@ namespace DataStructures
     auto operator-(const ScalerType &scaler, const Vector<T> &v)
     {
         Vector<decltype(scaler - v[0])> result(v);
+#ifdef __CUDA_ENABLED__
+        if (v.Dimension() == 0)
+            throw Exceptions::EmptyVector("Vector: Cannot perform subtraction on an empty vector.");
+        CudaHelpers::SubtractWithScalerArray(&result[0], scaler, &v[0], v.Dimension());
+#else
 #pragma omp parallel for
         for (std::size_t i = 0; i < result.Dimension(); i++)
             result[i] = scaler - result[i];
+#endif
         return result;
     }
 
@@ -663,9 +675,15 @@ namespace DataStructures
     auto operator*(const ScalerType &scaler, const Vector<T> &v)
     {
         Vector<decltype(scaler * v[0])> result(v);
+#ifdef __CUDA_ENABLED__
+        if (v.Dimension() == 0)
+            throw Exceptions::EmptyVector("Vector: Cannot perform scaling on an empty vector.");
+        CudaHelpers::MultiplyWithScalerArray(&result[0], scaler, &v[0], v.Dimension());
+#else
 #pragma omp parallel for
         for (std::size_t i = 0; i < result.Dimension(); i++)
             result[i] *= scaler;
+#endif
         return result;
     }
 
@@ -673,9 +691,22 @@ namespace DataStructures
     auto operator/(const ScalerType &scaler, const Vector<T> &v)
     {
         Vector<decltype(scaler / v[0])> result(v);
+#ifdef __CUDA_ENABLED__
+        if (v.Dimension() == 0)
+            throw Exceptions::EmptyVector("Vector: Cannot perform element-wise division on an empty vector.");
+        for (std::size_t i = 0; i < v.Dimension(); i++)
+        {
+            if (v[i] == 0)
+                throw Exceptions::DividedByZero(
+                    "Vector: Expect none of the elements of the second operand to be 0 when performing"
+                    "element-wise division.");
+        }
+        CudaHelpers::DivideWithScalerArray(&result[0], scaler, &v[0], v.Dimension());
+#else
 #pragma omp parallel for
         for (std::size_t i = 0; i < result.Dimension(); i++)
             result[i] = scaler / result[i];
+#endif
         return result;
     }
 }

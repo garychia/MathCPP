@@ -19,4 +19,5 @@ if(CMAKE_CUDA_COMPILER)
         LANGUAGE CUDA
         CUDA_SEPARABLE_COMPILATION ON
         CUDA_RESOLVE_DEVICE_SYMBOLS ON)
+    target_compile_options(MathCPPCUDA PUBLIC $<$<COMPILE_LANGUAGE:CUDA>: --extended-lambda>)
 endif()
