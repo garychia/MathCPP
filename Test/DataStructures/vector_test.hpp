@@ -2064,9 +2064,12 @@ TEST(Vector, Map)
     Vector<int> v1({64, -133, 53});
     Vector<float> v2({-2.124f, 23.2f, -82.32f, 84.3f, 1.04f, 0.3f, 32.3f, -49.f, 23.43f});
     Vector<double> v3({3.14, -2.0, 32.32, 8.235, 23.0, -7.5, 64.56, 1.23, 2.3423});
-    const auto multTwo = [](const int e) { return e * 2; };
-    const auto f1 = [](const float e) { return 2.f * e * e - 4.f * e + 435.23f; };
-    const auto f2 = [](const double e) { return -3.2 * e * e * e + 2.3 * e * e + 9 * e + 23.4223; };
+    const auto multTwo = [](const int e)
+    { return e * 2; };
+    const auto f1 = [](const float e)
+    { return 2.f * e * e - 4.f * e + 435.23f; };
+    const auto f2 = [](const double e)
+    { return -3.2 * e * e * e + 2.3 * e * e + 9 * e + 23.4223; };
     CheckMap(v1, multTwo);
     CheckMap(v2, f1);
     CheckMap(v3, f2);
@@ -2105,8 +2108,8 @@ TEST(Vector, ZeroVector)
 
 TEST(Vector, Combine)
 {
-    const std::vector<int> VECTOR_CONTENT_1({ 467, 235, 42, 692, 832, 11});
-    const std::vector<int> VECTOR_CONTENT_2({ 1, 1, 2, 2, 4, 4});
+    const std::vector<int> VECTOR_CONTENT_1({467, 235, 42, 692, 832, 11});
+    const std::vector<int> VECTOR_CONTENT_2({1, 1, 2, 2, 4, 4});
     Vector<int> v1(VECTOR_CONTENT_1);
     Vector<int> v2(VECTOR_CONTENT_2);
     auto combined = Vector<int>::Combine({v1, v2});
@@ -2114,4 +2117,221 @@ TEST(Vector, Combine)
         EXPECT_EQ(combined[i], VECTOR_CONTENT_1[i]);
     for (std::size_t i = 0; i < VECTOR_CONTENT_2.size(); i++)
         EXPECT_EQ(combined[VECTOR_CONTENT_1.size() + i], VECTOR_CONTENT_2[i]);
+}
+
+template <class T, class Scaler>
+void CheckScalerVectorAddition(const Scaler &s, const Vector<T> &v)
+{
+    if (v.Size() == 0)
+    {
+        EXPECT_THROW(
+            try {
+                s + v;
+            } catch (const Exceptions::EmptyVector &e) {
+                std::stringstream ss;
+                ss << "Vector: Cannot perform addition on an empty vector.";
+                EXPECT_TRUE(e.what() == ss.str());
+                throw e;
+            },
+            Exceptions::EmptyVector);
+        return;
+    }
+    const auto result = s + v;
+    for (std::size_t i = 0; i < v.Size(); i++)
+        EXPECT_DOUBLE_EQ(s + v[i], result[i]);
+}
+
+TEST(Vector, ScalerVectorAddition)
+{
+    Vector<int> v1({43, -13});
+    Vector<int> v2({96, -4, 99, 83, 48, -263, 34, 89});
+    Vector<float> v3({-2.124f, 23.2f, -82.32f, 84.3f, 1.04f, 0.f, 32.3f, -9.f, 23.f});
+    Vector<double> v4({3.14, -1.24, -0.5576, -94.3, 0.0, 23.0, -7.5, 0.85, 1.23, 2.3423});
+    Vector<int> v0;
+    const int s1 = 32;
+    const float s2 = 3.1415f;
+    const double s3 = 56635.45245;
+    CheckScalerVectorAddition(s1, v1);
+    CheckScalerVectorAddition(s2, v1);
+    CheckScalerVectorAddition(s3, v1);
+    CheckScalerVectorAddition(s1, v2);
+    CheckScalerVectorAddition(s2, v2);
+    CheckScalerVectorAddition(s3, v2);
+    CheckScalerVectorAddition(s1, v3);
+    CheckScalerVectorAddition(s2, v3);
+    CheckScalerVectorAddition(s3, v3);
+    CheckScalerVectorAddition(s1, v4);
+    CheckScalerVectorAddition(s2, v4);
+    CheckScalerVectorAddition(s3, v4);
+    CheckScalerVectorAddition(s3, v0);
+}
+
+template <class T, class Scaler>
+void CheckScalerVectorSubtraction(const Scaler &s, const Vector<T> &v)
+{
+    if (v.Size() == 0)
+    {
+        EXPECT_THROW(
+            try {
+                s - v;
+            } catch (const Exceptions::EmptyVector &e) {
+                std::stringstream ss;
+                ss << "Vector: Cannot perform subtraction on an empty vector.";
+                EXPECT_TRUE(e.what() == ss.str());
+                throw e;
+            },
+            Exceptions::EmptyVector);
+        return;
+    }
+    const auto result = s - v;
+    for (std::size_t i = 0; i < v.Size(); i++)
+        EXPECT_DOUBLE_EQ(s - v[i], result[i]);
+}
+
+TEST(Vector, ScalerVectorSubtraction)
+{
+    Vector<int> v1({55, -19});
+    Vector<int> v2({96, -4, 34, 83, 48, -286, 34, 325});
+    Vector<float> v3({-2.1454f, 243.2f, -582.32f, 874.3f, 165.04f, 10.f, 332.3f, 0.f, 23.f});
+    Vector<double> v4({23.435, -1.24454, -0.55676, -964.3, 0.0, 23.0, -7.45455, 0.4485, 1.2323, 2.3423});
+    Vector<int> v0;
+    const int s1 = 322342;
+    const float s2 = 25873.1415f;
+    const double s3 = 543.5644345;
+    CheckScalerVectorSubtraction(s1, v1);
+    CheckScalerVectorSubtraction(s2, v1);
+    CheckScalerVectorSubtraction(s3, v1);
+    CheckScalerVectorSubtraction(s1, v2);
+    CheckScalerVectorSubtraction(s2, v2);
+    CheckScalerVectorSubtraction(s3, v2);
+    CheckScalerVectorSubtraction(s1, v3);
+    CheckScalerVectorSubtraction(s2, v3);
+    CheckScalerVectorSubtraction(s3, v3);
+    CheckScalerVectorSubtraction(s1, v4);
+    CheckScalerVectorSubtraction(s2, v4);
+    CheckScalerVectorSubtraction(s3, v4);
+    CheckScalerVectorSubtraction(s1, v0);
+}
+
+template <class T, class Scaler>
+void CheckScalerVectorMultiplication(const Scaler &s, const Vector<T> &v)
+{
+    if (v.Size() == 0)
+    {
+        EXPECT_THROW(
+            try {
+                s *v;
+            } catch (const Exceptions::EmptyVector &e) {
+                std::stringstream ss;
+                ss << "Vector: Cannot perform scaling on an empty vector.";
+                EXPECT_TRUE(e.what() == ss.str());
+                throw e;
+            },
+            Exceptions::EmptyVector);
+        return;
+    }
+    const auto result = s * v;
+    for (std::size_t i = 0; i < v.Dimension(); i++)
+        EXPECT_DOUBLE_EQ(s * v[i], result[i]);
+}
+
+TEST(Vector, ScalerVectorMultiplication)
+{
+    Vector<int> v1({-34, 243, -7435, 4554, -4});
+    Vector<int> v2({96, -234, 12, -43, 56, -89, 6, 64, 934});
+    Vector<float> v3({-103.1454f, 13.2f, -75.32f, 74.3f, -23.234f, 67.f, 53.3f, 434.f, 23.565});
+    Vector<double> v4({23.435, -1.24454, -421.55676, -403.3, 324.0, 23.0324, -7.45455, 0.4485, 71.756, 42.3423});
+    Vector<int> v0;
+    const int s1 = -234;
+    const float s2 = 34.4378;
+    const double s3 = 905.2345;
+    CheckScalerVectorMultiplication(s1, v1);
+    CheckScalerVectorMultiplication(s2, v1);
+    CheckScalerVectorMultiplication(s3, v1);
+    CheckScalerVectorMultiplication(s1, v2);
+    CheckScalerVectorMultiplication(s2, v2);
+    CheckScalerVectorMultiplication(s3, v2);
+    CheckScalerVectorMultiplication(s1, v3);
+    CheckScalerVectorMultiplication(s2, v3);
+    CheckScalerVectorMultiplication(s3, v3);
+    CheckScalerVectorMultiplication(s1, v4);
+    CheckScalerVectorMultiplication(s2, v4);
+    CheckScalerVectorMultiplication(s3, v4);
+    CheckScalerVectorMultiplication(s3, v0);
+}
+
+template <class T, class Scaler>
+void CheckScalerVectorDivision(const Scaler &s, const Vector<T> &v)
+{
+    if (v.Size() == 0)
+    {
+        EXPECT_THROW(
+            try {
+                s / v;
+            } catch (const Exceptions::EmptyVector &e) {
+                std::stringstream ss;
+                ss << "Vector: Cannot perform element-wise division on an empty vector.";
+                EXPECT_TRUE(e.what() == ss.str());
+                throw e;
+            },
+            Exceptions::EmptyVector);
+        return;
+    }
+    bool hasZero = false;
+    for (std::size_t i = 0; i < v.Dimension(); i++)
+        if (v[i] == 0)
+        {
+            hasZero = true;
+            break;
+        }
+    if (hasZero)
+    {
+        EXPECT_THROW(
+            try {
+                s / v;
+            } catch (const Exceptions::DividedByZero &e) {
+                std::stringstream ss;
+                ss << "Division by zero occurred.\nVector: Expect none of the elements of the second operand to be 0 when performing"
+                      "element-wise division.";
+                std::cout << e.what() << std::endl;
+                EXPECT_TRUE(e.what() == ss.str());
+                throw e;
+            },
+            Exceptions::DividedByZero);
+        return;
+    }
+    const auto result = s / v;
+    for (std::size_t i = 0; i < v.Size(); i++)
+        EXPECT_DOUBLE_EQ(s / v[i], result[i]);
+}
+
+TEST(Vector, ScalerVectorDivision)
+{
+    Vector<int> v1({-4542, 34856, 7435, 438, -2594});
+    Vector<int> v2({96, -234, 34534, 89063, 24189, -2856, 6, 805325, 934});
+    Vector<float> v3({-5636.1454f, 243.2f, -582.32f, 874.3f, 23.234f, 1540.f, 332.3f, 6800450.f, 23.34532f});
+    Vector<double> v4({23.435, -1.24454, -923.55676, -964.3, 0.0, 23.0324, -7.45455, 0.4485, 1.2323, 2.3423});
+    Vector<int> v0;
+    const int s1 = -12;
+    const float s2 = 525873.631415f;
+    const double s3 = 454453.885644345;
+    const int s0 = 0;
+    CheckScalerVectorDivision(s1, v1);
+    CheckScalerVectorDivision(s2, v1);
+    CheckScalerVectorDivision(s3, v1);
+    CheckScalerVectorDivision(s0, v1);
+    CheckScalerVectorDivision(s1, v2);
+    CheckScalerVectorDivision(s2, v2);
+    CheckScalerVectorDivision(s3, v2);
+    CheckScalerVectorDivision(s0, v2);
+    CheckScalerVectorDivision(s1, v3);
+    CheckScalerVectorDivision(s2, v3);
+    CheckScalerVectorDivision(s3, v3);
+    CheckScalerVectorDivision(s0, v3);
+    CheckScalerVectorDivision(s1, v4);
+    CheckScalerVectorDivision(s2, v4);
+    CheckScalerVectorDivision(s3, v4);
+    CheckScalerVectorDivision(s0, v4);
+    CheckScalerVectorDivision(s3, v0);
+    CheckScalerVectorDivision(s0, v0);
 }
