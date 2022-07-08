@@ -2293,7 +2293,6 @@ void CheckScalerVectorDivision(const Scaler &s, const Vector<T> &v)
                 std::stringstream ss;
                 ss << "Division by zero occurred.\nVector: Expect none of the elements of the second operand to be 0 when performing"
                       "element-wise division.";
-                std::cout << e.what() << std::endl;
                 EXPECT_TRUE(e.what() == ss.str());
                 throw e;
             },
