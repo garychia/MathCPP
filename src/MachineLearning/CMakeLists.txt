@@ -28,7 +28,8 @@ target_include_directories(MathCPPML PUBLIC
         ${CMAKE_SOURCE_DIR}/src/DataStructures
         ${CMAKE_SOURCE_DIR}/src/Exceptions
         ${CMAKE_SOURCE_DIR}/src/MachineLearning
-        ${CMAKE_SOURCE_DIR}/src/Misc)
+        ${CMAKE_SOURCE_DIR}/src/Misc
+        ${CMAKE_SOURCE_DIR}/src/MathCUDA)
 
 if (MSVC)
     target_compile_options(MathCPPML PUBLIC "/openmp:llvm")
