@@ -15,32 +15,37 @@ namespace MachineLearning
         this->input = input;
         const auto batchSize = input.Shape()[1];
         mean = input.Sum(false) / batchSize;
-        variance = (input - mean).Map([](const double &e)
-                                      { return e * e; })
+        variance = (input - mean)
+                       .Map([](const double &e)
+                            { return e * e; })
                        .Sum(false)
                        .Divide(batchSize);
         normalized =
             (input - mean) /
             variance.Map([](const double &e)
                          { return Math::Power(e, 0.5) + EPSILON; });
-        this->output = normalized * scale + shift;
+        this->output = normalized.Scale(scale) + shift;
         return this->output;
     }
 
     Matrix<double> BatchNormLayer::Backward(const Matrix<double> &derivative)
     {
-        this->dScale = (derivative * normalized).Sum(false);
+        this->dScale = derivative.Scale(normalized).Sum(false);
         this->dShift = derivative.Sum(false);
         const auto batchSize = this->input.Shape()[1];
         const auto inversedSTD = variance.Map([](const double &e)
                                               { return Math::Power(e, -0.5) + EPSILON; });
         const auto inputMeanDiff = this->input - mean;
-        const auto dNorm = derivative * this->scale;
-        const auto dVariance = 
-            dNorm * inputMeanDiff *
-            -0.5 * inversedSTD.Map([](const double &e) { return e * e * e; }).Sum(false);
-        const auto dMean = (dNorm * -1 * inversedSTD).Sum(false) + dVariance * (- 2 / batchSize) * inputMeanDiff.Sum(false);
-        const auto dInput = dNorm * inversedSTD + dVariance * 2 / batchSize * inputMeanDiff + mean / batchSize;
+        const auto dNorm = derivative.Scale(this->scale);
+        const auto dVariance = dNorm
+                                   .Scale(inputMeanDiff)
+                                   .Scale(-0.5 * inversedSTD.Map([](const double &e)
+                                                                 { return e * e * e; }))
+
+                                   .Sum(false);
+        const auto dNormInversedSTDProduct = dNorm.Scale(inversedSTD);
+        const auto dMean = (dNormInversedSTDProduct * -1).Sum(false) + (dVariance * (-2 / batchSize)).Scale(inputMeanDiff.Sum(false));
+        const auto dInput = inputMeanDiff.Scale(dVariance * 2 / batchSize) + dNormInversedSTDProduct + mean / batchSize;
         return dInput;
     }
 
