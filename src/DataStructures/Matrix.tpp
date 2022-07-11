@@ -261,8 +261,7 @@ namespace DataStructures
         {
             std::stringstream errorMessageStream;
             errorMessageStream
-                << "Expected the numbers of rows and columns of the second matrix"
-                   " to be factors of these of the first matrix.";
+                << "Matrix: Expected the shape of the second operand to be a factor of the first one when performing matrix addition.";
             throw Exceptions::MatrixShapeMismatch(
                 thisShape,
                 otherShape,
@@ -314,8 +313,8 @@ namespace DataStructures
         {
             std::stringstream errorMessageStream;
             errorMessageStream
-                << "Expected the numbers of rows and columns of the second matrix"
-                   " to be factors of these of the first matrix."
+                << "Matrix: Expected the shape of the second operand to be a factor "
+                   "of that of the first one when performing matrix addition."
                 << std::endl;
             throw Exceptions::MatrixShapeMismatch(
                 thisShape,
@@ -345,8 +344,8 @@ namespace DataStructures
         {
             std::stringstream errorMessageStream;
             errorMessageStream
-                << "Expected the numbers of rows and columns of the second matrix"
-                   " to be factors of these of the first matrix."
+                << "Matrix: Expected the shape of the second operand to be a factor "
+                   "of that of the first operand when performing matrix subtraction."
                 << std::endl;
             throw Exceptions::MatrixShapeMismatch(
                 thisShape,
@@ -399,7 +398,7 @@ namespace DataStructures
         {
             std::stringstream errorMessageStream;
             errorMessageStream
-                << "Expected the numbers of rows and columns of the second matrix"
+                << "Matrix: Expected the numbers of rows and columns of the second matrix"
                    " to be factors of these of the first matrix."
                 << std::endl;
             throw Exceptions::MatrixShapeMismatch(
@@ -432,7 +431,7 @@ namespace DataStructures
             errorMessageStream
                 << "Expected number of rows of the target matrix to be "
                 << thisShape[1]
-                << ".";
+                << " when performing matrix multiplication.";
             throw Exceptions::MatrixShapeMismatch(
                 thisShape,
                 otherShape,
@@ -479,7 +478,7 @@ namespace DataStructures
     {
         if (this->IsEmpty())
             throw Exceptions::EmptyMatrix(
-                "Matrix: Cannot perform scaling on an empty matrix.");
+                "Matrix: Cannot perform scaling on an empty matrix when performing matrix scaling.");
 
         Matrix<decltype((*this)[0][0] * scaler)> result(*this);
 #pragma omp parallel for schedule(dynamic)
@@ -501,12 +500,12 @@ namespace DataStructures
 
         const auto otherShape = other.Shape();
         const auto thisShape = Shape();
-        if (thisShape != otherShape)
+        if (thisShape[0] % otherShape[0] != 0 || thisShape[1] % otherShape[1] != 0)
         {
             std::stringstream errorMessageStream;
             errorMessageStream
-                << "Expected two matrices have the same shape when performing "
-                   "element-wise scaling.";
+                << "Matrix: Expected the shape of the second operand to be a factor"
+                   " of the first one when performing matrix scaling.";
             throw Exceptions::MatrixShapeMismatch(
                 thisShape,
                 otherShape,
@@ -516,7 +515,7 @@ namespace DataStructures
         Matrix<decltype((*this)[0][0] * other[0][0])> result(*this);
 #pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < nRows; i++)
-            result[i] *= other[i];
+            result[i] *= other[i % otherShape[0]];
         return result;
     }
 
@@ -775,7 +774,10 @@ namespace DataStructures
     template <class ReturnType>
     ReturnType Matrix<T>::FrobeniusNorm() const
     {
-        return Math::Power<T, double>(Map([](const T &e) { return e * e; }).SumAll(), 0.5);
+        return Math::Power<T, double>(Map([](const T &e)
+                                          { return e * e; })
+                                          .SumAll(),
+                                      0.5);
     }
 
     template <class T>
