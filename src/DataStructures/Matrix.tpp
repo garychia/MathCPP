@@ -792,6 +792,49 @@ namespace DataStructures
     }
 
     template <class T>
+    void Matrix<T>::Eliminate()
+    {
+        for (std::size_t currentRow = 0; currentRow < nRows; currentRow++)
+        {
+            std::size_t maxRow = currentRow;
+            if (!(*this)[maxRow][currentRow])
+            {
+                for (std::size_t i = maxRow + 1; i < nRows; i++)
+                {
+                    if (Math::Abs((*this)[i][currentRow]) > Math::Abs((*this)[maxRow][currentRow]))
+                        maxRow = i;
+                }
+            }
+            if (!(*this)[maxRow][currentRow])
+                continue;
+            if (currentRow != maxRow)
+            {
+                for (std::size_t i = 0; i < nColumns; i++)
+                {
+                    auto temp = (*this)[maxRow][i];
+                    (*this)[maxRow][i] = (*this)[currentRow][i];
+                    (*this)[currentRow][i] = temp;
+                }
+            }
+            for (std::size_t row = currentRow + 1; row < nRows; row++)
+            {
+                const double factor = (*this)[row][currentRow] / (*this)[currentRow][currentRow];
+                (*this)[row] -= (*this)[currentRow] * factor;
+                (*this)[row][currentRow] = 0;
+            }
+        }
+    }
+
+    template <class T>
+    template <class OutputType>
+    Matrix<OutputType> Matrix<T>::Eliminated() const
+    {
+        Matrix<OutputType> result(*this);
+        result.Eliminate();
+        return result;
+    }
+
+    template <class T>
     Matrix<T> Matrix<T>::Identity(std::size_t n)
     {
         if (n == 0)

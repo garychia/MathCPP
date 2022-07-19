@@ -14,6 +14,12 @@
 namespace Math
 {
     template <class T>
+    T Abs(const T &value)
+    {
+        return ABS(value);
+    }
+
+    template <class T>
     T Exponent(const T &x)
     {
         if (x == 0)

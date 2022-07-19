@@ -367,6 +367,18 @@ namespace DataStructures
         template <class MapFunction>
         auto Map(MapFunction &&f) const;
 
+        /**
+         * Performs the Gaussian elimination on this Matrix inplace.
+         **/
+        void Eliminate();
+
+        /**
+         * Performs the Gaussian elimination on this Matrix.
+         * @return the result of the Gaussian elimination.
+         **/
+        template <class OutputType>
+        Matrix<OutputType> Eliminated() const;
+
         /*
         Constructs an identity matrix.
         @param n the size of the identity matrix to be generated.

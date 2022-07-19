@@ -14,6 +14,14 @@ using namespace DataStructures;
 
 namespace Math
 {
+    /**
+     * Computes the absolute value of a given value.
+     * @param value a number.
+     * @return the absolute value.
+     **/
+    template <class T>
+    T Abs(const T &value);
+
     /*
     Calculates the value of exponential e raised to a given number.
     @param x the power.
