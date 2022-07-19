@@ -7,7 +7,8 @@ target_include_directories(Misc PUBLIC
     ${PROJECT_SOURCE_DIR}/src/DataStructures
     ${PROJECT_SOURCE_DIR}/src/Exceptions
     ${PROJECT_SOURCE_DIR}/src/MachineLearning
-    ${PROJECT_SOURCE_DIR}/src/Misc)
+    ${PROJECT_SOURCE_DIR}/src/Misc
+    ${PROJECT_SOURCE_DIR}/src/MathCUDA)
 
 find_package(OpenMP)
 if(OpenMP_CXX_FOUND)
