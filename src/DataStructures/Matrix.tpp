@@ -838,11 +838,11 @@ namespace DataStructures
 
     template <class T>
     template <class OutputType>
-    Matrix<OutputType> Matrix<T>::Eliminated() const
+    Tuple<Matrix<OutputType>> Matrix<T>::Eliminated() const
     {
         Matrix<OutputType> result(*this);
-        result.Eliminate();
-        return result;
+        auto eliminationMatrix = result.Eliminate();
+        return { result, eliminationMatrix };
     }
 
     template <class T>

@@ -375,10 +375,11 @@ namespace DataStructures
 
         /**
          * Performs the Gaussian elimination on this Matrix.
-         * @return the result of the Gaussian elimination.
+         * @return a Tuple of the result of the Gaussian elimination and
+         * the elimination matrix.
          **/
         template <class OutputType>
-        Matrix<OutputType> Eliminated() const;
+        Tuple<Matrix<OutputType>> Eliminated() const;
 
         /*
         Constructs an identity matrix.
