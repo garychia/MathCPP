@@ -369,8 +369,9 @@ namespace DataStructures
 
         /**
          * Performs the Gaussian elimination on this Matrix inplace.
+         * @return the elimination matrix.
          **/
-        void Eliminate();
+        Matrix<T> Eliminate();
 
         /**
          * Performs the Gaussian elimination on this Matrix.

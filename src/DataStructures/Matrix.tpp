@@ -792,8 +792,9 @@ namespace DataStructures
     }
 
     template <class T>
-    void Matrix<T>::Eliminate()
+    Matrix<T> Matrix<T>::Eliminate()
     {
+        Matrix<T> eliminationMatrix = Matrix<T>::Identity(nRows);
         for (std::size_t currentRow = 0; currentRow < nRows; currentRow++)
         {
             std::size_t maxRow = currentRow;
@@ -815,14 +816,24 @@ namespace DataStructures
                     (*this)[maxRow][i] = (*this)[currentRow][i];
                     (*this)[currentRow][i] = temp;
                 }
+                Matrix<T> permutationMatrix = Matrix<T>::Identity(nRows);
+                permutationMatrix[currentRow][currentRow] = 0;
+                permutationMatrix[currentRow][maxRow] = 1;
+                permutationMatrix[maxRow][maxRow] = 0;
+                permutationMatrix[maxRow][currentRow] = 1;
+                eliminationMatrix = permutationMatrix.Multiply(eliminationMatrix);
             }
+            Matrix<T> subEliminationMatrix = Matrix<T>::Identity(nRows);
             for (std::size_t row = currentRow + 1; row < nRows; row++)
             {
                 const double factor = (*this)[row][currentRow] / (*this)[currentRow][currentRow];
                 (*this)[row] -= (*this)[currentRow] * factor;
                 (*this)[row][currentRow] = 0;
+                subEliminationMatrix[row][currentRow] = -factor;
             }
+            eliminationMatrix = subEliminationMatrix.Multiply(eliminationMatrix);
         }
+        return eliminationMatrix;
     }
 
     template <class T>
