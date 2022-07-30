@@ -795,19 +795,23 @@ namespace DataStructures
     Matrix<T> Matrix<T>::Eliminate()
     {
         Matrix<T> eliminationMatrix = Matrix<T>::Identity(nRows);
-        for (std::size_t currentRow = 0; currentRow < nRows; currentRow++)
+        std::size_t currentRow = 0;
+        std::size_t currentCol = 0;
+        while (currentRow < nRows && currentCol < nColumns)
         {
             std::size_t maxRow = currentRow;
-            if (!(*this)[maxRow][currentRow])
+            if (!(*this)[maxRow][currentCol])
             {
                 for (std::size_t i = maxRow + 1; i < nRows; i++)
                 {
-                    if (Math::Abs((*this)[i][currentRow]) > Math::Abs((*this)[maxRow][currentRow]))
+                    if (Math::Abs((*this)[i][currentCol]) > Math::Abs((*this)[maxRow][currentCol]))
                         maxRow = i;
                 }
             }
-            if (!(*this)[maxRow][currentRow])
+            if (!(*this)[maxRow][currentCol]) {
+                currentCol++;
                 continue;
+            }
             if (currentRow != maxRow)
             {
                 for (std::size_t i = 0; i < nColumns; i++)
@@ -826,12 +830,14 @@ namespace DataStructures
             Matrix<T> subEliminationMatrix = Matrix<T>::Identity(nRows);
             for (std::size_t row = currentRow + 1; row < nRows; row++)
             {
-                const double factor = (*this)[row][currentRow] / (*this)[currentRow][currentRow];
+                const double factor = (*this)[row][currentCol] / (*this)[currentRow][currentCol];
                 (*this)[row] -= (*this)[currentRow] * factor;
-                (*this)[row][currentRow] = 0;
+                (*this)[row][currentCol] = 0;
                 subEliminationMatrix[row][currentRow] = -factor;
             }
             eliminationMatrix = subEliminationMatrix.Multiply(eliminationMatrix);
+            currentRow++;
+            currentCol++;
         }
         return eliminationMatrix;
     }
