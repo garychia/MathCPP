@@ -12,35 +12,85 @@
 namespace DataStructures
 {
     template <class T>
+    void Vector<T>::copyCPUDataToGPU()
+    {
+        cudaArray = CUDAArray<T>(this->size, this->data);
+    }
+
+    template <class T>
+    void Vector<T>::copyGPUDataToCPU()
+    {
+        cudaArray.CopyToCPU(this->data);
+    }
+
+    template <class T>
     Vector<T>::Vector() : Tuple<T>() {}
 
     template <class T>
-    Vector<T>::Vector(std::size_t s, const T &value) : Tuple<T>(s, value) {}
+    Vector<T>::Vector(std::size_t s, const T &value) : Tuple<T>(s, value)
+    {
+#ifdef __CUDA_ENABLED__
+        copyCPUDataToGPU();
+#endif
+    }
 
     template <class T>
-    Vector<T>::Vector(const std::initializer_list<T> &l) : Tuple<T>(l) {}
+    Vector<T>::Vector(const std::initializer_list<T> &l) : Tuple<T>(l)
+    {
+#ifdef __CUDA_ENABLED__
+        copyCPUDataToGPU();
+#endif
+    }
 
     template <class T>
     template <std::size_t N>
-    Vector<T>::Vector(const std::array<T, N> &arr) : Tuple<T>(arr) {}
+    Vector<T>::Vector(const std::array<T, N> &arr) : Tuple<T>(arr)
+    {
+#ifdef __CUDA_ENABLED__
+        copyCPUDataToGPU();
+#endif
+    }
 
     template <class T>
-    Vector<T>::Vector(const std::vector<T> &v) : Tuple<T>(v) {}
+    Vector<T>::Vector(const std::vector<T> &v) : Tuple<T>(v)
+    {
+#ifdef __CUDA_ENABLED__
+        copyCPUDataToGPU();
+#endif
+    }
 
     template <class T>
-    Vector<T>::Vector(const Container<T> &other) : Tuple<T>(other) {}
+    Vector<T>::Vector(const Container<T> &other) : Tuple<T>(other)
+    {
+#ifdef __CUDA_ENABLED__
+        cudaArray = other.cudaArray;
+#endif
+    }
 
     template <class T>
     template <class OtherType>
-    Vector<T>::Vector(const Container<OtherType> &other) : Tuple<T>(other) {}
+    Vector<T>::Vector(const Container<OtherType> &other) : Tuple<T>(other)
+    {
+#ifdef __CUDA_ENABLED__
+        copyCPUDataToGPU();
+#endif
+    }
 
     template <class T>
-    Vector<T>::Vector(Container<T> &&other) : Tuple<T>(other) {}
+    Vector<T>::Vector(Container<T> &&other) : Tuple<T>(other)
+    {
+#ifdef __CUDA_ENABLED__
+        cudaArray = std::move(other.cudaArray);
+#endif
+    }
 
     template <class T>
     Vector<T> &Vector<T>::operator=(const Container<T> &other)
     {
         Tuple<T>::operator=(other);
+#ifdef __CUDA_ENABLED__
+        copyCPUDataToGPU();
+#endif
         return *this;
     }
 
@@ -49,6 +99,9 @@ namespace DataStructures
     Vector<T> &Vector<T>::operator=(const Container<OtherType> &other)
     {
         Tuple<T>::operator=(other);
+#ifdef __CUDA_ENABLED__
+        copyCPUDataToGPU();
+#endif
         return *this;
     }
 
@@ -126,7 +179,13 @@ namespace DataStructures
 #ifdef __CUDA_ENABLED__
 #pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < Dimension(); i += other.Dimension())
-            CudaHelpers::AddWithTwoArrays(&result[i], &(*this)[i], other.data, other.Dimension());
+            CudaHelpers::AddWithTwoGPUArrays(
+                &result.cudaArray.GetGPUPtr()[i],
+                &this->cudaArray.GetGPUPtr()[i],
+                other.cudaArray.GetGPUPtr(),
+                other.Dimension()
+            );
+        result.copyGPUDataToCPU();
 #else
 #pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < Dimension(); i++)
@@ -144,7 +203,8 @@ namespace DataStructures
                 "Vector: Cannot perform addition on an empty vector.");
         Vector<decltype(this->data[0] + scaler)> result(*this);
 #ifdef __CUDA_ENABLED__
-        CudaHelpers::AddWithArrayScaler(&result[0], &(*this)[0], scaler, result.Dimension());
+        CudaHelpers::AddWithGPUArrayScaler(result.cudaArray.GetGPUPtr(), this->cudaArray.GetGPUPtr(), scaler, result.Dimension());
+        result.copyGPUDataToCPU();
 #else
 #pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < Dimension(); i++)
@@ -181,7 +241,7 @@ namespace DataStructures
             throw Exceptions::InvalidArgument(
                 "Vector: Expected the dimension of the second operand to be a factor of that of the first operand.");
 #ifdef __CUDA_ENABLED__
-        *this = Add(other);
+        *this = std::move(Add(other));
 #else
 #pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < Dimension(); i++)
@@ -198,7 +258,7 @@ namespace DataStructures
             throw Exceptions::EmptyVector(
                 "Vector: Cannot perform addition on an empty vector.");
 #ifdef __CUDA_ENABLED__
-        *this = Add(scaler);
+        *this = std::move(Add(scaler));
 #else
 #pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < Dimension(); i++)
@@ -224,7 +284,8 @@ namespace DataStructures
 #ifdef __CUDA_ENABLED__
 #pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < Dimension(); i += other.Dimension())
-            CudaHelpers::SubtractWithTwoArrays(&result[i], &(*this)[i], other.data, other.Dimension());
+            CudaHelpers::SubtractWithTwoGPUArrays(&result.cudaArray.GetGPUPtr()[i], &cudaArray.GetGPUPtr()[i], other.cudaArray.GetGPUPtr(), other.Dimension());
+        result.copyGPUDataToCPU();
 #else
 #pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < Dimension(); i++)
@@ -242,7 +303,8 @@ namespace DataStructures
                 "Vector: Cannot perform subtraction on an empty vector.");
         Vector<decltype(this->data[0] - scaler)> result(*this);
 #ifdef __CUDA_ENABLED__
-        CudaHelpers::SubtractWithArrayScaler(&result[0], &(*this)[0], scaler, Dimension());
+        CudaHelpers::SubtractWithGPUArrayScaler(result.cudaArray.GetGPUPtr(), cudaArray.GetGPUPtr(), scaler, Dimension());
+        result.copyGPUDataToCPU();
 #else
 #pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < Dimension(); i++)
@@ -279,7 +341,7 @@ namespace DataStructures
             throw Exceptions::InvalidArgument(
                 "Vector: Expected the dimension of the second operand to be a factor of that of the first operand.");
 #ifdef __CUDA_ENABLED__
-        *this = Minus(other);
+        *this = std::move(Minus(other));
 #else
 #pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < Dimension(); i++)
@@ -296,7 +358,7 @@ namespace DataStructures
             throw Exceptions::EmptyVector(
                 "Vector: Cannot perform subtraction on an empty vector.");
 #ifdef __CUDA_ENABLED__
-        *this = Minus(scaler);
+        *this = std::move(Minus(scaler));
 #else
 #pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < Dimension(); i++)
@@ -314,7 +376,8 @@ namespace DataStructures
                 "Vector: Cannot perform scaling on an empty vector.");
         Vector<decltype(this->data[0] * scaler)> result(*this);
 #ifdef __CUDA_ENABLED__
-    CudaHelpers::MultiplyWithArrayScaler(&result[0], &(*this)[0], scaler, Dimension());
+        CudaHelpers::MultiplyWithGPUArrayScaler(result.cudaArray.GetGPUPtr(), cudaArray.GetGPUPtr(), scaler, Dimension());
+        result.copyGPUDataToCPU();
 #else
 #pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < Dimension(); i++)
@@ -340,7 +403,8 @@ namespace DataStructures
 #ifdef __CUDA_ENABLED__
 #pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < Dimension(); i += other.Dimension())
-            CudaHelpers::MultiplyWithTwoArrays(&result[i], &(*this)[i], other.data, other.Dimension());
+            CudaHelpers::MultiplyWithTwoGPUArrays(&result.cudaArray.GetGPUPtr()[i], &cudaArray.GetGPUPtr()[i], other.cudaArray.GetGPUPtr(), other.Dimension());
+        result.copyGPUDataToCPU();
 #else
 #pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < Dimension(); i++)
@@ -374,7 +438,8 @@ namespace DataStructures
 #ifdef __CUDA_ENABLED__
 #pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < Dimension(); i += other.Dimension())
-            CudaHelpers::MultiplyWithTwoArrays(&result[i], &(*this)[i], other.data, other.Dimension());
+            CudaHelpers::MultiplyWithTwoGPUArrays(&result.cudaArray.GetGPUPtr()[i], &cudaArray.GetGPUPtr()[i], other.cudaArray.GetGPUPtr(), other.Dimension());
+        result.copyGPUDataToCPU();
 #else
 #pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < this->size; i++)
@@ -391,7 +456,7 @@ namespace DataStructures
             throw Exceptions::EmptyVector(
                 "Vector: Cannot perform scaling on an empty vector.");
 #ifdef __CUDA_ENABLED__
-        *this = Scale(scaler);
+        *this = std::move(Scale(scaler));
 #else
 #pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < Dimension(); i++)
@@ -415,7 +480,7 @@ namespace DataStructures
                 "Vector: Expect the dimension of the second operand is a factor of that "
                 "of the first operand when performing element-wise multiplication.");
 #ifdef __CUDA_ENABLED__
-        *this = Scale(other);
+        *this = std::move(Scale(other));
 #else
 #pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < Dimension(); i++)
@@ -436,7 +501,8 @@ namespace DataStructures
                 "Vector: Cannot perform element-wise division as the second operand is 0.");
         Vector<decltype((*this)[0] / scaler)> result(*this);
 #ifdef __CUDA_ENABLED__
-    CudaHelpers::DivideWithArrayScaler(&result[0], &(*this)[0], scaler, Dimension());
+        CudaHelpers::DivideWithGPUArrayScaler(result.cudaArray.GetGPUPtr(), cudaArray.GetGPUPtr(), scaler, Dimension());
+        result.copyGPUDataToCPU();
 #else
 #pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < Dimension(); i++)
@@ -472,7 +538,8 @@ namespace DataStructures
         }
 #pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < Dimension(); i += vector.Dimension())
-            CudaHelpers::DivideWithTwoArrays(&result[i], &(*this)[i], vector.data, vector.Dimension());
+            CudaHelpers::DivideWithTwoGPUArrays(&result.cudaArray.GetGPUPtr()[i], &cudaArray.GetGPUPtr()[i], vector.cudaArray.GetGPUPtr(), vector.Dimension());
+        result.copyGPUDataToCPU();
 #else
 #pragma omp parallel for schedule(dynamic) private(j)
         for (std::size_t i = 0; i < Dimension(); i++)
@@ -512,7 +579,7 @@ namespace DataStructures
         else if (scaler == 0)
             throw Exceptions::DividedByZero("Vector: Cannot perform element-wise division as the second operand is 0.");
 #ifdef __CUDA_ENABLED__
-        *this = Divide(scaler);
+        *this = std::move(Divide(scaler));
 #else
 #pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < Dimension(); i++)
@@ -536,7 +603,7 @@ namespace DataStructures
                 "Vector: Cannot perform element-wise division. Expected the dimension of the "
                 "second operand to be a factor of that of the first operand.");
 #ifdef __CUDA_ENABLED__
-        *this = Divide(vector);
+        *this = std::move(Divide(vector));
 #else
 #pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < Dimension(); i++)
@@ -597,7 +664,8 @@ namespace DataStructures
     T Vector<T>::Sum() const
     {
         T total = 0;
-#pragma omp parallel for schedule(dynamic) reduction(+ : total)
+#pragma omp parallel for schedule(dynamic) reduction(+ \
+                                                     : total)
         for (std::size_t i = 0; i < this->size; i++)
             total += (*this)[i];
         return total;
@@ -611,6 +679,9 @@ namespace DataStructures
 #pragma omp parallel for schedule(dynamic)
         for (std::size_t i = 0; i < this->size; i++)
             result[i] = f(result[i]);
+#ifdef __CUDA_ENABLED__
+        result.copyCPUDataToGPU();
+#endif
         return result;
     }
 
@@ -636,6 +707,9 @@ namespace DataStructures
         for (auto vector : vectors)
             for (std::size_t j = 0; j < vector.Size(); j++)
                 combined[currentIndex++] = vector[j];
+#ifdef __CUDA_ENABLED__
+        combined.copyCPUDataToGPU();
+#endif
         return combined;
     }
 
@@ -643,10 +717,11 @@ namespace DataStructures
     auto operator+(const ScalerType &scaler, const Vector<T> &v)
     {
         Vector<decltype(scaler + v[0])> result(v);
-#ifdef __CUDA_ENABLED__
         if (v.Dimension() == 0)
             throw Exceptions::EmptyVector("Vector: Cannot perform addition on an empty vector.");
-        CudaHelpers::AddWithScalerArray(&result[0], scaler, &v[0], v.Dimension());
+#ifdef __CUDA_ENABLED__
+        CudaHelpers::AddWithScalerGPUArray(result.cudaArray.GetGPUPtr(), scaler, v.cudaArray.GetGPUPtr(), v.Dimension());
+        result.copyGPUDataToCPU();
 #else
 #pragma omp parallel for
         for (std::size_t i = 0; i < result.Dimension(); i++)
@@ -659,10 +734,11 @@ namespace DataStructures
     auto operator-(const ScalerType &scaler, const Vector<T> &v)
     {
         Vector<decltype(scaler - v[0])> result(v);
-#ifdef __CUDA_ENABLED__
         if (v.Dimension() == 0)
             throw Exceptions::EmptyVector("Vector: Cannot perform subtraction on an empty vector.");
-        CudaHelpers::SubtractWithScalerArray(&result[0], scaler, &v[0], v.Dimension());
+#ifdef __CUDA_ENABLED__
+        CudaHelpers::SubtractWithScalerGPUArray(result.cudaArray.GetGPUPtr() , scaler, v.cudaArray.GetGPUPtr(), v.Dimension());
+        result.copyGPUDataToCPU();
 #else
 #pragma omp parallel for
         for (std::size_t i = 0; i < result.Dimension(); i++)
@@ -675,10 +751,11 @@ namespace DataStructures
     auto operator*(const ScalerType &scaler, const Vector<T> &v)
     {
         Vector<decltype(scaler * v[0])> result(v);
-#ifdef __CUDA_ENABLED__
         if (v.Dimension() == 0)
             throw Exceptions::EmptyVector("Vector: Cannot perform scaling on an empty vector.");
-        CudaHelpers::MultiplyWithScalerArray(&result[0], scaler, &v[0], v.Dimension());
+#ifdef __CUDA_ENABLED__
+        CudaHelpers::MultiplyWithScalerGPUArray(result.cudaArray.GetGPUPtr(), scaler, v.cudaArray.GetGPUPtr(), v.Dimension());
+        result.copyGPUDataToCPU();
 #else
 #pragma omp parallel for
         for (std::size_t i = 0; i < result.Dimension(); i++)
@@ -691,9 +768,9 @@ namespace DataStructures
     auto operator/(const ScalerType &scaler, const Vector<T> &v)
     {
         Vector<decltype(scaler / v[0])> result(v);
-#ifdef __CUDA_ENABLED__
         if (v.Dimension() == 0)
             throw Exceptions::EmptyVector("Vector: Cannot perform element-wise division on an empty vector.");
+#ifdef __CUDA_ENABLED__
         for (std::size_t i = 0; i < v.Dimension(); i++)
         {
             if (v[i] == 0)
@@ -701,7 +778,8 @@ namespace DataStructures
                     "Vector: Expect none of the elements of the second operand to be 0 when performing"
                     "element-wise division.");
         }
-        CudaHelpers::DivideWithScalerArray(&result[0], scaler, &v[0], v.Dimension());
+        CudaHelpers::DivideWithScalerGPUArray(result.cudaArray.GetGPUPtr(), scaler, v.cudaArray.GetGPUPtr(), v.Dimension());
+        result.copyGPUDataToCPU();
 #else
 #pragma omp parallel for
         for (std::size_t i = 0; i < result.Dimension(); i++)

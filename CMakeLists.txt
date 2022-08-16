@@ -14,6 +14,7 @@ if(CMAKE_CUDA_COMPILER)
 	enable_language(CUDA)
     set(CMAKE_CUDA_STANDARD 14)
     add_compile_definitions(__CUDA_ENABLED__=1)
+    set(CMAKE_CUDA_FLAGS ${CMAKE_CUDA_FLAGS} "-g -G")
 endif()
 
 include(FetchContent)

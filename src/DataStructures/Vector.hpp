@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "Tuple.hpp"
+#include "CUDAArray.hpp"
 
 namespace DataStructures
 {
@@ -13,6 +14,15 @@ namespace DataStructures
     template <class T>
     class Vector : public Tuple<T>
     {
+#ifdef __CUDA_ENABLED__
+    private:
+        CUDAArray<T> cudaArray;
+
+        void copyCPUDataToGPU();
+
+        void copyGPUDataToCPU();
+
+#endif
     public:
         /* Constructor that Constructs an Empty Vector. */
         Vector();
@@ -429,6 +439,18 @@ namespace DataStructures
          * @return a Vector with the stacked elements.
          **/
         static Vector<T> Combine(const std::initializer_list<Vector<T>> &vectors);
+
+        template <class OtherType, class ScalerType>
+        friend auto operator+(const ScalerType& scaler, const Vector<OtherType>& v);
+
+        template <class OtherType, class ScalerType>
+        friend auto operator-(const ScalerType& scaler, const Vector<OtherType>& v);
+
+        template <class OtherType, class ScalerType>
+        friend auto operator*(const ScalerType& scaler, const Vector<OtherType>& v);
+
+        template <class OtherType, class ScalerType>
+        friend auto operator/(const ScalerType& scaler, const Vector<OtherType>& v);
 
         template <class OtherType>
         friend class Vector;

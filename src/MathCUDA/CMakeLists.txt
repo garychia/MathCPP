@@ -5,6 +5,7 @@ if(CMAKE_CUDA_COMPILER)
         ${PROJECT_SOURCE_DIR}/src/MathCUDA/CUDAUtilities.cu)
     set(CUDA_HEADERS
         ${PROJECT_SOURCE_DIR}/src/MathCUDA/ArithmeticOperations.cuh
+        ${PROJECT_SOURCE_DIR}/src/MathCUDA/GPUArray.cuh
         ${PROJECT_SOURCE_DIR}/src/MathCUDA/CUDAHelpers.hpp
         ${PROJECT_SOURCE_DIR}/src/MathCUDA/CUDAUtilities.cuh)
     add_library(MathCPPCUDA STATIC ${CUDA_SOURCES} ${CUDA_HEADERS})
