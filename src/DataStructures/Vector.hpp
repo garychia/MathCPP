@@ -6,7 +6,9 @@
 #include <vector>
 
 #include "Tuple.hpp"
+#ifdef __CUDA_ENABLED__
 #include "CUDAArray.hpp"
+#endif
 
 namespace DataStructures
 {

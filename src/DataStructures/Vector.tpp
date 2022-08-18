@@ -11,6 +11,7 @@
 
 namespace DataStructures
 {
+#ifdef __CUDA_ENABLED__
     template <class T>
     void Vector<T>::copyCPUDataToGPU()
     {
@@ -22,6 +23,7 @@ namespace DataStructures
     {
         cudaArray.CopyToCPU(this->data);
     }
+#endif
 
     template <class T>
     Vector<T>::Vector() : Tuple<T>() {}
