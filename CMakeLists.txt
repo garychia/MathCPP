@@ -47,7 +47,9 @@ set(DATASTRUCTURES_SOURCE_FILES
     ${PROJECT_SOURCE_DIR}/src/DataStructures/Vector.hpp
     ${PROJECT_SOURCE_DIR}/src/DataStructures/Vector.tpp
     ${PROJECT_SOURCE_DIR}/src/DataStructures/Vector3D.hpp
-    ${PROJECT_SOURCE_DIR}/src/DataStructures/Vector3D.tpp)
+    ${PROJECT_SOURCE_DIR}/src/DataStructures/Vector3D.tpp
+    ${PROJECT_SOURCE_DIR}/src/DataStructures/Quaternion.hpp
+    ${PROJECT_SOURCE_DIR}/src/DataStructures/Quaternion.tpp)
 
 add_executable(MathCPP application.cpp ${DATASTRUCTURES_SOURCE_FILES})
 target_include_directories(
