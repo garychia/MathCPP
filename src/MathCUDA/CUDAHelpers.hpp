@@ -41,25 +41,39 @@
 #define ARRAY_SCALER_FUNCTION_SIGNATURE(output_type, arr_type, scaler_type, func_name) \
     void func_name(output_type *dest, const arr_type *arr, const scaler_type scaler, std::size_t size)
 
-#define ARRAY_SCALER_FUNCTION_SIGNATURES(func_name)                                                 \
-    ARRAY_SCALER_FUNCTION_SIGNATURE(int, int, int, func_name);                                      \
-    ARRAY_SCALER_FUNCTION_SIGNATURE(float, float, float, func_name);                                \
-    ARRAY_SCALER_FUNCTION_SIGNATURE(double, double, double, func_name);                             \
-    TWO_TYPE_PERMUTATION_WITH_THREE_ARGS(ARRAY_SCALER_FUNCTION_SIGNATURE, int, float, func_name)    \
-    TWO_TYPE_PERMUTATION_WITH_THREE_ARGS(ARRAY_SCALER_FUNCTION_SIGNATURE, int, double, func_name)   \
-    TWO_TYPE_PERMUTATION_WITH_THREE_ARGS(ARRAY_SCALER_FUNCTION_SIGNATURE, float, double, func_name) \
+#define ARRAY_SCALER_FUNCTION_SIGNATURES(func_name)                                                                \
+    ARRAY_SCALER_FUNCTION_SIGNATURE(int, int, int, func_name);                                                     \
+    ARRAY_SCALER_FUNCTION_SIGNATURE(float, float, float, func_name);                                               \
+    ARRAY_SCALER_FUNCTION_SIGNATURE(double, double, double, func_name);                                            \
+    ARRAY_SCALER_FUNCTION_SIGNATURE(std::size_t, std::size_t, std::size_t, func_name);                             \
+    TWO_TYPE_PERMUTATION_WITH_THREE_ARGS(ARRAY_SCALER_FUNCTION_SIGNATURE, int, float, func_name)                   \
+    TWO_TYPE_PERMUTATION_WITH_THREE_ARGS(ARRAY_SCALER_FUNCTION_SIGNATURE, int, double, func_name)                  \
+    TWO_TYPE_PERMUTATION_WITH_THREE_ARGS(ARRAY_SCALER_FUNCTION_SIGNATURE, int, std::size_t, func_name)             \
+    TWO_TYPE_PERMUTATION_WITH_THREE_ARGS(ARRAY_SCALER_FUNCTION_SIGNATURE, float, double, func_name)                \
+    TWO_TYPE_PERMUTATION_WITH_THREE_ARGS(ARRAY_SCALER_FUNCTION_SIGNATURE, float, std::size_t, func_name)           \
+    TWO_TYPE_PERMUTATION_WITH_THREE_ARGS(ARRAY_SCALER_FUNCTION_SIGNATURE, double, std::size_t, func_name)          \
+    THREE_TYPE_PERMUTATION_WITH_THREE_ARGS(ARRAY_SCALER_FUNCTION_SIGNATURE, int, float, std::size_t, func_name)    \
+    THREE_TYPE_PERMUTATION_WITH_THREE_ARGS(ARRAY_SCALER_FUNCTION_SIGNATURE, int, std::size_t, double, func_name)   \
+    THREE_TYPE_PERMUTATION_WITH_THREE_ARGS(ARRAY_SCALER_FUNCTION_SIGNATURE, std::size_t, float, double, func_name) \
     THREE_TYPE_PERMUTATION_WITH_THREE_ARGS(ARRAY_SCALER_FUNCTION_SIGNATURE, int, float, double, func_name)
 
 #define SCALER_ARRAY_FUNCTION_SIGNATURE(output_type, scaler_type, arr_type, func_name) \
     void func_name(output_type *dest, const scaler_type scaler, const arr_type *arr, std::size_t size)
 
-#define SCALER_ARRAY_FUNCTION_SIGNATURES(func_name)                                                 \
-    SCALER_ARRAY_FUNCTION_SIGNATURE(int, int, int, func_name);                                      \
-    SCALER_ARRAY_FUNCTION_SIGNATURE(float, float, float, func_name);                                \
-    SCALER_ARRAY_FUNCTION_SIGNATURE(double, double, double, func_name);                             \
-    TWO_TYPE_PERMUTATION_WITH_THREE_ARGS(SCALER_ARRAY_FUNCTION_SIGNATURE, int, float, func_name)    \
-    TWO_TYPE_PERMUTATION_WITH_THREE_ARGS(SCALER_ARRAY_FUNCTION_SIGNATURE, int, double, func_name)   \
-    TWO_TYPE_PERMUTATION_WITH_THREE_ARGS(SCALER_ARRAY_FUNCTION_SIGNATURE, float, double, func_name) \
+#define SCALER_ARRAY_FUNCTION_SIGNATURES(func_name)                                                                \
+    SCALER_ARRAY_FUNCTION_SIGNATURE(int, int, int, func_name);                                                     \
+    SCALER_ARRAY_FUNCTION_SIGNATURE(float, float, float, func_name);                                               \
+    SCALER_ARRAY_FUNCTION_SIGNATURE(double, double, double, func_name);                                            \
+    SCALER_ARRAY_FUNCTION_SIGNATURE(std::size_t, std::size_t, std::size_t, func_name);                             \
+    TWO_TYPE_PERMUTATION_WITH_THREE_ARGS(SCALER_ARRAY_FUNCTION_SIGNATURE, int, float, func_name)                   \
+    TWO_TYPE_PERMUTATION_WITH_THREE_ARGS(SCALER_ARRAY_FUNCTION_SIGNATURE, int, double, func_name)                  \
+    TWO_TYPE_PERMUTATION_WITH_THREE_ARGS(SCALER_ARRAY_FUNCTION_SIGNATURE, int, std::size_t, func_name)             \
+    TWO_TYPE_PERMUTATION_WITH_THREE_ARGS(SCALER_ARRAY_FUNCTION_SIGNATURE, float, double, func_name)                \
+    TWO_TYPE_PERMUTATION_WITH_THREE_ARGS(SCALER_ARRAY_FUNCTION_SIGNATURE, float, std::size_t, func_name)           \
+    TWO_TYPE_PERMUTATION_WITH_THREE_ARGS(SCALER_ARRAY_FUNCTION_SIGNATURE, double, std::size_t, func_name)          \
+    THREE_TYPE_PERMUTATION_WITH_THREE_ARGS(SCALER_ARRAY_FUNCTION_SIGNATURE, int, float, std::size_t, func_name)    \
+    THREE_TYPE_PERMUTATION_WITH_THREE_ARGS(SCALER_ARRAY_FUNCTION_SIGNATURE, int, std::size_t, double, func_name)   \
+    THREE_TYPE_PERMUTATION_WITH_THREE_ARGS(SCALER_ARRAY_FUNCTION_SIGNATURE, std::size_t, float, double, func_name) \
     THREE_TYPE_PERMUTATION_WITH_THREE_ARGS(SCALER_ARRAY_FUNCTION_SIGNATURE, int, float, double, func_name)
 
 namespace CudaHelpers

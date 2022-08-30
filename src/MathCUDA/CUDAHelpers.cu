@@ -6,13 +6,20 @@
 
 #define MIN(a, b) (a) < (b) ? (a) : (b)
 
-#define FUNCTION_IMPLEMENTATIONS_WITH_THREE_TYPES(imple_macro, ...)                       \
-    EXPAND(imple_macro(int, int, int, __VA_ARGS__));                                      \
-    EXPAND(imple_macro(float, float, float, __VA_ARGS__));                                \
-    EXPAND(imple_macro(double, double, double, __VA_ARGS__));                             \
-    EXPAND(TWO_TYPE_PERMUTATION_WITH_THREE_ARGS(imple_macro, int, float, __VA_ARGS__))    \
-    EXPAND(TWO_TYPE_PERMUTATION_WITH_THREE_ARGS(imple_macro, int, double, __VA_ARGS__))   \
-    EXPAND(TWO_TYPE_PERMUTATION_WITH_THREE_ARGS(imple_macro, float, double, __VA_ARGS__)) \
+#define FUNCTION_IMPLEMENTATIONS_WITH_THREE_TYPES(imple_macro, ...)                                      \
+    EXPAND(imple_macro(int, int, int, __VA_ARGS__));                                                     \
+    EXPAND(imple_macro(float, float, float, __VA_ARGS__));                                               \
+    EXPAND(imple_macro(double, double, double, __VA_ARGS__));                                            \
+    EXPAND(imple_macro(std::size_t, std::size_t, std::size_t, __VA_ARGS__));                             \
+    EXPAND(TWO_TYPE_PERMUTATION_WITH_THREE_ARGS(imple_macro, int, float, __VA_ARGS__))                   \
+    EXPAND(TWO_TYPE_PERMUTATION_WITH_THREE_ARGS(imple_macro, int, double, __VA_ARGS__))                  \
+    EXPAND(TWO_TYPE_PERMUTATION_WITH_THREE_ARGS(imple_macro, int, std::size_t, __VA_ARGS__))             \
+    EXPAND(TWO_TYPE_PERMUTATION_WITH_THREE_ARGS(imple_macro, float, double, __VA_ARGS__))                \
+    EXPAND(TWO_TYPE_PERMUTATION_WITH_THREE_ARGS(imple_macro, float, std::size_t, __VA_ARGS__))           \
+    EXPAND(TWO_TYPE_PERMUTATION_WITH_THREE_ARGS(imple_macro, double, std::size_t, __VA_ARGS__))          \
+    EXPAND(THREE_TYPE_PERMUTATION_WITH_THREE_ARGS(imple_macro, int, float, std::size_t, __VA_ARGS__))    \
+    EXPAND(THREE_TYPE_PERMUTATION_WITH_THREE_ARGS(imple_macro, int, std::size_t, double, __VA_ARGS__))   \
+    EXPAND(THREE_TYPE_PERMUTATION_WITH_THREE_ARGS(imple_macro, std::size_t, float, double, __VA_ARGS__)) \
     EXPAND(THREE_TYPE_PERMUTATION_WITH_THREE_ARGS(imple_macro, int, float, double, __VA_ARGS__))
 
 #define GPU_ARRAY_POPULATE_FUNCTION_IMPLEMENTATION(func_name, arr_type, helper_func)      \
