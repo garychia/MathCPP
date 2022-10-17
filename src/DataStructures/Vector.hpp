@@ -34,7 +34,7 @@ namespace DataStructures
          * @param s the initial size of the Vector to be generated.
          * @param value the value the Vector will be filled with.
          **/
-        Vector(std::size_t s, const T &value);
+        Vector(std::size_t s, const T &value = 0);
 
         /**
          * Constructor with a std::initializer_list as Input.
