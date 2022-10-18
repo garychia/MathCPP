@@ -1,5 +1,7 @@
 #include "BatchNormLayer.hpp"
 
+#include "Math.hpp"
+
 namespace MachineLearning
 {
     BatchNormLayer::BatchNormLayer(std::size_t inputSize) : NeuralLayer(), mean(), variance(), normalized(), dScale(), dShift()

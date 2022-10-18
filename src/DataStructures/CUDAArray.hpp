@@ -53,10 +53,8 @@ namespace DataStructures
         Move Constructor
         @param other a CUDAArray to be moved.
         */
-        CUDAArray(CUDAArray<T> &&other)
+        CUDAArray(CUDAArray<T> &&other) noexcept : size(other.size), gpuData(other.gpuData)
         {
-            size = other.size;
-            gpuData = other.gpuData;
             other.size = 0;
             other.gpuData = nullptr;
         }
@@ -87,6 +85,17 @@ namespace DataStructures
             CheckCUDAStatus(cudaMalloc(&gpuData, sizeof(T) * size));
             CheckCUDAStatus(cudaMemcpy(gpuData, other.gpuData, sizeof(T) * size, cudaMemcpyDeviceToDevice));
             return *this;
+        }
+
+        virtual CUDAArray<T> &operator=(CUDAArray<T> &&other) {
+          if (gpuData)
+            CheckCUDAStatus(cudaFree(gpuData));
+          gpuData = nullptr;
+          size = other.size;
+          gpuData = other.gpuData;
+          other.size = 0;
+          other.gpuData = nullptr;
+          return *this;
         }
 
         /*

@@ -14,18 +14,20 @@ namespace DataStructures {
 /*
 Matrix class contains a collection of Vectors.
 */
-template <class T> class Matrix : public Vector<T> {
+template <class T> class Matrix {
 private:
   // the number of row vectors
-  std::size_t nRows;
+  size_t nRows;
   // the number of columns of each row vector.
-  std::size_t nColumns;
+  size_t nColumns;
+  // Elements of the matrix.
+  Vector<T> elements;
 
 public:
   /*
   Constructor that creates an empty matrix.
   */
-  Matrix() : Vector<T>(), nRows(0), nColumns(0) {}
+  Matrix() : elements(), nRows(0), nColumns(0) {}
 
   /*
   Constructor with the Number of Rows and Columns Specified.
@@ -33,8 +35,8 @@ public:
   @param numCoumns the number of columns.
   @param value the value, 0 by default, the Matrix will be filled with.
   */
-  Matrix(std::size_t numRows, std::size_t numColumns, T initialValue = 0)
-      : Vector<T>(numRows * numColmns, initialValue), nRows(numRows),
+  Matrix(size_t numRows, size_t numColumns, const T &initialValue = 0)
+      : elements(numRows * numColumns, initialValue), nRows(numRows),
         nColumns(numColumns) {}
 
   /*
@@ -44,14 +46,15 @@ public:
   different dimension.
   */
   Matrix(std::initializer_list<Vector<T>> l)
-      : Vector<T>(l.size() * l.begin()->Size()), nRows(l.size()),
+      : elements(l.size() * l.begin()->Size()), nRows(l.size()),
         nColumns(l.begin()->Size()) {
     auto itr = l.begin();
+    size_t i, j;
+#pragma omp parallel for private(j) collapse(2) schedule(dynamic)
     for (size_t i = 0; i < nRows; i++) {
       for (size_t j = 0; j < nColumns; j++) {
-        (*this)[i][j] = (*itr)[j];
+        (*this)[i][j] = (*(itr + i))[j];
       }
-      itr++;
     }
   }
 
@@ -62,16 +65,16 @@ public:
   @param column true if the resulting matrix wiil be a column vector.
   Otherwise, a row vector will be constructed.
   */
-  Matrix(std::initializer_list<T> l, bool column = true) : Vector<T>(l.size()) {
+  Matrix(std::initializer_list<T> l, bool column = true) : elements(l.size()) {
     nRows = column ? l.size() : 1;
     nColumns = column ? 1 : l.size();
     auto itr = l.begin();
+#pragma omp parallel for schedule(dynamic)
     for (size_t i = 0; i < l.size(); i++) {
       if (column)
-        (*this)[i][0] = *itr;
+        (*this)[i][0] = *(itr + i);
       else
-        (*this)[0][i] = *itr;
-      itr++;
+        (*this)[0][i] = *(itr + i);
     }
   }
 
@@ -79,12 +82,14 @@ public:
   Constructor with arrary as Input.
   @param arr an array that contains the row vectors this Matrix will store.
   */
-  template <std::size_t N>
+  template <size_t N>
   Matrix(const std::array<Vector<T>, N> &arr)
-      : Vector<T>(arr.size() * arr[0].Size()), nRows(arr.size()),
+      : elements(arr.size() * arr[0].Size()), nRows(arr.size()),
         nColumns(arr[0].Size()) {
-    for (size_t i = 0; i < nRows; i++) {
-      for (size_t j = 0; j < nColumns; j++) {
+    size_t i, j;
+#pragma omp parallel for private(j) collapse(2) schedule(dynamic)
+    for (i = 0; i < nRows; i++) {
+      for (j = 0; j < nColumns; j++) {
         (*this)[i][j] = arr[i][j];
       }
     }
@@ -95,7 +100,8 @@ public:
   @param l a List that contains the row vectors this Matrix will store.
   */
   Matrix(const List<Vector<T>> &l)
-      : Vector(l.Size() * l[0].Size()), nRows(l.Size()), nColumns(l[0].Size()) {
+      : elements(l.Size() * l[0].Size()), nRows(l.Size()),
+        nColumns(l[0].Size()) {
 #pragma omp parallel for private(j) collapse(2) schedule(dynamic)
     for (size_t i = 0; i < nRows; i++) {
       for (size_t j = 0; j < nColumns; j++) {
@@ -109,7 +115,7 @@ public:
   @param other a Matrix to be copied.
   */
   Matrix(const Matrix<T> &other)
-      : Vector<T>(other), nRows(other.nRows), nColumns(other.nColumns) {}
+      : elements(other.elements), nRows(other.nRows), nColumns(other.nColumns) {}
 
   /*
   Copy Constructor
@@ -117,14 +123,14 @@ public:
   */
   template <class OtherType>
   Matrix(const Matrix<OtherType> &other)
-      : Vector<T>(other), nRows(other.nRows), nColumns(other.nColumns) {}
+      : elements(other.elements), nRows(other.nRows), nColumns(other.nColumns) {}
 
   /*
   Move Constructor
   @param other a Matrix to be moved.
   */
   Matrix(Matrix<T> &&other)
-      : Vector<T>(other), nRows(other.nRows), nColumns(other.nColumns) {
+      : elements(std::move(other.elements)), nRows(other.nRows), nColumns(other.nColumns) {
     other.nRows = 0;
     other.nColumns = 0;
   }
@@ -135,7 +141,7 @@ public:
   */
   template <class OtherType>
   Matrix(Matrix<OtherType> &&other)
-      : Vector<T>(other), nRows(other.nRows), nColumns(other.nColumns) {
+      : elements(std::move(other.elements)), nRows(other.nRows), nColumns(other.nColumns) {
     other.nRows = 0;
     other.nColumns = 0;
   }
@@ -154,7 +160,9 @@ public:
   virtual Matrix<T> &operator=(Matrix<T> &&other) {
     nRows = other.nRows;
     nColumns = other.nColumns;
-    Vector<T>::operator=(other);
+    elements = std::move(other.elements);
+    other.nRows = 0;
+    other.nColumns = 0;
     return *this;
   }
 
@@ -163,8 +171,8 @@ public:
   @return the vector at the given index.
   @throw IndexOutOfBound when the index exceeds the greatest possible index.
   */
-  virtual T *operator[](const std::size_t &index) {
-    return &this->data[index * nRows];
+  virtual T *operator[](const size_t &index) {
+    return &elements[index * nColumns];
   }
 
   /*
@@ -172,22 +180,24 @@ public:
   @return the vector at the given index.
   @throw IndexOutOfBound when the index exceeds the greatest possible index.
   */
-  virtual const T *operator[](const std::size_t &index) const {
-    return &this->data[index * nRows];
+  virtual const T *operator[](const size_t &index) const {
+    return &elements[index * nColumns];
   }
 
   /*
-  Returns the number of row Vectors this Matrix stores.
-  @return the number of row Vectors this Matrix stores.
+  Returns the number of elements this Matrix stores.
+  @return the number of elements this Matrix stores.
   */
-  virtual std::size_t Size() const override { return nRows; }
+  virtual size_t Size() const { return nRows * nColumns; }
+
+  virtual bool IsEmpty() const { return elements.IsEmpty(); }
 
   /*
   Returns the shape of this Matrix.
   @return a Tuple that contains the numbers of rows and columns.
   */
-  Tuple<std::size_t> Shape() const {
-    return Tuple<std::size_t>({nRows, nColumns});
+  virtual Tuple<size_t> Shape() const {
+    return Tuple<size_t>({nRows, nColumns});
   }
 
   /*
@@ -219,10 +229,11 @@ public:
     }
 
     Matrix<decltype((*this)[0][0] + other[0][0])> result(*this);
+    size_t i, j;
 #pragma omp parallel for private(j) collapse(2) schedule(dynamic)
-    for (size_t i = 0; i < nRows; i++) {
-      for (size_t j = 0; j < nColumns; j++) {
-        result[i][j] += other[i][j];
+    for (i = 0; i < nRows; i++) {
+      for (j = 0; j < nColumns; j++) {
+        result[i][j] += other[i % other.nRows][j % other.nColumns];
       }
     }
     return result;
@@ -270,10 +281,11 @@ public:
       throw Exceptions::MatrixShapeMismatch(thisShape, otherShape,
                                             errorMessageStream.str());
     }
+    size_t i, j;
 #pragma omp parallel for private(j) collapse(2) schedule(dynamic)
-    for (size_t i = 0; i < nRows; i++) {
-      for (size_t j = 0; j < nColumns; j++) {
-        (*this)[i][j] += other[i][j];
+    for (i = 0; i < nRows; i++) {
+      for (j = 0; j < nColumns; j++) {
+        (*this)[i][j] += other[i % other.nRows][j % other.nColumns];
       }
     }
     return result;
@@ -310,9 +322,10 @@ public:
     }
 
     Matrix<decltype((*this)[0][0] + other[0][0])> result(*this);
+    size_t i, j;
 #pragma omp parallel for private(j) collapse(2) schedule(dynamic)
-    for (std::size_t i = 0; i < nRows; i++) {
-      for (size_t j = 0; j < nColumns; j++) {
+    for (i = 0; i < nRows; i++) {
+      for (j = 0; j < nColumns; j++) {
         result[i][j] -= other[i % other.nRows][j % other.nColumns];
       }
     }
@@ -362,9 +375,10 @@ public:
       throw Exceptions::MatrixShapeMismatch(thisShape, otherShape,
                                             errorMessageStream.str());
     }
+    size_t i, j;
 #pragma omp parallel for private(j) collapse(2) schedule(dynamic)
-    for (size_t i = 0; i < nRows; i++) {
-      for (size_t j = 0; j < nColumns; j++) {
+    for (i = 0; i < nRows; i++) {
+      for (j = 0; j < nColumns; j++) {
         (*this)[i][j] -= other[i % other.nRows][j % other.nColumns];
       }
     }
@@ -433,9 +447,10 @@ public:
   */
   auto Scale(const T &scaler) const {
     Matrix<decltype((*this)[0][0] * scaler)> result(*this);
+    size_t i, j;
 #pragma omp parallel for private(j) collapse(2) schedule(dynamic)
-    for (size_t i = 0; i < nRows; i++) {
-      for (size_t j = 0; j < nColumns; j++) {
+    for (i = 0; i < nRows; i++) {
+      for (j = 0; j < nColumns; j++) {
         result[i][j] *= scaler;
       }
     }
@@ -472,10 +487,11 @@ public:
     }
 
     Matrix<decltype((*this)[0][0] * other[0][0])> result(*this);
-#pragma omp parallel for schedule(dynamic)
-    for (size_t i = 0; i < nRows; i++) {
-      for (size_t j = 0; j < nColumns; j++) {
-        result[i][j] = other[i % other.nRows][j % other.nColumns];
+    size_t i, j;
+#pragma omp parallel for private(j) collapse(2) schedule(dynamic)
+    for (i = 0; i < nRows; i++) {
+      for (j = 0; j < nColumns; j++) {
+        result[i][j] *= other[i % other.nRows][j % other.nColumns];
       }
     }
     return result;
@@ -496,9 +512,10 @@ public:
   @throw EmptyMatrix when this matrix is empty.
   */
   Matrix<T> &operator*=(const T &scaler) {
+    size_t i, j;
 #pragma omp parallel for private(j) collapse(2) schedule(dynamic)
-    for (std::size_t i = 0; i < nRows; i++) {
-      for (size_t j = 0; j < nColumns; j++) {
+    for (i = 0; i < nRows; i++) {
+      for (j = 0; j < nColumns; j++) {
         (*this)[i][j] *= scaler;
       }
     }
@@ -530,9 +547,10 @@ public:
       throw Exceptions::MatrixShapeMismatch(thisShape, otherShape,
                                             errorMessageStream.str());
     }
+    size_t i, j;
 #pragma omp parallel for private(j) collapse(2) schedule(dynamic)
-    for (std::size_t i = 0; i < nRows; i++) {
-      for (size_t j = 0; j < nColumns; j++) {
+    for (i = 0; i < nRows; i++) {
+      for (j = 0; j < nColumns; j++) {
         (*this)[i][j] *= other[i % other.nRows][j % other.nColumns];
       }
     }
@@ -544,20 +562,17 @@ public:
   @param scaler a scaler.
   @return the result of the matrix element-wise division.
   @throw DividedByZero when the scaler is zero.
-  @throw EmptyMatrix when this matrix is empty.
   */
   template <class ScalerType> auto Divide(const ScalerType &scaler) const {
     if (scaler == 0)
       throw Exceptions::DividedByZero(
           "Matrix: Cannot perform element-wise division with zero.");
-    if (this->IsEmpty())
-      throw Exceptions::EmptyMatrix(
-          "Matrix: Cannot perform element-wise division on an empty matrix.");
 
     Matrix<decltype((*this)[0][0] * scaler)> result(*this);
+    size_t i, j;
 #pragma omp parallel for private(j) collapse(2) schedule(dynamic)
-    for (std::size_t i = 0; i < nRows; i++) {
-      for (size_t j = 0; j < nColumns; j++) {
+    for (i = 0; i < nRows; i++) {
+      for (j = 0; j < nColumns; j++) {
         result[i][j] /= scaler;
       }
     }
@@ -573,25 +588,26 @@ public:
   @throw InvalidArgument when broadcasting cannot be performed.
   */
   template <class OtherType>
-  auto Divide(const Matrix<OtherType> &matrix) const {
-    if (this->IsEmpty() || matrix.IsEmpty())
+  auto Divide(const Matrix<OtherType> &other) const {
+    if (IsEmpty() || other.IsEmpty())
       throw Exceptions::EmptyMatrix(
           "Matrix: Cannot perform element-wise division on an empty matrix.");
-    if (nRows % matrix.nRows != 0 || nColumns % matrix.nColumns != 0)
+    if (nRows % other.nRows != 0 || nColumns % other.nColumns != 0)
       throw Exceptions::InvalidArgument(
           "Matrix: The shape of the denominator matrix must be a factor of "
           "that of the numerator matrix.");
 
-    Matrix<decltype((*this)[0][0] * matrix[0][0])> result(*this);
-#pragma omp parallel for private(j) collapse(2) schedule(dynamic) private(j)
-    for (size_t i = 0; i < matrix.nRows; i++) {
-      for (size_t j = 0; j < matrix.nColumns; j++) {
-        if (matrix[i][j] == 0) {
+    Matrix<decltype((*this)[0][0] / other[0][0])> result(*this);
+    size_t i, j;
+#pragma omp parallel for private(j) collapse(2) schedule(dynamic)
+    for (i = 0; i < nRows; i++) {
+      for (j = 0; j < nColumns; j++) {
+        if (!other[i % other.nRows][j % other.nColumns]) {
           throw Exceptions::DividedByZero(
               "Matrix: Cannot perform element-wise division as there is a "
               "zero denominator.");
         }
-        result[i][j] /= matrix[i % matrix.nRows][j % matrix.nColumns];
+        result[i][j] /= other[i % other.nRows][j % other.nColumns];
       }
     }
     return result;
@@ -619,9 +635,10 @@ public:
       throw Exceptions::InvalidArgument(
           "Matrix: Cannot perform element-wise division with zero.");
 
+    size_t i, j;
 #pragma omp parallel for private(j) collapse(2) schedule(dynamic)
-    for (std::size_t i = 0; i < nRows; i++) {
-      for (size_t j = 0; j < nColumns; j++) {
+    for (i = 0; i < nRows; i++) {
+      for (j = 0; j < nColumns; j++) {
         (*this)[i][j] /= scaler;
       }
     }
@@ -632,12 +649,12 @@ public:
   Converts this Matrix to a string that shows the elements of this Matrix.
   @return a string that represents this Matrix.
   */
-  virtual std::string ToString() const override {
+  virtual std::string ToString() const {
     std::stringstream ss;
     ss << "[";
-    for (std::size_t i = 0; i < nRows; i++) {
+    for (size_t i = 0; i < nRows; i++) {
       ss << (i == 0 ? "[" : " [");
-      for (std::size_t j = 0; j < nColumns; j++) {
+      for (size_t j = 0; j < nColumns; j++) {
         ss << (*this)[i][j];
         if (j < nColumns - 1)
           ss << ", ";
@@ -656,10 +673,11 @@ public:
   Transposes this Matrix inplace.
   */
   void Transpose() {
+    size_t i, j;
 #pragma omp parallel for private(j) collapse(2) schedule(dynamic)
-    for (size_t i = 0; i < nRows; i++) {
-      for (size_t j = 0; j < nColumns; j++) {
-        std::swap(this->data[i * nRows  + j], this->data[j * nRows + i]);
+    for (i = 0; i < nRows; i++) {
+      for (j = i + 1; j < nColumns; j++) {
+        std::swap(elements[i * nColumns + j], elements[j * nRows + i]);
       }
     }
     std::swap(nRows, nColumns);
@@ -699,7 +717,7 @@ public:
    *@return the summation of the elements.
    */
   T SumAll() const {
-      return Vector<T>::Sum();
+      return elements.Sum();
   }
 
   /*
@@ -710,15 +728,18 @@ public:
   */
   Matrix<T> Sum(bool sumRows = true) const {
     Matrix<T> result(sumRows ? 1 : nRows, sumRows ? nColumns : 1);
+    size_t i, j;
     if (sumRows) {
+#pragma omp parallel for private(j) collapse(2) schedule(dynamic)
       for (size_t i = 0; i < nRows; i++) {
-        for (size_t j = 0; j < nColumns, j++) {
+        for (size_t j = 0; j < nColumns; j++) {
           result[0][j] += (*this)[i][j];
         }
       }
     } else {
+#pragma omp parallel for private(j) collapse(2) schedule(dynamic)
       for (size_t i = 0; i < nRows; i++) {
-        for (size_t j = 0; j < nColumns, j++) {
+        for (size_t j = 0; j < nColumns; j++) {
           result[i][0] += (*this)[i][j];
         }
       }
@@ -741,14 +762,9 @@ public:
   @param f a function that maps the value of an element to a new value.
   @return a new Matrix with the new values defined by f.
   */
-  template <class MapFunction> auto Map(MapFunction&& f) const {
+  template <class MapFunction> auto Map(MapFunction &&f) const {
     Matrix<T> result(*this);
-#pragma omp parallel for private(j) collapse(2) schedule(dynamic)
-    for (size_t i = 0; i < nRows; i++) {
-      for (size_t j = 0; j < nColumns; j++) {
-        result[i][j] = f(result[i][j]);
-      }
-    }
+    result.elements = result.elements.Map(std::forward<MapFunction>(f));
     return result;
   }
 
@@ -758,7 +774,7 @@ public:
   @return the identity matrix of size n.
   @throw InvalidArgument when n is non-positive.
   */
-  static Matrix<T> Identity(std::size_t n) {
+  static Matrix<T> Identity(size_t n) {
     Matrix<T> result(n, n);
 #pragma omp parallel for schedule(dynamic)
     for (size_t i = 0; i < n; i++)

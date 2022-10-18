@@ -35,17 +35,13 @@ set(DATASTRUCTURES_SOURCE_FILES
     ${PROJECT_SOURCE_DIR}/src/DataStructures/ComputationGraph.hpp
     ${PROJECT_SOURCE_DIR}/src/DataStructures/ComputationGraph.tpp
     ${PROJECT_SOURCE_DIR}/src/DataStructures/Container.hpp
-    ${PROJECT_SOURCE_DIR}/src/DataStructures/Container.tpp
     ${PROJECT_SOURCE_DIR}/src/DataStructures/List.hpp
     ${PROJECT_SOURCE_DIR}/src/DataStructures/List.tpp
     ${PROJECT_SOURCE_DIR}/src/DataStructures/Matrix.hpp
-    ${PROJECT_SOURCE_DIR}/src/DataStructures/Matrix.tpp
     ${PROJECT_SOURCE_DIR}/src/DataStructures/ScalerComputationGraph.hpp
     ${PROJECT_SOURCE_DIR}/src/DataStructures/ScalerComputationGraph.tpp
     ${PROJECT_SOURCE_DIR}/src/DataStructures/Tuple.hpp
-    ${PROJECT_SOURCE_DIR}/src/DataStructures/Tuple.tpp
     ${PROJECT_SOURCE_DIR}/src/DataStructures/Vector.hpp
-    ${PROJECT_SOURCE_DIR}/src/DataStructures/Vector.tpp
     ${PROJECT_SOURCE_DIR}/src/DataStructures/Vector3D.hpp
     ${PROJECT_SOURCE_DIR}/src/DataStructures/Vector3D.tpp)
 
