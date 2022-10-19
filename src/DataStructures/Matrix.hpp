@@ -115,7 +115,8 @@ public:
   @param other a Matrix to be copied.
   */
   Matrix(const Matrix<T> &other)
-      : elements(other.elements), nRows(other.nRows), nColumns(other.nColumns) {}
+      : elements(other.elements), nRows(other.nRows), nColumns(other.nColumns) {
+  }
 
   /*
   Copy Constructor
@@ -123,14 +124,16 @@ public:
   */
   template <class OtherType>
   Matrix(const Matrix<OtherType> &other)
-      : elements(other.elements), nRows(other.nRows), nColumns(other.nColumns) {}
+      : elements(other.elements), nRows(other.nRows), nColumns(other.nColumns) {
+  }
 
   /*
   Move Constructor
   @param other a Matrix to be moved.
   */
   Matrix(Matrix<T> &&other)
-      : elements(std::move(other.elements)), nRows(other.nRows), nColumns(other.nColumns) {
+      : elements(std::move(other.elements)), nRows(other.nRows),
+        nColumns(other.nColumns) {
     other.nRows = 0;
     other.nColumns = 0;
   }
@@ -141,7 +144,8 @@ public:
   */
   template <class OtherType>
   Matrix(Matrix<OtherType> &&other)
-      : elements(std::move(other.elements)), nRows(other.nRows), nColumns(other.nColumns) {
+      : elements(std::move(other.elements)), nRows(other.nRows),
+        nColumns(other.nColumns) {
     other.nRows = 0;
     other.nColumns = 0;
   }
@@ -587,8 +591,7 @@ public:
   @throw EmptyMatrix when this matrix is empty.
   @throw InvalidArgument when broadcasting cannot be performed.
   */
-  template <class OtherType>
-  auto Divide(const Matrix<OtherType> &other) const {
+  template <class OtherType> auto Divide(const Matrix<OtherType> &other) const {
     if (IsEmpty() || other.IsEmpty())
       throw Exceptions::EmptyMatrix(
           "Matrix: Cannot perform element-wise division on an empty matrix.");
@@ -716,9 +719,7 @@ public:
    *Calculate the summation of all the elements of this Matrix.
    *@return the summation of the elements.
    */
-  T SumAll() const {
-      return elements.Sum();
-  }
+  T SumAll() const { return elements.Sum(); }
 
   /*
   Calculate the summation of all the rows or columns of this Matrix.
@@ -802,7 +803,7 @@ public:
   @param deltas a translation vector.
   @return the translation matrix.
   */
-  static Matrix<T> Translation(const Vector<T>& deltas) {
+  static Matrix<T> Translation(const Vector<T> &deltas) {
     const size_t n = deltas.Dimension() + 1;
     auto result = Identity(n);
 #pragma omp parallel for schedule(dynamic)
@@ -816,7 +817,7 @@ public:
   @param factors a vector having the factors on each axis.
   @return the scaling matrix defined by factors.
   */
-  static Matrix<T> Scaling(const Vector<T>& factors) {
+  static Matrix<T> Scaling(const Vector<T> &factors) {
     const size_t n = factors.Dimension() + 1;
     auto result = Identity(n);
 #pragma omp parallel for schedule(dynamic)
@@ -843,7 +844,7 @@ public:
   @param axis a 3D vector that represents the axis to rotate around.
   @return the rotation matrix defined by radians.
   */
-  static Matrix<T> Rotation3D(const Vector<T>& axis, const T& radians) {
+  static Matrix<T> Rotation3D(const Vector<T> &axis, const T &radians) {
     if (axis.Dimension() != 3) {
       std::stringstream ss;
       ss << "Matrix: Rotation3D requires an axis defined in 3D space "
