@@ -6,160 +6,66 @@
 #include <vector>
 
 #include "Tuple.hpp"
-#ifdef __CUDA_ENABLED__
-#include "CUDAArray.hpp"
-#endif
 
 namespace DataStructures {
 /* A mutable Container of a fixed size that supports numerical operations. */
 template <class T> class Vector : public Tuple<T> {
-#ifdef __CUDA_ENABLED__
-private:
-  CUDAArray<T> cudaArray;
-
-  void copyCPUDataToGPU() { cudaArray = CUDAArray<T>(Size(), this->data); }
-
-  void copyGPUDataToCPU() { cudaArray.CopyToCPU(this->data); }
-
-#endif
 public:
   /* Constructor that Constructs an Empty Vector. */
-  Vector()
-      : Tuple<T>()
-#ifdef __CUDA_ENABLED__
-        ,
-        cudaArray()
-#endif
-  {
-  }
+  Vector() : Tuple<T>() {}
 
   /**
    * Constructor with Initial Size and a Value.
    * @param s the initial size of the Vector to be generated.
    * @param value the value the Vector will be filled with.
    **/
-  Vector(size_t s, const T &value = 0)
-      : Tuple<T>(s, value)
-#ifdef __CUDA_ENABLED__
-        ,
-        cudaArray()
-#endif
-  {
-#ifdef __CUDA_ENABLED__
-    copyCPUDataToGPU();
-#endif
-  }
+  Vector(size_t s, const T &value = 0) : Tuple<T>(s, value) {}
 
   /**
    * Constructor with a std::initializer_list as Input.
    * @param l a std::initializer_list that contains the elements the Vector will
    *store.
    **/
-  Vector(const std::initializer_list<T> &l)
-      : Tuple<T>(l)
-#ifdef __CUDA_ENABLED__
-        ,
-        cudaArray()
-#endif
-  {
-#ifdef __CUDA_ENABLED__
-    copyCPUDataToGPU();
-#endif
-  }
+  Vector(const std::initializer_list<T> &l) : Tuple<T>(l) {}
 
   /**
    * Constructor with a std::arrary as Input.
    * @param arr a std::array that contains the elements the Vector will store.
    **/
-  template <size_t N>
-  Vector(const std::array<T, N> &arr)
-      : Tuple<T>(arr)
-#ifdef __CUDA_ENABLED__
-        ,
-        cudaArray()
-#endif
-  {
-#ifdef __CUDA_ENABLED__
-    copyCPUDataToGPU();
-#endif
-  }
+  template <size_t N> Vector(const std::array<T, N> &arr) : Tuple<T>(arr) {}
 
   /**
    * Constructor with a std::vector as Input.
    * @param v a std::vector that contains the elements the Vector will store.
    **/
-  Vector(const std::vector<T> &v)
-      : Tuple<T>(v)
-#ifdef __CUDA_ENABLED__
-        ,
-        cudaArray()
-#endif
-  {
-#ifdef __CUDA_ENABLED__
-    copyCPUDataToGPU();
-#endif
-  }
+  Vector(const std::vector<T> &v) : Tuple<T>(v) {}
 
   /**
    * Copy Constructor.
    * @param other a Container whose elements will be copied into the Vector.
    **/
-  Vector(const Tuple<T> &other)
-      : Tuple<T>(other)
-#ifdef __CUDA_ENABLED__
-        ,
-        cudaArray()
-#endif
-  {
-#ifdef __CUDA_ENABLED__
-    cudaArray = other.cudaArray;
-#endif
-  }
+  Vector(const Tuple<T> &other) : Tuple<T>(other) {}
 
   /**
    * Copy Constructor.
    * @param other a Container to be copied.
    **/
   template <class OtherType>
-  Vector(const Tuple<OtherType> &other)
-      : Tuple<T>(other)
-#ifdef __CUDA_ENABLED__
-        ,
-        cudaArray()
-#endif
-  {
-#ifdef __CUDA_ENABLED__
-    copyCPUDataToGPU();
-#endif
-  }
+  Vector(const Tuple<OtherType> &other) : Tuple<T>(other) {}
 
   /**
    * Move Constructor.
    * @param other a Container whose elements will be 'moved' into the Vector.
    **/
-  Vector(Tuple<T> &&other)
-      : Tuple<T>(std::move(other))
-#ifdef __CUDA_ENABLED__
-        ,
-        cudaArray()
-#endif
-  {
-#ifdef __CUDA_ENABLED__
-    cudaArray = std::move(other.cudaArray);
-#endif
-  }
+  Vector(Tuple<T> &&other) : Tuple<T>(std::move(other)) {}
 
   /**
    * Copy Assignment.
    * @param other a Container whose elements will be copied into this Vector.
    * @return a reference to this Vector.
    **/
-  virtual Vector<T> &operator=(const Tuple<T> &other)
-  {
+  virtual Vector<T> &operator=(const Tuple<T> &other) {
     Tuple<T>::operator=(other);
-#ifdef __CUDA_ENABLED__
-    copyCPUDataToGPU();
-#endif
     return *this;
   }
 
@@ -171,17 +77,11 @@ public:
   template <class OtherType>
   Vector<T> &operator=(const Tuple<OtherType> &other) {
     Tuple<T>::operator=(other);
-#ifdef __CUDA_ENABLED__
-    copyCPUDataToGPU();
-#endif
     return *this;
   }
 
   Vector<T> &operator=(Tuple<T> &&other) {
     Tuple<T>::operator=(other);
-#ifdef __CUDA_ENABLED__
-    cudaArray = std::move(other.cudaArray);
-#endif
     return *this;
   }
 
@@ -225,7 +125,7 @@ public:
    * @throw EmptyVector if the Vector is empty.
    **/
   template <class ReturnType> ReturnType Length() const {
-    if (Size() == 0)
+    if (IsEmpty())
       throw Exceptions::EmptyVector(
           "Vector: Length of an empty vector is undefined.");
     return LpNorm<ReturnType>(2);
@@ -237,7 +137,7 @@ public:
    * @throw EmptyVector if the Vector is empty.
    **/
   template <class ReturnType> ReturnType EuclideanNorm() const {
-    if (Size() == 0)
+    if (IsEmpty())
       throw Exceptions::EmptyVector(
           "Vector: Euclidean norm of an empty vector is undefined.");
     return Length<ReturnType>();
@@ -249,7 +149,7 @@ public:
    * @throw EmptyVector if the Vector is empty.
    **/
   template <class ReturnType> ReturnType LpNorm(int p) const {
-    if (Size() == 0)
+    if (IsEmpty())
       throw Exceptions::EmptyVector(
           "Vector: Lp norm of an empty vector is undefined.");
     ReturnType squaredTotal = 0;
@@ -268,10 +168,10 @@ public:
    *elements of the second operand is not a factor of that of this Vector.
    **/
   template <class OtherType> auto Add(const Vector<OtherType> &other) const {
-    if (Size() == 0)
+    if (IsEmpty())
       throw Exceptions::EmptyVector(
           "Vector: Cannot perform addition on an empty vector.");
-    else if (other.Size() == 0)
+    else if (other.IsEmpty())
       throw Exceptions::InvalidArgument(
           "Vector: Cannot perform addtion on the given empty vector.");
     else if (Dimension() % other.Dimension() != 0)
@@ -279,18 +179,9 @@ public:
           "Vector: Expected the dimension of the second operand to be a factor "
           "of that of the first operand.");
     Vector<decltype(this->data[0] + other[0])> result(*this);
-#ifdef __CUDA_ENABLED__
-#pragma omp parallel for schedule(dynamic)
-    for (size_t i = 0; i < Dimension(); i += other.Dimension())
-      CudaHelpers::AddWithTwoGPUArrays(
-          &result.cudaArray.GetGPUPtr()[i], &this->cudaArray.GetGPUPtr()[i],
-          other.cudaArray.GetGPUPtr(), other.Dimension());
-    result.copyGPUDataToCPU();
-#else
 #pragma omp parallel for schedule(dynamic)
     for (size_t i = 0; i < Dimension(); i++)
       result[i] += other[i % other.Dimension()];
-#endif
     return result;
   }
 
@@ -301,20 +192,13 @@ public:
    * @throw EmptyVector if the Vector is empty.
    **/
   template <class ScalerType> auto Add(const ScalerType &scaler) const {
-    if (Size() == 0)
+    if (IsEmpty())
       throw Exceptions::EmptyVector(
           "Vector: Cannot perform addition on an empty vector.");
     Vector<decltype(this->data[0] + scaler)> result(*this);
-#ifdef __CUDA_ENABLED__
-    CudaHelpers::AddWithGPUArrayScaler(result.cudaArray.GetGPUPtr(),
-                                       this->cudaArray.GetGPUPtr(), scaler,
-                                       result.Dimension());
-    result.copyGPUDataToCPU();
-#else
 #pragma omp parallel for schedule(dynamic)
     for (size_t i = 0; i < Dimension(); i++)
       result[i] += scaler;
-#endif
     return result;
   }
 
@@ -351,23 +235,19 @@ public:
    **/
   template <class OtherType>
   Vector<T> &operator+=(const Vector<OtherType> &other) {
-    if (Size() == 0)
+    if (IsEmpty())
       throw Exceptions::EmptyVector(
           "Vector: Cannot perform addition on an empty vector.");
-    else if (other.Size() == 0)
+    else if (other.IsEmpty())
       throw Exceptions::InvalidArgument(
           "Vector: Cannot perform addtion on the given empty vector.");
     else if (Dimension() % other.Dimension() != 0)
       throw Exceptions::InvalidArgument(
           "Vector: Expected the dimension of the second operand to be a factor "
           "of that of the first operand.");
-#ifdef __CUDA_ENABLED__
-    *this = std::move(Add(other));
-#else
 #pragma omp parallel for schedule(dynamic)
     for (size_t i = 0; i < Dimension(); i++)
       this->data[i] += other[i % other.Dimension()];
-#endif
     return *this;
   }
 
@@ -378,16 +258,12 @@ public:
    * @throw EmptyVector if this Vector is empty.
    **/
   template <class ScalerType> Vector<T> &operator+=(const ScalerType &scaler) {
-    if (Size() == 0)
+    if (IsEmpty())
       throw Exceptions::EmptyVector(
           "Vector: Cannot perform addition on an empty vector.");
-#ifdef __CUDA_ENABLED__
-    *this = std::move(Add(scaler));
-#else
 #pragma omp parallel for schedule(dynamic)
     for (size_t i = 0; i < Dimension(); i++)
       this->data[i] += scaler;
-#endif
     return *this;
   }
 
@@ -400,10 +276,10 @@ public:
    *elements of the second operand is not a factor of that of this Vector.
    **/
   template <class OtherType> auto Minus(const Vector<OtherType> &other) const {
-    if (Size() == 0)
+    if (IsEmpty())
       throw Exceptions::EmptyVector(
           "Vector: Cannot perform subtraction on an empty vector.");
-    else if (other.Size() == 0)
+    else if (other.IsEmpty())
       throw Exceptions::InvalidArgument(
           "Vector: Cannot perform subtraction on the given empty vector.");
     else if (Dimension() % other.Dimension() != 0)
@@ -411,18 +287,9 @@ public:
           "Vector: Expected the dimension of the second operand to be a factor "
           "of that of the first operand.");
     Vector<decltype(this->data[0] - other[0])> result(*this);
-#ifdef __CUDA_ENABLED__
-#pragma omp parallel for schedule(dynamic)
-    for (size_t i = 0; i < Dimension(); i += other.Dimension())
-      CudaHelpers::SubtractWithTwoGPUArrays(
-          &result.cudaArray.GetGPUPtr()[i], &cudaArray.GetGPUPtr()[i],
-          other.cudaArray.GetGPUPtr(), other.Dimension());
-    result.copyGPUDataToCPU();
-#else
 #pragma omp parallel for schedule(dynamic)
     for (size_t i = 0; i < Dimension(); i++)
       result[i] -= other[i % other.Dimension()];
-#endif
     return result;
   }
 
@@ -433,20 +300,13 @@ public:
    * @throw EmptyVector if the Vector is empty.
    **/
   template <class ScalerType> auto Minus(const ScalerType &scaler) const {
-    if (Size() == 0)
+    if (IsEmpty())
       throw Exceptions::EmptyVector(
           "Vector: Cannot perform subtraction on an empty vector.");
     Vector<decltype(this->data[0] - scaler)> result(*this);
-#ifdef __CUDA_ENABLED__
-    CudaHelpers::SubtractWithGPUArrayScaler(result.cudaArray.GetGPUPtr(),
-                                            cudaArray.GetGPUPtr(), scaler,
-                                            Dimension());
-    result.copyGPUDataToCPU();
-#else
 #pragma omp parallel for schedule(dynamic)
     for (size_t i = 0; i < Dimension(); i++)
       result[i] -= scaler;
-#endif
     return result;
   }
 
@@ -483,23 +343,19 @@ public:
    **/
   template <class OtherType>
   Vector<T> &operator-=(const Vector<OtherType> &other) {
-    if (Size() == 0)
+    if (IsEmpty())
       throw Exceptions::EmptyVector(
           "Vector: Cannot perform subtraction on an empty vector.");
-    else if (other.Size() == 0)
+    else if (other.IsEmpty())
       throw Exceptions::InvalidArgument(
           "Vector: Cannot perform subtraction on the given empty vector.");
     else if (Dimension() % other.Dimension() != 0)
       throw Exceptions::InvalidArgument(
           "Vector: Expected the dimension of the second operand to be a factor "
           "of that of the first operand.");
-#ifdef __CUDA_ENABLED__
-    *this = std::move(Minus(other));
-#else
 #pragma omp parallel for schedule(dynamic)
     for (size_t i = 0; i < Dimension(); i++)
       this->data[i] -= other[i % other.Dimension()];
-#endif
     return *this;
   }
 
@@ -510,16 +366,12 @@ public:
    * @throw EmptyVector if the Vector is empty.
    **/
   template <class ScalerType> Vector<T> &operator-=(const ScalerType &scaler) {
-    if (Size() == 0)
+    if (IsEmpty())
       throw Exceptions::EmptyVector(
           "Vector: Cannot perform subtraction on an empty vector.");
-#ifdef __CUDA_ENABLED__
-    *this = std::move(Minus(scaler));
-#else
 #pragma omp parallel for schedule(dynamic)
     for (size_t i = 0; i < Dimension(); i++)
       this->data[i] -= scaler;
-#endif
     return *this;
   }
 
@@ -530,20 +382,13 @@ public:
    * @throw EmptyVector if this Vector is empty.
    **/
   template <class ScalerType> auto Scale(const ScalerType &scaler) const {
-    if (Size() == 0)
+    if (IsEmpty())
       throw Exceptions::EmptyVector(
           "Vector: Cannot perform scaling on an empty vector.");
     Vector<decltype(this->data[0] * scaler)> result(*this);
-#ifdef __CUDA_ENABLED__
-    CudaHelpers::MultiplyWithGPUArrayScaler(result.cudaArray.GetGPUPtr(),
-                                            cudaArray.GetGPUPtr(), scaler,
-                                            Dimension());
-    result.copyGPUDataToCPU();
-#else
 #pragma omp parallel for schedule(dynamic)
     for (size_t i = 0; i < Dimension(); i++)
       result[i] *= scaler;
-#endif
     return result;
   }
 
@@ -569,18 +414,9 @@ public:
           "Vector: Expected the dimension of the second operand to be a factor "
           "of that of the first operand.");
     Vector<decltype((*this)[0] * other[0])> result(*this);
-#ifdef __CUDA_ENABLED__
-#pragma omp parallel for schedule(dynamic)
-    for (size_t i = 0; i < Dimension(); i += other.Dimension())
-      CudaHelpers::MultiplyWithTwoGPUArrays(
-          &result.cudaArray.GetGPUPtr()[i], &cudaArray.GetGPUPtr()[i],
-          other.cudaArray.GetGPUPtr(), other.Dimension());
-    result.copyGPUDataToCPU();
-#else
 #pragma omp parallel for schedule(dynamic)
     for (size_t i = 0; i < Dimension(); i++)
       result[i] *= other[i % other.Dimension()];
-#endif
     return result;
   }
 
@@ -605,7 +441,7 @@ public:
    **/
   template <class OtherType>
   auto operator*(const Vector<OtherType> &other) const {
-    if (Size() == 0)
+    if (IsEmpty())
       throw Exceptions::EmptyVector("Vector: Cannot perform element-wise "
                                     "multiplication on an empty vector.");
     if (other.Dimension() == 0)
@@ -618,18 +454,9 @@ public:
           "that "
           "of the first operand when performing element-wise multiplication.");
     Vector<decltype((*this)[0] * other[0])> result(*this);
-#ifdef __CUDA_ENABLED__
-#pragma omp parallel for schedule(dynamic)
-    for (size_t i = 0; i < Dimension(); i += other.Dimension())
-      CudaHelpers::MultiplyWithTwoGPUArrays(
-          &result.cudaArray.GetGPUPtr()[i], &cudaArray.GetGPUPtr()[i],
-          other.cudaArray.GetGPUPtr(), other.Dimension());
-    result.copyGPUDataToCPU();
-#else
 #pragma omp parallel for schedule(dynamic)
     for (size_t i = 0; i < Size(); i++)
       result[i] *= other[i % other.Dimension()];
-#endif
     return result;
   }
 
@@ -640,16 +467,12 @@ public:
    * @throw EmptyVector when this vector is empty.
    **/
   template <class ScalerType> Vector<T> &operator*=(const ScalerType &scaler) {
-    if (Size() == 0)
+    if (IsEmpty())
       throw Exceptions::EmptyVector(
           "Vector: Cannot perform scaling on an empty vector.");
-#ifdef __CUDA_ENABLED__
-    *this = std::move(Scale(scaler));
-#else
 #pragma omp parallel for schedule(dynamic)
     for (size_t i = 0; i < Dimension(); i++)
       (*this)[i] *= scaler;
-#endif
     return *this;
   }
 
@@ -674,13 +497,9 @@ public:
           "Vector: Expect the dimension of the second operand is a factor of "
           "that "
           "of the first operand when performing element-wise multiplication.");
-#ifdef __CUDA_ENABLED__
-    *this = std::move(Scale(other));
-#else
 #pragma omp parallel for schedule(dynamic)
     for (size_t i = 0; i < Dimension(); i++)
       (*this)[i] *= other[i % other.Dimension()];
-#endif
     return *this;
   }
 
@@ -699,16 +518,9 @@ public:
       throw Exceptions::DividedByZero("Vector: Cannot perform element-wise "
                                       "division as the second operand is 0.");
     Vector<decltype((*this)[0] / scaler)> result(*this);
-#ifdef __CUDA_ENABLED__
-    CudaHelpers::DivideWithGPUArrayScaler(result.cudaArray.GetGPUPtr(),
-                                          cudaArray.GetGPUPtr(), scaler,
-                                          Dimension());
-    result.copyGPUDataToCPU();
-#else
 #pragma omp parallel for schedule(dynamic)
     for (size_t i = 0; i < Dimension(); i++)
       result[i] /= scaler;
-#endif
     return result;
   }
 
@@ -738,22 +550,7 @@ public:
           "second operand to be a factor of that of the first operand.");
     Vector<decltype((*this)[0] / vector[0])> result(*this);
     size_t j;
-#ifdef __CUDA_ENABLED__
-#pragma omp parallel for schedule(dynamic)
-    for (size_t i = 0; i < vector.Dimension(); i++) {
-      if (vector[i] == 0)
-        throw Exceptions::DividedByZero(
-            "Vector: Expect none of the element of the second operand to be 0 "
-            "when performing"
-            "element-wise division.");
-    }
-#pragma omp parallel for schedule(dynamic)
-    for (size_t i = 0; i < Dimension(); i += vector.Dimension())
-      CudaHelpers::DivideWithTwoGPUArrays(
-          &result.cudaArray.GetGPUPtr()[i], &cudaArray.GetGPUPtr()[i],
-          vector.cudaArray.GetGPUPtr(), vector.Dimension());
-    result.copyGPUDataToCPU();
-#else
+
 #pragma omp parallel for schedule(dynamic) private(j)
     for (size_t i = 0; i < Dimension(); i++) {
       j = i % vector.Dimension();
@@ -764,7 +561,6 @@ public:
             "element-wise division.");
       result[i] /= vector[j];
     }
-#endif
     return result;
   }
 
@@ -807,13 +603,10 @@ public:
     else if (scaler == 0)
       throw Exceptions::DividedByZero("Vector: Cannot perform element-wise "
                                       "division as the second operand is 0.");
-#ifdef __CUDA_ENABLED__
-    *this = std::move(Divide(scaler));
-#else
+
 #pragma omp parallel for schedule(dynamic)
     for (size_t i = 0; i < Dimension(); i++)
       (*this)[i] /= scaler;
-#endif
     return *this;
   }
 
@@ -841,9 +634,7 @@ public:
           "dimension "
           "of the "
           "second operand to be a factor of that of the first operand.");
-#ifdef __CUDA_ENABLED__
-    *this = std::move(Divide(vector));
-#else
+
 #pragma omp parallel for schedule(dynamic)
     for (size_t i = 0; i < Dimension(); i++) {
       const auto element = vector[i % vector.Dimension()];
@@ -854,7 +645,6 @@ public:
             "element-wise division.");
       (*this)[i] /= element;
     }
-#endif
     return *this;
   }
 
@@ -867,10 +657,10 @@ public:
    *different dimensions.
    **/
   template <class OtherType> auto Dot(const Vector<OtherType> &other) const {
-    if (Size() == 0)
+    if (IsEmpty())
       throw Exceptions::EmptyVector(
           "Vector: Cannot perform dot product on an empty vector.");
-    else if (other.Size() == 0)
+    else if (other.IsEmpty())
       throw Exceptions::InvalidArgument("Vector: Cannot perform dot product "
                                         "when the second operand is empty.");
     else if (Dimension() != other.Dimension())
@@ -902,7 +692,7 @@ public:
    * @throw DividedByZero if this Vector is a zero Vector.
    **/
   void Normalize() {
-    if (Size() == 0)
+    if (IsEmpty())
       throw Exceptions::EmptyVector(
           "Vector: Cannot perform normalization on an empty vector.");
     const T length = Length<T>();
@@ -934,9 +724,6 @@ public:
 #pragma omp parallel for schedule(dynamic)
     for (size_t i = 0; i < Size(); i++)
       result[i] = f(result[i]);
-#ifdef __CUDA_ENABLED__
-    result.copyCPUDataToGPU();
-#endif
     return result;
   }
 
@@ -968,9 +755,6 @@ public:
     for (auto vector : vectors)
       for (size_t j = 0; j < vector.Size(); j++)
         combined[currentIndex++] = vector[j];
-#ifdef __CUDA_ENABLED__
-    combined.copyCPUDataToGPU();
-#endif
     return combined;
   }
 
@@ -980,15 +764,9 @@ public:
     if (v.Dimension() == 0)
       throw Exceptions::EmptyVector(
           "Vector: Cannot perform addition on an empty vector.");
-#ifdef __CUDA_ENABLED__
-    CudaHelpers::AddWithScalerGPUArray(result.cudaArray.GetGPUPtr(), scaler,
-                                       v.cudaArray.GetGPUPtr(), v.Dimension());
-    result.copyGPUDataToCPU();
-#else
 #pragma omp parallel for
     for (size_t i = 0; i < result.Dimension(); i++)
       result[i] += scaler;
-#endif
     return result;
   }
 
@@ -998,16 +776,9 @@ public:
     if (v.Dimension() == 0)
       throw Exceptions::EmptyVector(
           "Vector: Cannot perform subtraction on an empty vector.");
-#ifdef __CUDA_ENABLED__
-    CudaHelpers::SubtractWithScalerGPUArray(result.cudaArray.GetGPUPtr(),
-                                            scaler, v.cudaArray.GetGPUPtr(),
-                                            v.Dimension());
-    result.copyGPUDataToCPU();
-#else
 #pragma omp parallel for
     for (size_t i = 0; i < result.Dimension(); i++)
       result[i] = scaler - result[i];
-#endif
     return result;
   }
 
@@ -1017,16 +788,9 @@ public:
     if (v.Dimension() == 0)
       throw Exceptions::EmptyVector(
           "Vector: Cannot perform scaling on an empty vector.");
-#ifdef __CUDA_ENABLED__
-    CudaHelpers::MultiplyWithScalerGPUArray(result.cudaArray.GetGPUPtr(),
-                                            scaler, v.cudaArray.GetGPUPtr(),
-                                            v.Dimension());
-    result.copyGPUDataToCPU();
-#else
 #pragma omp parallel for
     for (size_t i = 0; i < result.Dimension(); i++)
       result[i] *= scaler;
-#endif
     return result;
   }
 
@@ -1036,23 +800,15 @@ public:
     if (v.Dimension() == 0)
       throw Exceptions::EmptyVector(
           "Vector: Cannot perform element-wise division on an empty vector.");
-#ifdef __CUDA_ENABLED__
-    for (size_t i = 0; i < v.Dimension(); i++) {
-      if (v[i] == 0)
+    for (size_t i = 0; i < result.Dimension(); i++) {
+      if (!result[i])
         throw Exceptions::DividedByZero(
             "Vector: Expect none of the elements of the second operand to be 0 "
-            "when performing"
-            "element-wise division.");
+            "when performing element-wise division.");
     }
-    CudaHelpers::DivideWithScalerGPUArray(result.cudaArray.GetGPUPtr(), scaler,
-                                          v.cudaArray.GetGPUPtr(),
-                                          v.Dimension());
-    result.copyGPUDataToCPU();
-#else
 #pragma omp parallel for
     for (size_t i = 0; i < result.Dimension(); i++)
       result[i] = scaler / result[i];
-#endif
     return result;
   }
 
