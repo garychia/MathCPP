@@ -1,9 +1,10 @@
 enable_testing()
 
 set(MATHCPPTEST_SOURCES
+    ${PROJECT_SOURCE_DIR}/test/DataStructures/math_test.hpp
     ${PROJECT_SOURCE_DIR}/test/DataStructures/tuple_test.hpp
     ${PROJECT_SOURCE_DIR}/test/DataStructures/vector_test.hpp
-    ${PROJECT_SOURCE_DIR}/test/DataStructures/vector3d_test.hpp)
+    ${PROJECT_SOURCE_DIR}/test/DataStructures/matrix_test.hpp)
 
 add_executable(MathCPPTest test_main.cpp ${MATHCPPTEST_SOURCES})
 
@@ -18,7 +19,7 @@ if(CMAKE_CUDA_COMPILER)
         ${PROJECT_SOURCE_DIR}/test/DataStructures
         ${PROJECT_SOURCE_DIR}/src/MathCUDA
     )
-    target_link_libraries(MathCPPTest gtest_main MathCPPCUDA)
+    target_link_libraries(MathCPPTest gtest_main MathCPPCUDA MathCPPMath)
 else()
     target_include_directories(
         MathCPPTest PUBLIC
@@ -29,7 +30,7 @@ else()
         ${PROJECT_SOURCE_DIR}/src/Misc
         ${PROJECT_SOURCE_DIR}/test/DataStructures
     )
-    target_link_libraries(MathCPPTest gtest_main)
+    target_link_libraries(MathCPPTest gtest_main MathCPPMath)
 endif()
 
 if (MSVC)

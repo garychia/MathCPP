@@ -11,6 +11,7 @@ TEST(Vector, EmptyConstructor) {
   Vector<int> empty;
   EXPECT_EQ(empty.Size(), ZERO);
   EXPECT_EQ(empty.Dimension(), ZERO);
+  EXPECT_EQ(empty.AsRawPointer(), nullptr);
 }
 
 TEST(Vector, FillConstructor) {
