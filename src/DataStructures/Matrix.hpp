@@ -292,7 +292,7 @@ public:
         (*this)[i][j] += other[i % other.nRows][j % other.nColumns];
       }
     }
-    return result;
+    return *this;
   }
 
   /*
@@ -648,6 +648,35 @@ public:
     return *this;
   }
 
+  template <class OtherType> Matrix<T> &operator/=(const Matrix<OtherType> &other) {
+    if (IsEmpty() || other.IsEmpty())
+      throw Exceptions::EmptyMatrix(
+          "Matrix: Cannot perform element-wise division on an empty matrix.");
+    if (nRows % other.nRows != 0 || nColumns % other.nColumns != 0)
+      throw Exceptions::InvalidArgument(
+          "Matrix: The shape of the denominator matrix must be a factor of "
+          "that of the numerator matrix.");
+
+    size_t i, j;
+#pragma omp parallel for private(j) collapse(2) schedule(dynamic)
+    for (i = 0; i < nRows; i++) {
+      for (j = 0; j < nColumns; j++) {
+        if (!other[i % other.nRows][j % other.nColumns]) {
+          throw Exceptions::DividedByZero(
+              "Matrix: Cannot perform element-wise division as there is a "
+              "zero denominator.");
+        }
+        (*this)[i][j] /= other[i % other.nRows][j % other.nColumns];
+      }
+    }
+    return *this;
+  }
+
+  template <class OtherType>
+  bool operator==(const Matrix<OtherType> &other) const {
+    return nRows == other.nRows && nColumns == other.nColumns && elements == other.elements;
+  }
+
   /*
   Converts this Matrix to a string that shows the elements of this Matrix.
   @return a string that represents this Matrix.
@@ -673,16 +702,18 @@ public:
   friend std::ostream;
 
   /*
-  Transposes this Matrix inplace.
+  Transposes this Matrix.
   */
   void Transpose() {
+    Vector<T> newElements(elements.Dimension());
     size_t i, j;
 #pragma omp parallel for private(j) collapse(2) schedule(dynamic)
     for (i = 0; i < nRows; i++) {
-      for (j = i + 1; j < nColumns; j++) {
-        std::swap(elements[i * nColumns + j], elements[j * nRows + i]);
+      for (j = 0; j < nColumns; j++) {
+        newElements[j * nRows + i] = (*this)[i][j];
       }
     }
+    elements = std::move(newElements);
     std::swap(nRows, nColumns);
   }
 

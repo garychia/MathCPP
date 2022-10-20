@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "Tuple.hpp"
+#include "Math.hpp"
 
 namespace DataStructures {
 /* A mutable Container of a fixed size that supports numerical operations. */
@@ -155,8 +156,8 @@ public:
     ReturnType squaredTotal = 0;
 #pragma omp parallel for schedule(dynamic) reduction(+ : squaredTotal)
     for (size_t i = 0; i < Dimension(); i++)
-      squaredTotal += Math::Power<ReturnType, int>((*this)[i], p);
-    return Math::Power<ReturnType, double>(squaredTotal, (double)1 / p);
+      squaredTotal += Math::template Power<ReturnType, int>((*this)[i], p);
+    return Math::template Power<ReturnType, double>(squaredTotal, (double)1 / p);
   }
 
   /**
