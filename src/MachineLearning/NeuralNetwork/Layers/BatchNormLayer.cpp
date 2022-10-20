@@ -21,7 +21,7 @@ Matrix<double> BatchNormLayer::Forward(const Matrix<double> &input) {
                  .Sum(false)
                  .Divide(batchSize);
   normalized = (input - mean) / variance.Map([](const double &e) {
-    return Math::Power(e, 0.5) + EPSILON;
+    return Math::Power(e, 0.5) + 1E-10;
   });
   this->output = normalized.Scale(scale) + shift;
   return this->output;
@@ -32,7 +32,7 @@ Matrix<double> BatchNormLayer::Backward(const Matrix<double> &derivative) {
   this->dShift = derivative.Sum(false);
   const auto batchSize = this->input.Shape()[1];
   const auto inversedSTD = variance.Map(
-      [](const double &e) { return Math::Power(e, -0.5) + EPSILON; });
+      [](const double &e) { return Math::Power(e, -0.5) + 1E-10; });
   const auto inputMeanDiff = this->input - mean;
   const auto dNorm = derivative.Scale(this->scale);
   const auto dVariance = dNorm.Scale(inputMeanDiff)

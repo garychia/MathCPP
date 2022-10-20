@@ -88,16 +88,16 @@ Matrix<double> NeuralNetwork::Predict(const Matrix<double> &input) {
 
 void NeuralNetwork::Learn(const Matrix<double> &derivative,
                           const double &learningRate) {
-  if (!layers.IsEmpty()) {
-    Matrix<double> currentDerivative = derivative;
-    std::size_t i = layers.Size() - 1;
-    while (true) {
-      currentDerivative = layers[i]->Backward(currentDerivative);
-      layers[i]->UpdateWeights(learningRate);
-      if (i == 0)
-        break;
-      i--;
-    }
+  if (layers.IsEmpty())
+    return;
+  Matrix<double> currentDerivative = derivative;
+  size_t i = layers.Size() - 1;
+  while (true) {
+    currentDerivative = layers[i]->Backward(currentDerivative);
+    layers[i]->UpdateWeights(learningRate);
+    if (i == 0)
+      break;
+    i--;
   }
 }
 
