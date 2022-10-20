@@ -26,6 +26,7 @@ FetchContent_Declare(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(gtest)
 
+add_subdirectory(${PROJECT_SOURCE_DIR}/src/Algorithms)
 add_subdirectory(${PROJECT_SOURCE_DIR}/src/MachineLearning)
 add_subdirectory(${PROJECT_SOURCE_DIR}/src/Misc)
 add_subdirectory(${PROJECT_SOURCE_DIR}/src/MathCUDA)
@@ -60,6 +61,7 @@ if (MSVC)
     target_compile_options(Misc PUBLIC "/openmp:llvm")
 endif (MSVC)
 
+target_link_libraries(MathCPP PUBLIC MathCPPMath)
 target_link_libraries(MathCPP PUBLIC MathCPPNN)
 target_link_libraries(MathCPP PUBLIC Misc)
 if(CMAKE_CUDA_COMPILER)

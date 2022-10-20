@@ -17,10 +17,6 @@ public:
   static const double Pi;
 };
 
-const double Constants::Epsilon = 0.00000000001;
-const double Constants::Ln2 = 0.69314718056;
-const double Constants::Pi = 3.14159265359;
-
 template <class T> T Abs(const T &x) { return x >= 0 ? x : -x; }
 
 template <class T> T &Max(const T &x, const T &y) { return x < y ? y : x; }
