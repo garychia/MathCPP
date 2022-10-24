@@ -5,8 +5,8 @@
 #include <initializer_list>
 #include <vector>
 
-#include "Tuple.hpp"
 #include "Math.hpp"
+#include "Tuple.hpp"
 
 namespace DataStructures {
 /* A mutable Container of a fixed size that supports numerical operations. */
@@ -93,7 +93,7 @@ public:
    * @throw IndexOutOfBound when the index exceeds the largest possible index.
    **/
   virtual T &operator[](const size_t &index) {
-    if (index < Size())
+    if (index < Dimension())
       return this->data[index];
     throw Exceptions::IndexOutOfBound(
         index, "Vector: Index must be less than the dimension.");
@@ -106,19 +106,19 @@ public:
    * @throw IndexOutOfBound when the index exceeds the largest possible index.
    **/
   virtual const T &operator[](const size_t &index) const override {
-    if (index < Size())
+    if (index < Dimension())
       return this->data[index];
     throw Exceptions::IndexOutOfBound(
         index, "Vector: Index must be less than the dimension.");
   }
 
-  virtual bool IsEmpty() const { return Dimension() == 0; }
+  virtual bool IsEmpty() const override { return Dimension() == 0; }
 
   /**
    * Return the dimention (number of values) of the Vector.
    * @return the dimention.
    **/
-  size_t Dimension() const { return Size(); }
+  size_t Dimension() const { return this->size; }
 
   /**
    * Return the Euclidean norm of the Vector.
@@ -157,7 +157,8 @@ public:
 #pragma omp parallel for schedule(dynamic) reduction(+ : squaredTotal)
     for (size_t i = 0; i < Dimension(); i++)
       squaredTotal += Math::template Power<ReturnType, int>((*this)[i], p);
-    return Math::template Power<ReturnType, double>(squaredTotal, (double)1 / p);
+    return Math::template Power<ReturnType, double>(squaredTotal,
+                                                    (double)1 / p);
   }
 
   /**
@@ -311,27 +312,8 @@ public:
     return result;
   }
 
-  /**
-   * Perform subtraction with two Vectors. (See Vector::Minus)
-   * @param other a Vector as the second operand.
-   * @return a new Vector as the subtraction result.
-   * @throw EmptyVector if this Vector is empty.
-   * @throw InvalidArgument if the second operand is empty or the number of
-   *elements of the second operand is not a factor of that of this Vector.
-   **/
-  template <class OtherType>
-  auto operator-(const Vector<OtherType> &other) const {
-    return this->Minus(other);
-  }
-
-  /**
-   * Perform subtraction with a Vector and a scaler. (See Vector.Minus)
-   * @param scaler a scaler to be subtracted from each element of the Vector.
-   * @return a new Vector that is the subtraction result.
-   * @throw EmptyVector if this Vector is empty.
-   **/
-  template <class ScalerType> auto operator-(const ScalerType &scaler) const {
-    return this->Minus(scaler);
+  template <class U> auto operator-(const U &operand) const {
+    return this->Minus(operand);
   }
 
   /**
@@ -456,7 +438,7 @@ public:
           "of the first operand when performing element-wise multiplication.");
     Vector<decltype((*this)[0] * other[0])> result(*this);
 #pragma omp parallel for schedule(dynamic)
-    for (size_t i = 0; i < Size(); i++)
+    for (size_t i = 0; i < Dimension(); i++)
       result[i] *= other[i % other.Dimension()];
     return result;
   }
@@ -710,7 +692,7 @@ public:
   T Sum() const {
     T total = 0;
 #pragma omp parallel for schedule(dynamic) reduction(+ : total)
-    for (size_t i = 0; i < Size(); i++)
+    for (size_t i = 0; i < Dimension(); i++)
       total += (*this)[i];
     return total;
   }
@@ -723,7 +705,7 @@ public:
   template <class MapFunction> auto Map(MapFunction &&f) const {
     Vector<decltype(f((*this)[0]))> result(*this);
 #pragma omp parallel for schedule(dynamic)
-    for (size_t i = 0; i < Size(); i++)
+    for (size_t i = 0; i < Dimension(); i++)
       result[i] = f(result[i]);
     return result;
   }
@@ -759,48 +741,108 @@ public:
     return combined;
   }
 
-  template <class ScalerType>
-  friend auto operator+(const ScalerType &scaler, const Vector<T> &v) {
+  friend auto operator+(int scaler, const Vector<T> &v) {
     Vector<decltype(scaler + v[0])> result(v);
-    if (v.Dimension() == 0)
-      throw Exceptions::EmptyVector(
-          "Vector: Cannot perform addition on an empty vector.");
 #pragma omp parallel for
     for (size_t i = 0; i < result.Dimension(); i++)
       result[i] += scaler;
     return result;
   }
 
-  template <class ScalerType>
-  friend auto operator-(const ScalerType &scaler, const Vector<T> &v) {
+  friend auto operator+(float scaler, const Vector<T> &v) {
+    Vector<decltype(scaler + v[0])> result(v);
+#pragma omp parallel for
+    for (size_t i = 0; i < result.Dimension(); i++)
+      result[i] += scaler;
+    return result;
+  }
+
+  friend auto operator+(double scaler, const Vector<T> &v) {
+    Vector<double> result(v);
+#pragma omp parallel for
+    for (size_t i = 0; i < result.Dimension(); i++)
+      result[i] += scaler;
+    return result;
+  }
+
+  friend auto operator-(int scaler, const Vector<T> &v) {
     Vector<decltype(scaler - v[0])> result(v);
-    if (v.Dimension() == 0)
-      throw Exceptions::EmptyVector(
-          "Vector: Cannot perform subtraction on an empty vector.");
 #pragma omp parallel for
     for (size_t i = 0; i < result.Dimension(); i++)
       result[i] = scaler - result[i];
     return result;
   }
 
-  template <class ScalerType>
-  friend auto operator*(const ScalerType &scaler, const Vector<T> &v) {
+  friend auto operator-(float scaler, const Vector<T> &v) {
+    Vector<decltype(scaler - v[0])> result(v);
+#pragma omp parallel for
+    for (size_t i = 0; i < result.Dimension(); i++)
+      result[i] = scaler - result[i];
+    return result;
+  }
+
+  friend auto operator-(double scaler, const Vector<T> &v) {
+    Vector<decltype(scaler - v[0])> result(v);
+#pragma omp parallel for
+    for (size_t i = 0; i < result.Dimension(); i++)
+      result[i] = scaler - result[i];
+    return result;
+  }
+
+  friend auto operator*(int scaler, const Vector<T> &v) {
     Vector<decltype(scaler * v[0])> result(v);
-    if (v.Dimension() == 0)
-      throw Exceptions::EmptyVector(
-          "Vector: Cannot perform scaling on an empty vector.");
 #pragma omp parallel for
     for (size_t i = 0; i < result.Dimension(); i++)
       result[i] *= scaler;
     return result;
   }
 
-  template <class ScalerType>
-  friend auto operator/(const ScalerType &scaler, const Vector<T> &v) {
+  friend auto operator*(float scaler, const Vector<T> &v) {
+    Vector<decltype(scaler * v[0])> result(v);
+#pragma omp parallel for
+    for (size_t i = 0; i < result.Dimension(); i++)
+      result[i] *= scaler;
+    return result;
+  }
+
+  friend auto operator*(double scaler, const Vector<T> &v) {
+    Vector<decltype(scaler * v[0])> result(v);
+#pragma omp parallel for
+    for (size_t i = 0; i < result.Dimension(); i++)
+      result[i] *= scaler;
+    return result;
+  }
+
+  friend auto operator/(int scaler, const Vector<T> &v) {
     Vector<decltype(scaler / v[0])> result(v);
-    if (v.Dimension() == 0)
-      throw Exceptions::EmptyVector(
-          "Vector: Cannot perform element-wise division on an empty vector.");
+    for (size_t i = 0; i < result.Dimension(); i++) {
+      if (!result[i])
+        throw Exceptions::DividedByZero(
+            "Vector: Expect none of the elements of the second operand to be 0 "
+            "when performing element-wise division.");
+    }
+#pragma omp parallel for
+    for (size_t i = 0; i < result.Dimension(); i++)
+      result[i] = scaler / result[i];
+    return result;
+  }
+
+  friend auto operator/(float scaler, const Vector<T> &v) {
+    Vector<decltype(scaler / v[0])> result(v);
+    for (size_t i = 0; i < result.Dimension(); i++) {
+      if (!result[i])
+        throw Exceptions::DividedByZero(
+            "Vector: Expect none of the elements of the second operand to be 0 "
+            "when performing element-wise division.");
+    }
+#pragma omp parallel for
+    for (size_t i = 0; i < result.Dimension(); i++)
+      result[i] = scaler / result[i];
+    return result;
+  }
+
+  friend auto operator/(double scaler, const Vector<T> &v) {
+    Vector<decltype(scaler / v[0])> result(v);
     for (size_t i = 0; i < result.Dimension(); i++) {
       if (!result[i])
         throw Exceptions::DividedByZero(

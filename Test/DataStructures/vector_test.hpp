@@ -1937,17 +1937,6 @@ TEST(Vector, Combine) {
 
 template <class T, class Scaler>
 void CheckScalerVectorAddition(const Scaler &s, const Vector<T> &v) {
-  if (v.Size() == 0) {
-    EXPECT_THROW(
-        try { s + v; } catch (const Exceptions::EmptyVector &e) {
-          std::stringstream ss;
-          ss << "Vector: Cannot perform addition on an empty vector.";
-          EXPECT_TRUE(e.what() == ss.str());
-          throw e;
-        },
-        Exceptions::EmptyVector);
-    return;
-  }
   const auto result = s + v;
   for (std::size_t i = 0; i < v.Size(); i++)
     EXPECT_DOUBLE_EQ(s + v[i], result[i]);
@@ -1981,17 +1970,6 @@ TEST(Vector, ScalerVectorAddition) {
 
 template <class T, class Scaler>
 void CheckScalerVectorSubtraction(const Scaler &s, const Vector<T> &v) {
-  if (v.Size() == 0) {
-    EXPECT_THROW(
-        try { s - v; } catch (const Exceptions::EmptyVector &e) {
-          std::stringstream ss;
-          ss << "Vector: Cannot perform subtraction on an empty vector.";
-          EXPECT_TRUE(e.what() == ss.str());
-          throw e;
-        },
-        Exceptions::EmptyVector);
-    return;
-  }
   const auto result = s - v;
   for (std::size_t i = 0; i < v.Size(); i++)
     EXPECT_DOUBLE_EQ(s - v[i], result[i]);
@@ -2025,17 +2003,6 @@ TEST(Vector, ScalerVectorSubtraction) {
 
 template <class T, class Scaler>
 void CheckScalerVectorMultiplication(const Scaler &s, const Vector<T> &v) {
-  if (v.Size() == 0) {
-    EXPECT_THROW(
-        try { s *v; } catch (const Exceptions::EmptyVector &e) {
-          std::stringstream ss;
-          ss << "Vector: Cannot perform scaling on an empty vector.";
-          EXPECT_TRUE(e.what() == ss.str());
-          throw e;
-        },
-        Exceptions::EmptyVector);
-    return;
-  }
   const auto result = s * v;
   for (std::size_t i = 0; i < v.Dimension(); i++)
     EXPECT_DOUBLE_EQ(s * v[i], result[i]);
@@ -2069,18 +2036,6 @@ TEST(Vector, ScalerVectorMultiplication) {
 
 template <class T, class Scaler>
 void CheckScalerVectorDivision(const Scaler &s, const Vector<T> &v) {
-  if (v.Size() == 0) {
-    EXPECT_THROW(
-        try { s / v; } catch (const Exceptions::EmptyVector &e) {
-          std::stringstream ss;
-          ss << "Vector: Cannot perform element-wise division on an empty "
-                "vector.";
-          EXPECT_TRUE(e.what() == ss.str());
-          throw e;
-        },
-        Exceptions::EmptyVector);
-    return;
-  }
   bool hasZero = false;
   for (std::size_t i = 0; i < v.Dimension(); i++)
     if (v[i] == 0) {

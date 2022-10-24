@@ -96,25 +96,25 @@ static void CheckMatrixArithmetic(const Matrix<T> &m1, const Matrix<U> &m2,
 
 TEST(Matrix, Addition) {
   Matrix<int> m1({{1, 2, 3}, {4, 5, 6}});
-  Matrix<int> m2({{98}, {65}});
+  Matrix<int> m2({98, 65});
   CheckMatrixArithmetic(m1, m2, ArithmeticType::Addition);
 }
 
 TEST(Matrix, Subtraction) {
   Matrix<int> m1({{2, 4, 89}, {45, 0, 65}});
-  Matrix<int> m2({{98}, {65}});
+  Matrix<int> m2({98, 65});
   CheckMatrixArithmetic(m1, m2, ArithmeticType::Subtraction);
 }
 
 TEST(Matrix, Scaling) {
   Matrix<float> m1({{1.5f, 2.f, 3.f}, {4.f, 5.2f, 6.f}});
-  Matrix<int> m2({{98}, {65}});
+  Matrix<int> m2({98, 65});
   CheckMatrixArithmetic(m1, m2, ArithmeticType::Scaling);
 }
 
 TEST(Matrix, Division) {
   Matrix<int> m1({{1, 2, 3}, {4, 5, 6}});
-  Matrix<double> m2({{98.23}, {65.87}});
+  Matrix<double> m2({98.23, 65.87});
   CheckMatrixArithmetic(m1, m2, ArithmeticType::Division);
 }
 

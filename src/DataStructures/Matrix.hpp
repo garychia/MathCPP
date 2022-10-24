@@ -27,7 +27,7 @@ public:
   /*
   Constructor that creates an empty matrix.
   */
-  Matrix() : elements(), nRows(0), nColumns(0) {}
+  Matrix() : nRows(0), nColumns(0), elements() {}
 
   /*
   Constructor with the Number of Rows and Columns Specified.
@@ -36,8 +36,8 @@ public:
   @param value the value, 0 by default, the Matrix will be filled with.
   */
   Matrix(size_t numRows, size_t numColumns, const T &initialValue = 0)
-      : elements(numRows * numColumns, initialValue), nRows(numRows),
-        nColumns(numColumns) {}
+      : nRows(numRows), nColumns(numColumns),
+        elements(numRows * numColumns, initialValue) {}
 
   /*
   Constructor with an initializer_list of row Vectors.
@@ -46,13 +46,13 @@ public:
   different dimension.
   */
   Matrix(std::initializer_list<Vector<T>> l)
-      : elements(l.size() * l.begin()->Size()), nRows(l.size()),
-        nColumns(l.begin()->Size()) {
+      : nRows(l.size()), nColumns(l.begin()->Size()),
+        elements(l.size() * l.begin()->Size()) {
     auto itr = l.begin();
     size_t i, j;
 #pragma omp parallel for private(j) collapse(2) schedule(dynamic)
-    for (size_t i = 0; i < nRows; i++) {
-      for (size_t j = 0; j < nColumns; j++) {
+    for (i = 0; i < nRows; i++) {
+      for (j = 0; j < nColumns; j++) {
         (*this)[i][j] = (*(itr + i))[j];
       }
     }
@@ -102,9 +102,10 @@ public:
   Matrix(const List<Vector<T>> &l)
       : elements(l.Size() * l[0].Size()), nRows(l.Size()),
         nColumns(l[0].Size()) {
+    size_t i, j;
 #pragma omp parallel for private(j) collapse(2) schedule(dynamic)
-    for (size_t i = 0; i < nRows; i++) {
-      for (size_t j = 0; j < nColumns; j++) {
+    for (i = 0; i < nRows; i++) {
+      for (j = 0; j < nColumns; j++) {
         (*this)[i][j] = l[i][j];
       }
     }
@@ -115,7 +116,7 @@ public:
   @param other a Matrix to be copied.
   */
   Matrix(const Matrix<T> &other)
-      : elements(other.elements), nRows(other.nRows), nColumns(other.nColumns) {
+      : nRows(other.nRows), nColumns(other.nColumns), elements(other.elements) {
   }
 
   /*
@@ -124,7 +125,7 @@ public:
   */
   template <class OtherType>
   Matrix(const Matrix<OtherType> &other)
-      : elements(other.elements), nRows(other.nRows), nColumns(other.nColumns) {
+      : nRows(other.nRows), nColumns(other.nColumns), elements(other.elements) {
   }
 
   /*
@@ -132,8 +133,8 @@ public:
   @param other a Matrix to be moved.
   */
   Matrix(Matrix<T> &&other)
-      : elements(std::move(other.elements)), nRows(other.nRows),
-        nColumns(other.nColumns) {
+      : nRows(other.nRows), nColumns(other.nColumns),
+        elements(std::move(other.elements)) {
     other.nRows = 0;
     other.nColumns = 0;
   }
@@ -623,8 +624,8 @@ public:
   @throw InvalidArgument when the scaler is zero.
   @throw EmptyMatrix when this matrix is empty.
   */
-  template <class ScalerType> auto operator/(const ScalerType &scaler) const {
-    return Divide(scaler);
+  template <class U> auto operator/(const U &operand) const {
+    return Divide(operand);
   }
 
   /*
@@ -648,7 +649,8 @@ public:
     return *this;
   }
 
-  template <class OtherType> Matrix<T> &operator/=(const Matrix<OtherType> &other) {
+  template <class OtherType>
+  Matrix<T> &operator/=(const Matrix<OtherType> &other) {
     if (IsEmpty() || other.IsEmpty())
       throw Exceptions::EmptyMatrix(
           "Matrix: Cannot perform element-wise division on an empty matrix.");
@@ -674,7 +676,8 @@ public:
 
   template <class OtherType>
   bool operator==(const Matrix<OtherType> &other) const {
-    return nRows == other.nRows && nColumns == other.nColumns && elements == other.elements;
+    return nRows == other.nRows && nColumns == other.nColumns &&
+           elements == other.elements;
   }
 
   /*
@@ -763,8 +766,8 @@ public:
     size_t i, j;
     if (sumRows) {
 #pragma omp parallel for private(j) collapse(2) schedule(dynamic)
-      for (size_t i = 0; i < nRows; i++) {
-        for (size_t j = 0; j < nColumns; j++) {
+      for (i = 0; i < nRows; i++) {
+        for (j = 0; j < nColumns; j++) {
           result[0][j] += (*this)[i][j];
         }
       }
